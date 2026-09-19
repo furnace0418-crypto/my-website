@@ -1,0 +1,33 @@
+# Dependencies and build output
+node_modules/
+.next/
+dist/
+build/
+
+# Local tooling and caches
+.codex/
+.agents/
+desktop-recovery/
+memorial/
+*.log
+.DS_Store
+Thumbs.db
+
+# Local launch helpers
+*.bat
+start-*.ps1
+
+# Working files: keep only the current outer desktop server
+work/*
+!work/outer-server/
+work/outer-server/*
+!work/outer-server/package.json
+!work/outer-server/server.js
+!work/outer-server/public/
+!work/outer-server/public/**
+
+# Archives and temporary exports
+*.zip
+*.7z
+*.rar
+*.tmp

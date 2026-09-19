@@ -1,0 +1,1323 @@
+:root {
+  --desktop: #287a79;
+  --silver: #c6c6c6;
+  --light: #ffffff;
+  --mid: #8d8d8d;
+  --dark: #242424;
+  --navy: #082d86;
+  --bar-h: 42px;
+}
+
+* { box-sizing: border-box; }
+
+html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+
+body {
+  font-family: "SimSun", "Fixedsys", "Terminal", monospace;
+  font-size: 13px;
+  color: #111;
+  user-select: none;
+  cursor: default;
+}
+
+button { font: inherit; }
+
+.desktop {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--desktop);
+}
+
+.desktop-noise {
+  position: absolute;
+  inset: 0;
+  opacity: .14;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.045) 0 1px, transparent 1px 4px),
+    radial-gradient(circle at 24% 18%, rgba(255,255,255,.11), transparent 28%),
+    radial-gradient(circle at 72% 67%, rgba(0,0,0,.08), transparent 33%);
+  mix-blend-mode: soft-light;
+}
+
+.desktop-icons {
+  position: absolute;
+  z-index: 2;
+  top: 18px;
+  left: 14px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(5, 88px);
+  grid-auto-columns: 88px;
+  gap: 4px 15px;
+}
+
+.desktop-icon {
+  width: 88px;
+  min-height: 84px;
+  border: 1px solid transparent;
+  padding: 5px 3px;
+  color: #fff;
+  background: transparent;
+  text-shadow: 1px 1px #153e3e;
+  outline: none;
+}
+
+.desktop-icon:hover, .desktop-icon:focus-visible {
+  border: 1px dotted rgba(255,255,255,.95);
+  background: rgba(198,226,226,.17);
+}
+.desktop-icon.selected { border:1px dotted rgba(255,255,255,.95); background:rgba(7,38,112,.28); }
+
+.desktop-icon:active { transform: translate(1px, 1px); }
+
+.icon-label {
+  display: block;
+  max-width: 84px;
+  margin: 5px auto 0;
+  line-height: 16px;
+  text-align: center;
+  font-family: "SimSun", "Fixedsys", monospace;
+  letter-spacing: 0;
+}
+
+.pixel-icon {
+  position: relative;
+  display: block;
+  width: 40px;
+  height: 40px;
+  margin: 0 auto;
+  image-rendering: pixelated;
+  filter: drop-shadow(2px 2px 0 rgba(0,0,0,.35));
+}
+
+.computer-icon:before {
+  content: ""; position: absolute; left: 2px; top: 1px; width: 28px; height: 23px;
+  border: 3px solid #ddd; box-shadow: inset 0 0 0 3px #272727, inset 0 0 0 5px #1c5967, 3px 3px 0 #555;
+  background: #58b0b2;
+}
+.computer-icon:after { content: ""; position: absolute; left: 13px; top: 28px; width: 20px; height: 5px; background: #d0d0d0; border: 2px solid #333; }
+.computer-icon i { position: absolute; left: 26px; top: 19px; width: 10px; height: 16px; background: #d7d7d7; border: 2px solid #333; z-index: 2; }
+
+.folder-icon:before { content: ""; position: absolute; left: 1px; top: 10px; width: 35px; height: 24px; background: #f5b91f; border: 2px solid #68440d; box-shadow: inset 0 3px #ffd765, 2px 2px #234b4b; }
+.folder-icon:after { content: ""; position: absolute; left: 3px; top: 5px; width: 15px; height: 8px; background: #f4bb29; border: 2px solid #68440d; border-bottom: 0; }
+
+.browser-icon:before { content: ""; position: absolute; inset: 1px; border-radius: 50%; background: #168bc3; border: 3px solid #eee; box-shadow: inset -5px -5px #075194, 2px 2px #333; }
+.browser-icon:after { content: "e"; position: absolute; left: 7px; top: -4px; color: #edce3a; font: bold italic 41px/38px Georgia; text-shadow: 2px 2px #263d84; }
+
+.note-icon:before { content: ""; position: absolute; left: 6px; top: 1px; width: 27px; height: 35px; background: repeating-linear-gradient(#fff 0 5px,#aaa 6px 7px); border: 2px solid #333; box-shadow: 2px 2px #315454; }
+.note-icon:after { content: ""; position: absolute; right: 4px; bottom: 1px; width: 20px; height: 5px; background: #e8c887; border: 1px solid #684b23; transform: rotate(-42deg); transform-origin: right; }
+
+.recycle-icon:before { content: ""; position: absolute; left: 7px; top: 8px; width: 26px; height: 29px; background: linear-gradient(90deg,#dcebea 0 4px,#8db8b7 4px 8px,#dcebea 8px 12px,#8db8b7 12px 16px,#dcebea 16px 20px); border: 2px solid #284b4b; clip-path: polygon(7% 0,93% 0,82% 100%,18% 100%); }
+.recycle-icon:after { content: "♻"; position: absolute; left: 10px; top: 9px; color: #176b68; font-size: 20px; font-weight: bold; }
+.recycle-icon i { position: absolute; left: 5px; top: 3px; width: 30px; height: 6px; border: 2px solid #284b4b; background: #dcebea; z-index: 2; }
+
+.window-layer { position: absolute; inset: 0 0 var(--bar-h) 0; z-index: 5; pointer-events: none; }
+
+.retro-window {
+  position: absolute;
+  left: clamp(105px, 25vw, 360px);
+  top: clamp(48px, 14vh, 130px);
+  width: min(590px, calc(100vw - 125px));
+  height: min(420px, calc(100vh - 110px));
+  min-width: 290px;
+  min-height: 210px;
+  display: flex;
+  flex-direction: column;
+  padding: 3px;
+  background: var(--silver);
+  border: 2px solid;
+  border-color: var(--light) var(--dark) var(--dark) var(--light);
+  box-shadow: 1px 1px 0 #000, inset 1px 1px #dfdfdf;
+  pointer-events: auto;
+}
+
+.retro-window.inactive .titlebar { background: #707070; }
+.retro-window.minimized { display: none; }
+.retro-window.maximized { inset: 0 !important; width: 100% !important; height: 100% !important; }
+
+.titlebar {
+  height: 27px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 3px 3px 5px;
+  color: #fff;
+  background: #000080;
+  cursor: move;
+}
+
+.titlebar h2 { flex: 1; overflow: hidden; margin: 0; font-size: 13px; white-space: nowrap; text-overflow: ellipsis; }
+.window-mini-icon { position: relative; width: 15px; height: 13px; flex: 0 0 auto; background: #f0d36f; border: 1px solid #252525; box-shadow: inset 0 2px #fff5b0; }
+.window-mini-icon:before { content: ""; position: absolute; left: 1px; top: -3px; width: 7px; height: 3px; background: #e7c454; border: 1px solid #222; border-bottom: 0; }
+.window-mini-icon.computer { height:12px; background:#57a6a8; box-shadow:inset 0 0 0 2px #ddd; }.window-mini-icon.computer:before { left:4px; top:12px; width:7px; height:2px; background:#aaa; border:1px solid #222; }
+.window-mini-icon.browser { width:15px; height:15px; border-radius:50%; color:#f1ce30; background:#1266a0; box-shadow:inset -2px -2px #063a6b; }.window-mini-icon.browser:before { content:"e"; left:2px; top:-3px; width:auto; height:auto; color:#f1ce30; background:transparent; border:0; font:bold italic 15px Georgia; }
+.window-mini-icon.qq,.window-mini-icon.qq-chat-icon { width:14px; height:15px; border-radius:50%; background:#111; box-shadow:inset 3px 0 #fff,inset -3px 0 #fff; }.window-mini-icon.qq:before,.window-mini-icon.qq-chat-icon:before { left:1px; top:12px; width:12px; height:4px; background:#e2b323; border:1px solid #69460b; }
+.window-mini-icon.notes { width:13px; height:15px; background:repeating-linear-gradient(#fff 0 2px,#777 3px 4px); box-shadow:none; }.window-mini-icon.notes:before { display:none; }
+.window-mini-icon.recycle { width:13px; height:14px; background:repeating-linear-gradient(90deg,#dcebea 0 2px,#67a6a3 2px 4px); box-shadow:none; clip-path:polygon(8% 0,92% 0,80% 100%,20% 100%); }.window-mini-icon.recycle:before { display:none; }
+.window-mini-icon.excel { width:15px; height:15px; color:#fff; background:#087b43; box-shadow:inset 0 0 0 1px #bce5ce; font:bold 10px/14px Arial; text-align:center; }.window-mini-icon.excel:before{content:"X";position:static;width:auto;height:auto;background:transparent;border:0}
+
+.window-controls { display: flex; gap: 2px; }
+.window-controls button {
+  width: 21px; height: 20px; padding: 0; line-height: 15px; font-weight: 900; color: #111; background: var(--silver);
+  border: 2px solid; border-color: #fff #333 #333 #fff;
+}
+.window-controls button[data-action="close"]:hover { color:#fff; background:#d92d28; border-color:#ff9a94 #76120f #76120f #ff9a94; }
+.window-controls button[data-action="close"]:active { color:#fff; background:#b51e1a; border-color:#76120f #ff9a94 #ff9a94 #76120f; }
+.window-controls button:active, .toolbar button:active, .start-button:active, .task-item:active { border-color: #333 #fff #fff #333; padding: 2px 0 0 2px; }
+
+.menu-bar { height: 27px; display: flex; align-items: center; padding: 0 5px; border-bottom: 1px solid #777; font:15px/1 SimSun,"MS Sans Serif",sans-serif; }
+.menu-bar button { height: 24px; padding: 0 8px; border: 0; background: transparent; font:inherit; }
+.menu-bar button:hover { color: #fff; background: var(--navy); }
+
+.toolbar { display: flex; height: 34px; align-items: center; gap: 5px; padding: 4px; border-top: 1px solid #fff; border-bottom: 1px solid #777; }
+.toolbar button { width: 26px; height: 24px; padding: 0; background: var(--silver); border: 2px solid; border-color: #fff #555 #555 #fff; }
+.address-label { margin-left: 3px; }
+.address-field { height: 23px; flex: 1; background: white; border: 2px solid; border-color: #555 #fff #fff #555; }
+
+.window-content { flex: 1; overflow: auto; margin: 4px 1px 2px; background: #f8f8f5; border: 2px solid; border-color: #555 #fff #fff #555; }
+.empty-state { width: 100%; height: 100%; min-height: 100px; background: repeating-linear-gradient(0deg, rgba(40,40,40,.018) 0 1px, transparent 1px 3px); }
+.statusbar { height: 22px; display: flex; justify-content: space-between; align-items: center; padding-left: 5px; border-top: 1px solid #888; box-shadow: inset 0 1px #fff; color: #444; }
+.resize-grip { align-self: flex-end; color: #777; font-size: 13px; }
+
+.taskbar {
+  position: absolute; z-index: 1000; left: 0; right: 0; bottom: 0; height: var(--bar-h);
+  display: flex; align-items: center; padding: 4px;
+  background: var(--silver); border-top: 2px solid #fff; box-shadow: 0 -1px #555;
+}
+
+.start-button, .task-item {
+  height: 32px; background: var(--silver); border: 2px solid; border-color: #fff #333 #333 #fff; color: #111;
+}
+.start-button { min-width: 85px; display: flex; align-items: center; justify-content: center; gap: 7px; font-size: 15px; }
+.start-button.open { border-color: #333 #fff #fff #333; background: #b9b9b9; }
+.start-mark { width: 22px; height: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 2px; background: #333; transform: skewY(-4deg); }
+.start-mark i:nth-child(1) { background: #e5483a; }.start-mark i:nth-child(2) { background: #44a559; }.start-mark i:nth-child(3) { background: #3986cc; }.start-mark i:nth-child(4) { background: #e5c13a; }
+.task-separator { width: 2px; align-self: stretch; margin: 0 5px; border-left: 1px solid #777; border-right: 1px solid #fff; }
+.task-items { flex: 1; min-width: 0; display: flex; gap: 4px; overflow: hidden; }
+.task-item { width: 180px; max-width: 28vw; display:flex; align-items:center; gap:6px; padding:0 8px; overflow:hidden; text-align:left; white-space:nowrap; }
+.task-title { min-width:0; overflow:hidden; text-overflow:ellipsis; }
+.task-app-icon { position:relative; width:18px; height:18px; flex:0 0 18px; display:inline-grid; place-items:center; image-rendering:pixelated; }
+.task-app-icon.computer { background:#74b7b6; border:2px solid #222; box-shadow:inset 0 0 0 2px #ddd,2px 2px #777; }
+.task-app-icon.folder { height:13px; margin-top:3px; background:#f5b91f; border:1px solid #69450c; box-shadow:inset 0 2px #ffd765; }.task-app-icon.folder:before { content:""; position:absolute; left:1px; top:-5px; width:8px; height:5px; background:#f5b91f; border:1px solid #69450c; border-bottom:0; }
+.task-app-icon.browser { border-radius:50%; color:#f3d43b; background:#116bac; border:2px solid #eee; font:bold italic 15px Georgia; }.task-app-icon.browser:after { content:"e"; transform:translateY(-1px); }
+.task-app-icon.qq,.task-app-icon.qq-chat-icon { border-radius:50%; background:#111; border:1px solid #eee; }.task-app-icon.qq:after,.task-app-icon.qq-chat-icon:after { content:""; position:absolute; left:2px; right:2px; bottom:-2px; height:5px; background:#e8b526; border:1px solid #704a08; }.task-app-icon.qq-chat-icon:before { content:""; position:absolute; z-index:2; right:-4px; top:-3px; width:7px; height:7px; background:#36a15b; border:1px solid #164d29; }
+.task-app-icon.notes { background:repeating-linear-gradient(#fff 0 3px,#8a8a8a 4px 5px); border:1px solid #333; }.task-app-icon.notes:after { content:""; position:absolute; right:-2px; bottom:1px; width:11px; height:3px; background:#d9ad62; transform:rotate(-38deg); }
+.task-app-icon.recycle { background:repeating-linear-gradient(90deg,#dcebea 0 3px,#72aaa7 3px 6px); border:1px solid #284b4b; clip-path:polygon(10% 0,90% 0,80% 100%,20% 100%); }.task-app-icon.recycle:after { content:"♻"; color:#176b68; font-size:10px; }
+.task-app-icon.excel { color:#fff; background:#087b43; border:1px solid #174d32; font:bold 12px Arial; }.task-app-icon.excel:after{content:"X"}
+.task-item.active { background: #ddd; border-color: #333 #fff #fff #333; font-weight: 700; }
+.task-context-menu { position:fixed; z-index:10050; width:152px; padding:3px; background:var(--silver); border:2px solid; border-color:#fff #222 #222 #fff; box-shadow:2px 2px 0 rgba(0,0,0,.55); }
+.task-context-menu[hidden] { display:none; }
+.task-context-menu button { width:100%; height:30px; display:flex; align-items:center; gap:9px; padding:0 9px; border:0; color:#111; text-align:left; background:transparent; font:14px "SimSun","Fixedsys",monospace; }
+.task-context-menu button:hover,.task-context-menu button:focus { color:#fff; background:#777; outline:0; }
+.task-context-menu button span { width:16px; color:#555; font:bold 20px/1 Arial,sans-serif; text-align:center; }
+.task-context-menu button:hover span,.task-context-menu button:focus span { color:#e0201b; }
+.tray { height: 32px; min-width: 116px; display: flex; justify-content: center; align-items: center; gap: 8px; padding: 0 9px; border: 2px solid; border-color: #777 #fff #fff #777; background: #bbb; }
+.tray-led { width: 9px; height: 9px; background: #39b875; border: 1px solid #155f3a; box-shadow: 0 0 3px #6af0aa; }
+.tray-volume { font-size: 11px; }
+#clock { font-weight: 700; letter-spacing: .4px; }
+
+.start-menu {
+  position: absolute; z-index: 1100; left: 3px; bottom: 40px; width: 265px; height: 322px;
+  display: none; background: var(--silver); border: 2px solid; border-color: #fff #222 #222 #fff; box-shadow: 2px 2px #111;
+}
+.start-menu.open { display: flex; }
+.start-rail { width:34px; display:flex; align-items:flex-end; justify-content:center; padding-bottom:8px; background:linear-gradient(#000080,#000044); color:#d8d8d8; }
+.start-rail span { font-weight: 900; font-size: 19px; letter-spacing: 2px; writing-mode: vertical-rl; transform: rotate(180deg); }
+.start-content { flex: 1; padding: 4px; }
+.start-profile { display: flex; align-items: center; gap: 10px; height: 52px; padding: 5px 7px; border-bottom: 1px solid #777; box-shadow: 0 1px #fff; }
+.profile-pixel { display: grid; place-items: center; width: 37px; height: 37px; background: #e1c48b; border: 2px solid; border-color: #fff #444 #444 #fff; font-size: 21px; }
+.start-content button { width: 100%; height: 43px; display: flex; align-items: center; gap: 11px; border: 0; padding: 0 10px; text-align: left; background: transparent; }
+.start-content button span { width: 27px; font-size: 22px; color: #154f8e; text-align: center; }
+.start-content button:hover { color: #fff; background: var(--navy); }
+.start-content button:hover span { color: #fff; }
+.start-divider { margin: 2px 6px; border-top: 1px solid #777; border-bottom: 1px solid #fff; }
+.start-content .shutdown { height: 39px; }
+
+@media (max-width: 650px) {
+  :root { --bar-h: 46px; }
+  .desktop-icons { grid-template-rows: repeat(5, 79px); grid-auto-columns: 75px; gap: 1px; left: 4px; }
+  .desktop-icon { width: 75px; min-height: 75px; }
+  .retro-window { left: 82px; width: calc(100vw - 90px); }
+  .task-item { width: 105px; }
+  .tray { min-width: 88px; gap: 4px; padding: 0 5px; }
+  .tray-volume { display: none; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .retro-window.opening { animation: window-open .16s steps(3, end); }
+  @keyframes window-open { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: scale(1); } }
+}
+
+/* QQ 2001 icon */
+.qq-icon:before { content:""; position:absolute; left:8px; top:2px; width:23px; height:28px; border-radius:50% 50% 45% 45%; background:#111; border:2px solid #eee; box-shadow:2px 2px #234c4b; }
+.qq-icon:after { content:""; position:absolute; left:12px; top:8px; width:15px; height:9px; border-radius:50%; background:#fff; box-shadow:inset 5px 0 #fff, 0 13px 0 -2px #d93b29; }
+.qq-icon i { position:absolute; z-index:2; left:8px; bottom:1px; width:25px; height:9px; background:#e5b72c; border:2px solid #603d08; clip-path:polygon(0 35%,35% 0,50% 35%,68% 0,100% 35%,88% 100%,12% 100%); }
+
+/* Full reference-style system tray */
+.tray { min-width:385px; justify-content:flex-end; gap:2px; padding:2px 8px 2px 6px; background:#eee; }
+.tray-tool { height:26px; min-width:27px; display:inline-flex; align-items:center; justify-content:center; gap:4px; padding:0 3px; border:1px solid transparent; background:transparent; color:#222; }
+.tray-tool:hover,.tray-tool.active { border-color:#777 #fff #fff #777; background:#d4d4d4; }
+.network-tool { min-width:59px; color:#555; }.network-tool b { font-size:13px; }
+.wifi-icon { position:relative; width:22px; height:17px; overflow:hidden; }
+.wifi-icon:before,.wifi-icon:after,.wifi-icon i { content:""; position:absolute; left:50%; border:3px solid #5cb69f; border-left-color:transparent; border-right-color:transparent; border-bottom-color:transparent; border-radius:50%; transform:translateX(-50%); }
+.wifi-icon:before { top:1px; width:20px; height:20px; }.wifi-icon:after { top:6px; width:12px; height:12px; }.wifi-icon i { top:11px; width:4px; height:4px; background:#5cb69f; border:0; }
+.mini-penguin { display:grid; place-items:center; width:16px; height:22px; color:#111; border-radius:50%; background:linear-gradient(90deg,#111 20%,#fff 21% 79%,#111 80%); font-size:8px; box-shadow:0 4px 0 -1px #d7a816; }
+.tray-browser { color:#174f8e; font:bold italic 24px Georgia; text-shadow:1px 1px #dbb830; }
+.ime-tool { min-width:43px; background:#f2cf56; border:1px solid #d2ac28; border-radius:4px; font-weight:bold; }
+.shield-tool { color:#278c78; font-size:25px; font-weight:bold; }.volume-tool { font-size:15px; }
+#clock { min-width:47px; margin-left:4px; text-align:center; }
+
+.start-menu { height:382px; }
+.start-content button { height:42px; }
+
+/* System volume popup */
+.volume-popup { position:absolute; z-index:1200; right:70px; bottom:43px; width:190px; display:none; grid-template-columns:1fr auto; gap:10px; align-items:center; padding:12px; background:var(--silver); border:2px solid; border-color:#fff #222 #222 #fff; box-shadow:2px 2px #111; }
+.volume-popup.open { display:grid; }.volume-popup strong,.volume-popup input[type=range],.volume-popup small { grid-column:1/-1; }.volume-popup input[type=range] { width:100%; accent-color:#123d91; }.volume-popup label { justify-self:end; }.volume-popup small { padding-top:7px; border-top:1px solid #888; color:#555; }
+
+/* QQ friend list and chat */
+.qq-window .menu-bar { flex:0 0 25px; }.qq-window .window-content { margin:3px 1px 1px; overflow:hidden; background:#d1d0c8; }
+.qq-login-window .menu-bar { display:none; }.qq-login-window .window-content { margin:3px 1px 1px; background:#c0c0c0; }
+.qq-login-form { display:grid; grid-template-columns:145px 1fr; width:100%; height:100%; min-height:275px; background:#c0c0c0; }
+.qq-login-brand { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; overflow:hidden; color:#fff; background:linear-gradient(150deg,#00005d 0,#001c9d 56%,#0c58a8 100%); border-right:2px solid; border-color:#222 #fff #fff #222; text-shadow:1px 1px #000; }
+.qq-login-brand:before { content:""; position:absolute; inset:0; opacity:.18; background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(255,255,255,.16) 2px 3px); }.qq-login-brand img { position:relative; width:72px; height:72px; image-rendering:pixelated; }.qq-login-brand strong { position:relative; font-size:22px; letter-spacing:1px; }.qq-login-brand span { position:relative; color:#b9d8ff; }
+.qq-login-fields { display:flex; flex-direction:column; min-width:0; padding:14px 17px 10px; }
+.login-welcome { display:flex; flex-direction:column; gap:4px; margin-bottom:13px; padding-bottom:8px; color:#000080; border-bottom:1px solid #777; box-shadow:0 1px #fff; }.login-welcome strong { font-size:16px; }.login-welcome span { color:#444; font-size:12px; }
+.qq-login-fields > label { display:grid; grid-template-columns:72px 1fr; align-items:center; margin-bottom:9px; }.qq-login-fields input[type=text],.qq-login-fields input:not([type]),.qq-login-fields input[type=password],.qq-login-fields select { width:100%; height:24px; padding:2px 5px; border:2px solid; border-color:#555 #fff #fff #555; border-radius:0; background:#fff; font:13px "SimSun","Fixedsys",monospace; outline:none; }.qq-login-fields input:focus,.qq-login-fields select:focus { outline:1px dotted #000080; outline-offset:-4px; }
+.qq-login-options { display:flex; justify-content:space-between; align-items:center; margin:0 0 4px 72px; }.qq-login-options label { display:flex; align-items:center; gap:4px; }.qq-login-options input { width:14px; height:14px; margin:0; }.qq-login-options a { color:#000080; }
+.qq-login-error { height:21px; margin:2px 0 3px 72px; color:#a00000; font-size:12px; }.qq-login-error.success { color:#006000; }
+.qq-login-actions { display:grid; grid-template-columns:auto 1fr 68px 68px; gap:7px; margin-top:auto; padding-top:8px; border-top:1px solid #777; box-shadow:inset 0 1px #fff; }.qq-login-actions button { height:29px; padding:0 8px; background:#c0c0c0; border:2px solid; border-color:#fff #333 #333 #fff; }.qq-login-actions button:active{border-color:#333 #fff #fff #333}.qq-login-actions button.primary{font-weight:bold;outline:1px solid #111;outline-offset:1px}.qq-login-actions button:disabled{color:#777;text-shadow:1px 1px #fff}.qq-login-form.shake{animation:login-shake .18s steps(2,end)}@keyframes login-shake{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+
+/* Restored browser directory */
+.browser-window .window-content{background:#fff}.browser-window .address-field{display:flex;align-items:center;padding:0 5px;font-family:"Courier New","SimSun",monospace;user-select:text}.nav-page{min-width:620px;min-height:100%;padding:5px;color:#111;background:#fff;font:12px/1.45 "SimSun","Fixedsys",monospace;user-select:text}.nav-page a{color:#0000a0;text-decoration:none}.nav-page a:hover{color:#d00000;text-decoration:underline}.nav-head{border:1px solid #24744d;background:#fff}.nav-utility{height:24px;display:flex;justify-content:space-between;align-items:center;padding:0 8px;color:#555;background:#efefdf;border-bottom:1px solid #9dbb9d}.nav-brand-row{height:65px;display:flex;align-items:center;padding:4px 15px;background:linear-gradient(90deg,#fff,#f1fff1 65%,#e1f1ff)}.nav-logo{min-width:250px;display:flex;align-items:baseline;gap:5px;white-space:nowrap}.nav-logo b{color:#005c36;font:bold 32px/1 SimSun;text-shadow:1px 1px #9fcf9f}.nav-logo strong{color:#003399;font:bold 24px/1 SimSun}.nav-logo em{padding:1px 3px;color:#fff;background:#d00000;font:bold 12px Arial;font-style:normal}.nav-slogan{display:flex;flex-direction:column;gap:3px;padding-left:18px;color:#b00000;border-left:1px solid #aaa;font-weight:bold}.nav-slogan small{color:#555;font-weight:normal}.nav-search{min-height:39px;display:flex;justify-content:center;align-items:center;gap:5px;padding:6px 10px;background:#dcebdc;border-top:1px solid #91b291;border-bottom:1px solid #6a976a}.nav-search select,.nav-search input{height:24px;border:2px solid;border-color:#555 #fff #fff #555;border-radius:0;background:#fff;font:12px SimSun}.nav-search select{width:70px}.nav-search input{width:min(390px,50vw);padding:2px 5px}.nav-search button{height:26px;padding:0 12px;background:#c0c0c0;border:2px solid;border-color:#fff #333 #333 #fff}.nav-notice{min-height:25px;display:flex;align-items:center;padding:3px 8px;color:#783f00;background:#fffbea}.nav-warning{margin-top:5px;padding:7px 10px 8px;color:#555;background:#fffde1;border:1px solid #e2b300;box-shadow:inset 0 -2px #efad00;font:13px/1.45 SimSun,monospace}.nav-warning-head{display:flex;align-items:center;gap:14px}.nav-warning-head strong{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;color:#111;background:#ffd11b;font-size:14px}.nav-warning p{margin:7px 0 2px;color:#df1d16}.nav-directory{margin-top:5px;border:1px solid #28774e}.nav-featured{min-height:38px;display:grid;grid-template-columns:88px repeat(6,1fr);align-items:center;background:#f4fff4;border-bottom:2px solid #28774e}.nav-featured b{height:100%;display:grid;place-items:center;color:#fff;background:#28774e}.nav-featured a{text-align:center;font-weight:bold}.nav-category{min-height:47px;display:grid;grid-template-columns:88px 1fr;border-bottom:1px solid #a8c8a8}.nav-category:nth-child(odd){background:#f7fbff}.nav-category:nth-child(even){background:#fffff4}.nav-category h3{height:100%;display:grid;place-items:center;margin:0;color:#006030;background:#e2f0e2;border-right:1px solid #a8c8a8;font-size:13px}.nav-category div{display:grid;grid-template-columns:repeat(6,1fr);align-items:center}.nav-category a{padding:4px 5px;text-align:center;white-space:nowrap}.nav-link.hot{color:#c00000;font-weight:bold}.nav-link[hidden]{display:none!important}.nav-footer{min-height:35px;display:flex;justify-content:space-between;align-items:center;margin-top:5px;padding:5px 9px;color:#555;background:#efefdf;border:1px solid #9dbb9d}
+
+/* Restored QQ contacts and chat */
+.qq-layout{display:grid;grid-template-columns:245px minmax(350px,1fr);height:100%;min-height:0;gap:5px;padding:5px}.qq-friends,.qq-chat,.qq-contacts-panel{min-height:0;display:flex;flex-direction:column;border:2px solid;border-color:#777 #fff #fff #777;background:#f7f7f4}.qq-profile{height:62px;display:flex;align-items:center;gap:9px;padding:7px;color:#fff;background:linear-gradient(90deg,#142b90,#3938b5)}.qq-profile div,.chat-head div{display:flex;flex-direction:column;gap:4px}.qq-profile small,.chat-head small{color:#a8dfec}.avatar{flex:0 0 auto;display:grid;place-items:center;width:37px;height:37px;border:2px solid;border-color:#fff #555 #555 #fff;color:#fff;font:bold 15px SimSun;text-shadow:1px 1px #333;background:#bf934e}.avatar-me{background:linear-gradient(135deg,#bd5e35,#303e82)}.gold{background:linear-gradient(135deg,#f0c643,#b45b2d)}.pink{background:linear-gradient(135deg,#e9a8b7,#9d4b73)}.orange{background:linear-gradient(135deg,#ef9f32,#b74420)}.blue{background:linear-gradient(135deg,#72aad3,#355e9a)}.qq-tabs{height:35px;display:grid;grid-template-columns:repeat(3,1fr)}.qq-tabs button{border:1px solid #999;background:var(--silver)}.qq-tabs .selected{color:#17398b;font-weight:bold;border-color:#555 #fff #fff #555;background:#eee}.friend-group{padding:9px 9px 6px;border-top:1px solid #bbb}.friend{display:flex;width:100%;min-height:57px;align-items:center;gap:8px;padding:5px 8px;border:1px solid transparent;text-align:left;background:transparent}.friend:hover,.friend.selected{color:#fff;background:#16359e}.friend>span:last-child{min-width:0;display:flex;flex-direction:column;gap:4px}.friend b,.friend small{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.friend small{color:#777}.friend:hover small,.friend.selected small{color:#b6d8ec}.qq-contacts-panel{height:100%;border:0}.qq-contacts-panel .qq-profile em{float:right;margin-left:25px;font-style:normal}.add-friend-row{height:48px;display:flex;justify-content:flex-end;align-items:center;padding:5px;background:#d1d0c8;border-bottom:1px solid #777}.add-friend-row button{height:32px;padding:0 12px;background:var(--silver);border:2px solid;border-color:#fff #555 #555 #fff}.friend-list{flex:1;overflow:auto;background:#f8f8f6;border:2px solid;border-color:#555 #fff #fff #555}.qq-chat{padding:6px;background:#d1d0c8}.chat-head{min-height:72px;display:flex;align-items:center;gap:10px;padding:9px;color:#fff;background:linear-gradient(90deg,#1b2796,#3735aa)}.chat-head .avatar{width:45px;height:45px}.qq-number{margin-left:auto;align-self:flex-start;font-size:11px;color:#c5c5c5}.message-list{flex:1;min-height:100px;overflow:auto;margin-top:6px;padding:12px;background:#fbfbf8;border:2px solid;border-color:#555 #fff #fff #555;user-select:text}.message{margin-bottom:15px}.message b{color:#233b8e}.message time{margin-left:12px;color:#888;font-size:11px}.message p{margin:7px 0 0 30px;line-height:1.6}.message.me b{color:#8b2e2e}.chat-tools{display:flex;gap:5px;padding:6px 0}.chat-tools button,.chat-bottom button{height:30px;background:var(--silver);border:2px solid;border-color:#fff #555 #555 #fff}.chat-tools .history{margin-left:auto}.qq-chat textarea{flex:0 0 90px;resize:none;padding:10px;border:2px solid;border-color:#555 #fff #fff #555;font:13px SimSun;outline:none}.chat-bottom{height:48px;display:flex;align-items:center;gap:10px}.chat-bottom span{flex:1;color:#777}.chat-bottom button{min-width:80px}.chat-bottom .send-button{min-width:150px;color:#243c88;font-weight:bold}.shutdown-cover{position:fixed;inset:0;z-index:9999;display:grid;place-content:center;gap:18px;text-align:center;color:#f0d86a;background:#050505;font-size:19px}.shutdown-cover small{color:#aaa}
+
+/* Two-stage profile error */
+.boot-login{position:fixed;inset:0;z-index:21000;display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle at 50% 42%,#1c579a 0,#0b3473 60%,#041b4b 100%);font-family:"SimSun","Fixedsys","Terminal",monospace}.boot-login:before{content:"";position:absolute;inset:0;opacity:.18;background:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 4px);pointer-events:none}.boot-login-dialog{position:relative;width:min(535px,calc(100vw - 34px));color:#111;background:#c0c0c0;border:3px solid;border-color:#fff #222 #222 #fff;box-shadow:3px 3px 0 rgba(0,0,0,.75);font:17px/1.45 SimSun,"MS Sans Serif",sans-serif}.boot-login-dialog>header{height:34px;display:flex;align-items:center;gap:8px;padding:4px 6px;color:#fff;background:linear-gradient(90deg,#000080,#1574c4);font-weight:bold}.boot-windows-mark{width:21px;height:21px;display:grid;grid-template-columns:1fr 1fr;gap:1px;padding:2px;background:#222;transform:skewY(-4deg)}.boot-windows-mark i:nth-child(1){background:#e5483a}.boot-windows-mark i:nth-child(2){background:#44a559}.boot-windows-mark i:nth-child(3){background:#3986cc}.boot-windows-mark i:nth-child(4){background:#e5c13a}.boot-login-dialog>main{display:flex;gap:22px;min-height:186px;padding:25px 28px 12px;background:#e9e9e9}.boot-login-icon{position:relative;flex:0 0 66px;width:66px;height:66px;color:#f2c744;background:#0b4c91;border:3px ridge #ddd;text-align:center;font:bold 28px/54px Arial}.boot-login-icon i{position:absolute;left:16px;bottom:8px;width:31px;height:17px;background:#e8c945;border-radius:50% 50% 7px 7px}.boot-login-dialog main section{flex:1}.boot-login-dialog p{margin:0 0 17px}.boot-login-dialog label{display:grid;grid-template-columns:112px 1fr;align-items:center;margin:9px 0}.boot-login-dialog input{height:29px;padding:2px 6px;background:#fff;border:2px solid;border-color:#555 #fff #fff #555;font:17px SimSun}.boot-login-dialog input[readonly]{color:#555;background:#ddd}.boot-login-dialog small{display:block;min-height:25px;margin-top:7px;color:#a00000}.boot-login-dialog>footer{display:flex;justify-content:flex-end;gap:10px;padding:10px 18px 16px;background:#e9e9e9}.boot-login-dialog button{width:100px;height:34px;background:#c0c0c0;border:2px solid;border-color:#fff #333 #333 #fff;font:17px SimSun}.boot-login-dialog button:active{border-color:#333 #fff #fff #333}.boot-login-dialog.shake{animation:boot-login-shake .18s steps(2,end)}@keyframes boot-login-shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.login-error{position:fixed;inset:0;z-index:20000;display:grid;place-items:center;overflow:hidden;color:#fff;background:radial-gradient(circle at 50% 46%,#001ea0 0,#00147d 48%,#00085c 78%,#00033b 100%);font-family:"SimSun","Fixedsys","Terminal",monospace;image-rendering:pixelated}.login-error:before{content:"";position:absolute;inset:0;opacity:.24;background:repeating-linear-gradient(0deg,rgba(255,255,255,.045) 0 1px,transparent 1px 4px),repeating-linear-gradient(90deg,transparent 0 3px,rgba(0,0,0,.07) 3px 4px);pointer-events:none}.login-error-panel{position:relative;width:min(760px,90vw);display:flex;flex-direction:column;align-items:center;text-align:center;transform:translateY(-2vh)}.login-message{display:flex;flex-direction:column;align-items:center;gap:25px;width:100%;margin-bottom:48px;font-size:clamp(22px,2.5vw,31px);font-weight:400;line-height:1.35;text-align:center;text-shadow:2px 2px 0 #00003a}.login-message strong{font-weight:400}.login-error button{width:178px;height:54px;color:#000;font-family:"SimSun","Fixedsys",monospace;font-size:22px;background:#c0c0c0;border:3px solid;border-color:#fff #222 #222 #fff;box-shadow:1px 1px #000}.login-error button:active{transform:translate(1px,1px);border-color:#222 #fff #fff #222}.login-error.second-step{background:radial-gradient(circle at 50% 46%,#0024a8 0,#00136e 62%,#00033b 100%)}
+.login-error.second-step .login-message strong{white-space:nowrap}
+
+/* Compact late-90s sign-in and interrupted loading sequence. */
+.boot-login,.boot-progress{background:#008080;font-family:SimSun,sans-serif}
+.boot-login:before{display:none}
+.boot-login-dialog{width:min(460px,calc(100vw - 28px));font:13px/1.25 SimSun,sans-serif;border-width:2px;box-shadow:2px 2px #222}
+.boot-login-dialog>header{height:22px;padding:2px 4px;gap:5px;background:#000080}
+.boot-windows-mark{width:15px;height:15px;padding:1px}
+.boot-login-dialog>main{min-height:118px;gap:13px;padding:17px 96px 8px 18px;background:#c0c0c0}
+.boot-login-icon{width:60px;height:52px;flex-basis:60px;border:0;background:transparent;color:#e2ba19;text-shadow:1px 1px #111;font:48px/52px Georgia,serif}
+.boot-login-icon i{display:none}
+.boot-login-dialog p{margin:0 0 13px;white-space:nowrap}
+.boot-login-dialog label{grid-template-columns:67px 1fr;margin:4px 0;white-space:nowrap}
+.boot-login-dialog input{width:135px;height:23px;padding:1px 3px;font:14px SimSun}
+.boot-login-dialog input[readonly]{background:white;color:#222}
+.boot-login-dialog small{min-height:14px;margin-top:2px;font-size:12px;white-space:nowrap}
+.boot-login-dialog>footer{position:absolute;right:10px;top:31px;display:grid;gap:6px;padding:0;background:transparent}
+.boot-login-dialog button{width:72px;height:23px;font:13px SimSun}
+.boot-progress{position:fixed;inset:0;z-index:20500;display:grid;place-items:center}
+.boot-progress[hidden]{display:none}
+.boot-progress-dialog{width:min(560px,calc(100vw - 30px));background:#c0c0c0;color:#111;border:3px solid;border-color:#fff #333 #333 #fff;box-shadow:2px 2px #222;font:17px SimSun}
+.boot-progress-dialog header{height:29px;padding:3px 7px;background:#000080;color:#fff;font-weight:bold}
+.boot-progress-dialog main{padding:26px 28px 30px}
+.boot-progress-dialog p{margin:0 0 24px}
+.boot-progress-track{height:29px;padding:3px;background:#fff;border:2px solid;border-color:#777 #fff #fff #777}
+.boot-progress-track span{display:block;width:0;height:100%;background:repeating-linear-gradient(90deg,#000080 0 22px,transparent 22px 25px)}
+.qz-post-photo-button,.qq-space-page .qz-post-photo-button{display:block;width:fit-content;max-width:100%;padding:0;border:0;background:transparent;line-height:0;cursor:zoom-in}
+.qz-post-photo{display:block;width:auto;height:auto;max-width:100%;max-height:650px;object-fit:contain;border:1px solid #aaa}
+
+/* Boot screen and QQ-space refinements. */
+.boot-login,.boot-progress{background:var(--desktop)}
+.boot-login-dialog{width:min(590px,calc(100vw - 28px));font-size:18px}
+.boot-login-dialog>header{height:31px;padding:4px 7px;font-size:17px}
+.boot-login-dialog>main{min-height:174px;gap:22px;padding:24px 119px 15px 23px}
+.boot-login-icon{position:relative;flex:0 0 86px;width:86px;height:96px;overflow:hidden;border:0;background:#d5dfe1;line-height:normal;text-shadow:none;mix-blend-mode:multiply}
+.boot-login-icon img{position:absolute;left:-22px;top:-17px;width:120px;height:auto;max-width:none}
+.boot-login-dialog p{margin-bottom:19px}
+.boot-login-dialog label{grid-template-columns:88px 1fr;margin:7px 0}
+.boot-login-dialog input{width:174px;height:30px;font-size:18px}
+.boot-login-dialog small{min-height:18px;font-size:15px}
+.boot-login-dialog>footer{right:14px;top:47px;gap:10px}
+.boot-login-dialog button{width:91px;height:29px;font-size:16px}
+.login-message{font-size:clamp(20px,2.15vw,27px);gap:20px;margin-bottom:38px}
+.login-error button{width:156px;height:47px;font-size:19px}
+.qz-module h3{font-size:17px}
+.qz-post p{font-size:19px}
+.qz-post-meta strong{font-size:21px}
+.qz-post-with-avatar{display:grid;grid-template-columns:50px minmax(0,1fr);column-gap:13px;align-items:start}
+.qz-feed-avatar{display:block;width:50px;height:50px;object-fit:cover;border:2px solid #fff;box-shadow:1px 1px #777}
+.qz-post-content{min-width:0}
+.qz-post-photo{width:min(330px,100%);max-height:none;height:auto}
+@media(max-width:620px){.boot-login-dialog{font-size:15px}.boot-login-dialog>main{gap:10px;padding:14px 95px 13px 10px}.boot-login-icon{flex-basis:65px;width:65px;height:78px}.boot-login-icon img{width:100px;left:-19px;top:-15px}.boot-login-dialog label{grid-template-columns:66px 1fr}.boot-login-dialog input{width:min(145px,30vw);font-size:15px}.boot-login-dialog p{white-space:normal}.boot-login-dialog>footer{right:7px;top:43px}.boot-login-dialog button{width:79px}.login-error button,.login-error.second-step button{width:156px;height:47px;font-size:19px}}
+
+/* Hidden game entry opened from the 2001 directory search. */
+
+/* Authentic bitmap icon assets */
+.pixel-icon{width:40px;height:40px;background-repeat:no-repeat;background-position:center;background-size:32px 32px;filter:none}.pixel-icon:before,.pixel-icon:after,.pixel-icon i{display:none!important}.computer-icon{background-image:url("assets/icons/computer-32.png")}.folder-icon{background-image:url("assets/icons/folder-32.png")}.browser-icon{background-image:url("assets/icons/browser-16.png");image-rendering:pixelated}.qq-icon{background-image:url("assets/icons/qq-32.svg")}.note-icon{background-image:url("assets/icons/notepad-32.png")}.recycle-icon{background-image:url("assets/icons/recycle-32.png")}.profile-pixel{padding:0;overflow:hidden;background:#c0c0c0}.profile-pixel img{width:32px;height:32px;object-fit:contain;image-rendering:pixelated}.start-app-icon{width:32px!important;height:32px;flex:0 0 32px;display:inline-block;background-repeat:no-repeat;background-position:center;background-size:32px 32px;image-rendering:pixelated}.start-app-icon.computer{background-image:url("assets/icons/computer-32.png")}.start-app-icon.folder{background-image:url("assets/icons/folder-32.png")}.start-app-icon.browser{background-image:url("assets/icons/browser-16.png")}.start-app-icon.qq{background-image:url("assets/icons/qq-32.svg")}.start-app-icon.notes{background-image:url("assets/icons/notepad-32.png")}.start-app-icon.shutdown{background-image:url("assets/icons/shutdown-32.png")}.task-app-icon,.window-mini-icon,.tray-asset{background-repeat:no-repeat!important;background-position:center!important;background-size:16px 16px!important;image-rendering:pixelated}.task-app-icon.computer,.window-mini-icon.computer{background-image:url("assets/icons/computer-16.png")!important}.task-app-icon.folder,.window-mini-icon.folder{background-image:url("assets/icons/folder-16.png")!important}.task-app-icon.browser,.window-mini-icon.browser{background-image:url("assets/icons/browser-16.png")!important}.task-app-icon.qq,.task-app-icon.qq-chat-icon,.window-mini-icon.qq,.window-mini-icon.qq-chat-icon{background-image:url("assets/icons/qq-16.svg")!important}.task-app-icon.notes,.window-mini-icon.notes{background-image:url("assets/icons/notepad-16.png")!important}.task-app-icon.recycle,.window-mini-icon.recycle{background-image:url("assets/icons/recycle-16.png")!important}.task-app-icon:before,.task-app-icon:after,.window-mini-icon:before,.window-mini-icon:after{display:none!important}.tray-asset{display:inline-block;width:18px;height:18px}.tray-asset.network{background-image:url("assets/icons/network-16.png")}.tray-asset.qq{background-image:url("assets/icons/qq-16.svg")}.tray-asset.browser{background-image:url("assets/icons/browser-16.png")}.tray-asset.security{background-image:url("assets/icons/security-16.svg")}.tray-asset.volume{background-image:url("assets/icons/volume-16.png")}.tray-asset.volume.muted{background-image:url("assets/icons/volume-muted-16.png")}
+
+/* Larger desktop shortcuts while retaining the original 32/16px bitmap artwork. */
+.desktop-icons{grid-template-rows:repeat(5,104px);grid-auto-columns:108px;gap:7px 18px}
+.desktop-icon{width:108px;min-height:100px;padding:7px 4px}
+.desktop-icon .pixel-icon{width:52px;height:52px;background-size:48px 48px}
+.desktop-icon .icon-label{max-width:102px;margin-top:6px;font-size:16px;line-height:19px}
+
+/* Slightly enlarged QQ 2001 windows with more readable period-style text. */
+.qq-login-window .titlebar h2{font-size:15px}.qq-login-window .window-content{font-size:17px}
+.qq-login-form{grid-template-columns:160px 1fr;min-height:310px}
+.qq-login-brand{gap:11px}.qq-login-brand img{width:80px;height:80px}.qq-login-brand strong{font-size:27px}.qq-login-brand span{font-size:16px}
+.qq-login-fields{padding:17px 20px 12px}.login-welcome{gap:5px;margin-bottom:15px;padding-bottom:9px}.login-welcome strong{font-size:21px}.login-welcome span{font-size:16px}
+.qq-login-fields>label{grid-template-columns:92px 1fr;margin-bottom:11px;font-size:17px}.qq-login-fields input[type=text],.qq-login-fields input:not([type]),.qq-login-fields input[type=password],.qq-login-fields select{height:30px;font-size:17px}
+.qq-login-options{margin-left:92px;font-size:16px}.qq-login-options input{width:17px;height:17px}.qq-login-error{height:24px;margin-left:92px;font-size:15px}
+.qq-login-actions{grid-template-columns:auto 1fr 80px 80px;gap:8px;padding-top:9px}.qq-login-actions button{height:34px;font-size:16px}
+
+.qq-contacts-window .titlebar h2,.qq-chat-window .titlebar h2{font-size:15px}.qq-contacts-window .window-content,.qq-chat-window .window-content{font-size:17px}
+.qq-contacts-window .qq-profile{height:76px;padding:9px}.qq-contacts-window .qq-profile strong,.chat-head strong{font-size:18px}.qq-profile small,.chat-head small{font-size:15px}.qq-contacts-window .avatar{width:42px;height:42px;font-size:17px}
+.qq-tabs{height:42px}.qq-tabs button,.add-friend-row button{font-size:16px}.add-friend-row{height:56px}.add-friend-row button{height:38px}
+.friend-group{padding:11px 11px 8px;font-size:17px}.friend{min-height:69px;gap:10px;padding:7px 10px}.friend .avatar{width:42px;height:42px;font-size:17px}.friend b{font-size:17px}.friend small{font-size:15px}
+.chat-head{min-height:84px;padding:11px}.chat-head .avatar{width:50px;height:50px;font-size:17px}.qq-number{font-size:13px}.message-list{padding:16px}.message{margin-bottom:19px}.message b,.message p{font-size:17px}.message time{font-size:14px}.message p{margin-top:9px;line-height:1.7}
+.chat-tools button,.chat-bottom button{height:36px;font-size:16px}.qq-chat textarea{flex-basis:112px;font-size:17px}.chat-bottom{height:56px;font-size:15px}.chat-bottom button{min-width:96px}.chat-bottom .send-button{min-width:178px}
+.avatar.avatar-image{overflow:hidden;padding:1px;box-sizing:border-box;background:#cfd1cc;box-shadow:inset 0 0 0 1px #a6a8a3}.avatar.avatar-image img{display:block;width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply;transform:scale(1.08)}.avatar.avatar-image img[src$="shiqian-bear.png"]{transform:scale(1.3)}.pinned-group{color:#8a4600;background:#fff0c8;border-top:0;border-bottom:1px solid #c69c54}.pinned-conversation{min-height:76px;background:#fffdf0;border-bottom:1px solid #d4c99f}.pinned-conversation:hover,.pinned-conversation.selected{background:#16359e}.pinned-conversation .avatar{width:48px;height:48px}.pinned-conversation.group-conversation{background:#f1f8ff}.pinned-conversation.group-conversation:hover,.pinned-conversation.group-conversation.selected{background:#16359e}.friend-copy{min-width:0;flex:1}.friend-title{display:flex;align-items:center;gap:5px;min-width:0}.friend-title b{min-width:0;overflow:hidden;text-overflow:ellipsis}.chat-kind,.pin-tag{flex:0 0 auto;padding:1px 4px;border:1px solid;font:normal 11px/14px "SimSun","Fixedsys",monospace}.direct-kind{color:#17672f;background:#e4f5df;border-color:#75a66f}.group-kind{color:#174f91;background:#dcecff;border-color:#789fc6}.pin-tag{margin-left:auto;color:#8c4b00;background:#ffe09a;border-color:#bc8a31}.friend:hover .chat-kind,.friend.selected .chat-kind,.friend:hover .pin-tag,.friend.selected .pin-tag{color:#fff;background:#334fb3;border-color:#9bb4e8}.group-avatar{box-shadow:inset 0 0 0 1px #447fa5}.message-date{display:flex;align-items:center;gap:9px;margin:3px 0 17px;color:#777;font-size:14px;text-align:center}.message-date:before,.message-date:after{content:"";flex:1;height:1px;background:#c4c4bd}.group-chat .chat-head{background:linear-gradient(90deg,#17497f,#2d6c99)}.group-chat .message{padding-left:9px;border-left:3px solid #9ab5cc}.group-chat .message b{color:#245c87}.group-chat .message.me{border-left-color:#c58b72}.group-chat .message.me b{color:#8b2e2e}
+
+/* Match the directory page typography to the enlarged QQ contact list. */
+.browser-window .address-field,.browser-window .menu-bar,.browser-window .statusbar{font-size:15px}
+.nav-page{font-size:17px;line-height:1.55}
+.nav-utility{height:33px;padding:0 11px;font-size:15px}
+.nav-brand-row{height:80px;padding:6px 18px}.nav-logo{min-width:285px;gap:7px}.nav-logo b{font-size:36px}.nav-logo strong{font-size:29px}.nav-logo em{font-size:14px}.nav-slogan{gap:4px;padding-left:20px;font-size:17px}.nav-slogan small{font-size:15px}
+.nav-search{min-height:51px;gap:7px;padding:8px 12px}.nav-search select,.nav-search input{height:32px;font-size:16px}.nav-search select{width:82px}.nav-search button{height:33px;padding:0 15px;font-size:16px}
+.nav-notice{min-height:35px;padding:5px 10px;font-size:16px}
+.nav-warning{padding:9px 12px 10px;font-size:16px}.nav-warning-head{gap:17px}.nav-warning-head strong{padding:3px 10px;font-size:17px}.nav-warning p{margin-top:8px;font-size:17px}
+.nav-featured{min-height:51px;grid-template-columns:110px repeat(6,1fr)}.nav-featured b{font-size:17px}.nav-featured a{font-size:17px}
+.nav-category{min-height:59px;grid-template-columns:110px 1fr}.nav-category h3{font-size:17px}.nav-category a{padding:6px;font-size:17px}
+.nav-footer{min-height:45px;padding:7px 11px;font-size:15px}
+.nav-directory[hidden],.nav-warning[hidden],.nav-footer[hidden]{display:none!important}
+.browser-window .toolbar{height:48px;gap:8px;padding:6px}.browser-window .toolbar button{width:40px;height:34px;font:bold 24px/28px "Fixedsys","SimSun",monospace}.browser-window .address-label{margin-left:5px;font-size:17px}.browser-window .address-field{height:34px;padding:0 8px;font-size:17px}
+
+@media(max-width:900px){.tray{min-width:270px}.network-tool b,.shield-tool,.tray-browser{display:none}.qq-contacts-window{left:5px!important;width:320px!important}.qq-chat-window{left:330px!important;width:calc(100vw - 335px)!important}.login-error.second-step .login-message strong{white-space:normal}}@media(max-width:620px){.tray{min-width:158px}.network-tool,.tray-qq,.ime-tool{display:none}.qq-contacts-window,.qq-chat-window{left:5px!important;width:calc(100vw - 10px)!important}.qq-chat-window{top:80px!important}.login-message{margin-bottom:45px}.login-error button,.login-error.second-step button{width:170px;height:54px;font-size:22px}}@media(max-width:520px){.qq-login-form{grid-template-columns:100px 1fr}.qq-login-brand img{width:54px;height:54px}.qq-login-brand strong{font-size:17px}.qq-login-brand span{display:none}.qq-login-fields{padding:10px}.qq-login-fields>label{grid-template-columns:65px 1fr}.qq-login-options,.qq-login-error{margin-left:65px}.qq-login-actions{grid-template-columns:1fr 62px 62px}.qq-login-actions button:first-child{display:none}}
+
+/* Keep long QQ conversations inside the window while the composer stays visible. */
+.qq-chat-window > .window-content {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.qq-chat-window .qq-chat {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.qq-chat-window .chat-head,
+.qq-chat-window .chat-tools,
+.qq-chat-window textarea,
+.qq-chat-window .chat-bottom {
+  flex-shrink: 0;
+}
+
+.qq-chat-window .message-list {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+/* Stable classic title bar: do not let the flex layout squash its contents. */
+.qq-chat-window > .titlebar {
+  flex: 0 0 27px;
+  min-height: 27px;
+  overflow: hidden;
+}
+
+.qq-chat-window > .titlebar h2 {
+  display: block;
+  min-width: 0;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  color: #fff;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  outline: 0;
+  line-height: 19px;
+  transform: none;
+}
+
+/* Incoming messages stay left; messages sent by the user stay right. */
+.qq-chat-window .message {
+  width: fit-content;
+  max-width: 82%;
+  margin-right: auto;
+  text-align: left;
+}
+
+.qq-chat-window .message p {
+  margin-right: 0;
+  margin-left: 30px;
+}
+
+.qq-chat-window .message.me {
+  margin-right: 0;
+  margin-left: auto;
+  text-align: right;
+}
+
+.qq-chat-window .message.me p {
+  margin-right: 30px;
+  margin-left: 0;
+}
+
+.qq-chat-window .message.me time {
+  margin-right: 12px;
+  margin-left: 0;
+}
+
+.qq-chat-window .group-chat .message.me {
+  padding-right: 9px;
+  padding-left: 0;
+  border-right: 3px solid #c58b72;
+  border-left: 0;
+}
+
+/* QQ 2001 conversation layout: both speakers use the same left-hand transcript. */
+.qq-chat-window .message,
+.qq-chat-window .message.me {
+  width: auto;
+  max-width: 100%;
+  margin-right: 0;
+  margin-left: 0;
+  text-align: left;
+}
+
+.qq-chat-window .message p,
+.qq-chat-window .message.me p {
+  margin-right: 0;
+  margin-left: 0;
+  white-space: pre-wrap;
+}
+
+.qq-chat-window .message.me time {
+  margin-right: 0;
+  margin-left: 12px;
+}
+
+.qq-chat-window .group-chat .message.me {
+  padding-right: 0;
+  padding-left: 9px;
+  border-right: 0;
+  border-left: 3px solid #c58b72;
+}
+
+.qq-chat-window .message time {
+  color: #5a7c68;
+  font-weight: normal;
+}
+
+.qq-chat-window .message.me time {
+  color: #6d70a6;
+}
+
+/* Larger Windows-2000-style title-bar controls on every application window. */
+.retro-window > .titlebar {
+  flex-basis: 35px;
+  min-height: 35px;
+  padding: 4px 4px 4px 6px;
+}
+.retro-window > .titlebar h2 { font-size: 16px; line-height: 25px; }
+.retro-window > .titlebar .window-mini-icon { width: 18px; height: 18px; flex-basis: 18px; background-size: 18px 18px!important; }
+.retro-window > .titlebar .window-controls { gap: 3px; }
+.retro-window > .titlebar .window-controls button { width: 30px; height: 27px; padding: 0; font-size: 17px; line-height: 20px; }
+
+/* Mouse resize affordance for application windows. */
+.window-resize-handle {
+  position: absolute;
+  z-index: 30;
+  right: 4px;
+  bottom: 4px;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  cursor: nwse-resize;
+  border: 0;
+  background: repeating-linear-gradient(135deg,transparent 0 3px,#666 3px 5px,transparent 5px 8px);
+  clip-path: polygon(100% 0,100% 100%,0 100%);
+}
+.window-resize-handle:hover { background: repeating-linear-gradient(135deg,transparent 0 3px,#000080 3px 5px,transparent 5px 8px); }
+.retro-window.maximized .window-resize-handle { display:none; }
+.retro-window.resizing { user-select:none; }
+
+/* Clickable merged-forward card inside the class group conversation. */
+.forward-chat-card {
+  width: min(370px,calc(100% - 8px));
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 5px 12px;
+  margin-top: 4px;
+  padding: 10px 12px;
+  text-align: left;
+  color: #202020;
+  background: #f4f4ed;
+  border: 2px solid;
+  border-color: #fff #626262 #626262 #fff;
+  box-shadow: inset 1px 1px #d8d8d0;
+}
+.forward-chat-card:hover { background: #fff; }
+.forward-chat-card:active { border-color: #626262 #fff #fff #626262; }
+.forward-chat-card strong { grid-column: 1 / -1; color: #1d358a!important; font-size: 17px; }
+.forward-chat-card span { overflow: hidden; color: #656565; font-size: 14px; white-space: nowrap; text-overflow: ellipsis; }
+.forward-chat-card em { color: #304f9c; font-size: 13px; font-style: normal; white-space: nowrap; }
+
+/* Separate compact window for the forwarded transcript. */
+.qq-forward-window { min-width: 360px; min-height: 330px; }
+.qq-forward-window > .window-content { min-height: 0; overflow: hidden; background: #d2d1ca; }
+.forward-record-shell { height: 100%; min-height: 0; display: flex; flex-direction: column; padding: 7px; }
+.forward-record-shell > header { flex: 0 0 auto; display: flex; flex-direction: column; gap: 5px; padding: 10px 12px; color: #fff; background: linear-gradient(90deg,#192b91,#3f45b3); border: 1px solid #111b72; }
+.forward-record-shell > header strong { font-size: 17px; }
+.forward-record-shell > header small { color: #c8d9f0; font-size: 13px; }
+.forward-transcript { flex: 1 1 0; min-height: 0; overflow-y: auto; margin-top: 6px; padding: 12px 15px; background: #fbfbf8; border: 2px solid; border-color: #555 #fff #fff #555; user-select: text; }
+.forward-message { margin-bottom: 17px; }
+.forward-message b { display: block; margin-bottom: 6px; color: #263d8b; font-size: 16px; }
+.forward-message p { margin: 0 0 0 18px; font-size: 16px; line-height: 1.65; }
+.forward-system { margin: 20px 0 5px; padding-top: 12px; color: #777; text-align: center; border-top: 1px solid #c5c5bd; font-size: 14px; }
+
+/* Offline delivery feedback and read-only state for a departed group. */
+.message-delivery-notice {
+  margin: 18px 8px 8px;
+  padding: 7px 10px;
+  color: #777;
+  text-align: center;
+  font-size: 15px;
+  font-style: italic;
+  animation: delivery-notice-in .18s steps(3,end);
+}
+@keyframes delivery-notice-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+.group-chat-locked {
+  flex: 0 0 54px;
+  display: grid;
+  place-items: center;
+  margin-top: 6px;
+  color: #777;
+  background: #e7e7e1;
+  border: 2px solid;
+  border-color: #fff #686868 #686868 #fff;
+  font-size: 16px;
+  font-style: italic;
+}
+
+/* Clear press/focus feedback for composing and sending messages. */
+.qq-chat textarea:focus {
+  background: #fff;
+  border-color: #000080 #8ca3c7 #8ca3c7 #000080;
+  box-shadow: inset 0 0 0 2px rgba(25,55,145,.18);
+}
+.chat-tools button:active,.chat-bottom button:active {
+  border-color: #555 #fff #fff #555;
+  box-shadow: inset 2px 2px #888;
+  transform: translate(1px,1px);
+}
+.chat-bottom .send-button:active { color: #fff; background: #253e94; }
+
+/* QQ 2001 contact panel: two tabs, left application rail, and bottom shortcuts. */
+.friend-group { display:flex; width:100%; align-items:center; gap:9px; border:0; border-top:1px solid #bbb; color:inherit; text-align:left; background:transparent; cursor:pointer; appearance:none; }
+.friend-group.pinned-group { border-top:0; border-bottom:1px solid #c69c54; background:#fff0c8; }
+.friend-group:focus-visible { outline:1px dotted #000; outline-offset:-3px; }
+.group-chevron { flex:0 0 auto; width:9px; height:9px; border-right:2px solid currentColor; border-bottom:2px solid currentColor; transform:rotate(45deg) translate(-1px,-1px); transform-origin:center; transition:transform .14s ease; }
+.friend-group[aria-expanded="false"] .group-chevron { transform:rotate(-45deg) translate(-1px,1px); }
+.friend[hidden] { display:none!important; }
+.qq-contacts-window .qq-tabs { grid-template-columns: repeat(2,1fr); }
+.qq-contact-workspace { flex: 1 1 0; min-height: 0; display: flex; background: #d2d1ca; }
+.qq-side-rail { flex: 0 0 58px; display: flex; flex-direction: column; align-items: stretch; gap: 4px; padding: 7px 5px; background: linear-gradient(#15358c,#000080); border-right: 1px solid #00004d; }
+.qq-side-rail button { min-height: 57px; display: grid; place-items: center; gap: 1px; padding: 3px 2px; color: #fff; background: transparent; border: 1px solid transparent; text-shadow: 1px 1px #315f91; }
+.qq-side-rail button>span { display: grid; place-items: center; width: 31px; height: 31px; color: #3d3d3d; background: linear-gradient(#deded9,#a9a9a4); border: 2px solid; border-color: #fff #4f4f4f #4f4f4f #fff; border-radius: 7px; font:bold 18px/1 SimSun; text-shadow: none; }
+.qq-side-rail .qq-friends-symbol img { display:block; width:26px; height:auto; max-height:26px; object-fit:contain; }
+.qq-side-rail .qq-rail-image img { display:block; width:25px; height:25px; object-fit:contain; mix-blend-mode:multiply; }
+.qq-side-rail button small { font-size: 12px; }
+.qq-side-rail button:hover,.qq-side-rail button.selected { background: rgba(255,255,255,.2); border-color: #c9e6ff #285c8c #285c8c #c9e6ff; }
+.qq-side-rail button:active { transform: translate(1px,1px); border-color: #285c8c #c9e6ff #c9e6ff #285c8c; }
+
+/* QQ 收藏：在复古桌面里保留新版收藏的深色信息布局。 */
+.qq-favorites-window .window-content,
+.qq-note-editor-window .window-content { margin:3px; padding:0; overflow:hidden; background:#111; }
+.qq-favorites-app { height:100%; min-height:390px; display:grid; grid-template-columns:218px minmax(380px,1fr); color:#e8e8e8; background:#101010; font:15px/1.45 "Microsoft YaHei",sans-serif; }
+.qq-favorites-sidebar { position:relative; display:flex; flex-direction:column; box-sizing:border-box; padding:14px 10px 68px; background:linear-gradient(145deg,#303030,#242424); border-right:1px solid #3a3a3a; }
+.qq-favorites-sidebar label { display:flex; align-items:center; gap:7px; height:36px; margin-bottom:13px; padding:0 10px; border-radius:9px; color:#bbb; background:#3a3a3a; }
+.qq-favorites-sidebar label span { font-size:24px; line-height:1; transform:rotate(-20deg); }
+.qq-favorites-sidebar input { min-width:0; flex:1; color:#f1f1f1; background:transparent; border:0; outline:0; font:15px "Microsoft YaHei",sans-serif; }
+.qq-favorites-sidebar input::placeholder { color:#aaa; }
+.qq-favorites-sidebar nav { display:grid; gap:4px; }
+.qq-favorites-sidebar nav button { height:40px; padding:0 13px; border:0; border-radius:8px; color:#e5e5e5; background:transparent; text-align:left; font:15px "Microsoft YaHei",sans-serif; cursor:pointer; }
+.qq-favorites-sidebar nav button:hover { background:#383838; }
+.qq-favorites-sidebar nav button.selected { background:#4b4b4b; color:#fff; }
+.create-favorite-note { position:absolute; left:14px; right:14px; bottom:15px; height:38px; border:1px solid #5b5b5b; border-radius:10px; color:#eee; background:#303030; font:15px "Microsoft YaHei",sans-serif; cursor:pointer; }
+.create-favorite-note:hover { background:#414141; }
+.qq-favorites-main { min-width:0; overflow:hidden; background:#111; }
+.qq-favorites-main>header { height:57px; display:flex; align-items:center; gap:6px; padding:0 27px; box-sizing:border-box; border-bottom:1px solid #333; font-size:20px; }
+.qq-favorites-main>header span { color:#aaa; }
+.qq-favorites-list { height:calc(100% - 57px); overflow:auto; padding:0 26px; }
+.qq-favorite-item { min-height:118px; display:grid; grid-template-columns:minmax(0,1fr) 150px; align-items:center; gap:20px; padding:16px 0; box-sizing:border-box; border-bottom:1px solid #292929; }
+.qq-favorite-item strong { display:block; margin-bottom:8px; color:#f1f1f1; font-size:17px; font-weight:500; }
+.qq-favorite-item p { max-width:580px; margin:0; color:#aaa; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.qq-favorite-item aside { display:grid; gap:5px; justify-items:end; color:#999; font-size:13px; }
+.qq-favorites-empty { display:grid; place-items:center; height:100%; color:#888; }
+
+.qq-note-editor { height:100%; display:grid; grid-template-rows:54px 48px 1fr 24px; color:#eee; background:#171717; font-family:"Microsoft YaHei",sans-serif; }
+.qq-note-editor>header { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; padding:0 14px; border-bottom:1px solid #333; }
+.qq-note-title { grid-column:2; width:260px; padding:6px 10px; border:0; border-bottom:1px solid transparent; outline:0; color:#f2f2f2; background:transparent; text-align:center; font:17px "Microsoft YaHei",sans-serif; }
+.qq-note-title:focus { border-bottom-color:#777; }
+.publish-note { grid-column:3; justify-self:end; height:32px; padding:0 18px; border:1px solid #567daf; border-radius:3px; color:#fff; background:linear-gradient(#397dcc,#205ca6); cursor:pointer; }
+.publish-note:hover { background:linear-gradient(#4b91df,#276cba); }
+.qq-note-editor nav { display:flex; align-items:center; gap:6px; padding:0 15px; border-bottom:1px solid #303030; }
+.qq-note-editor nav button { width:34px; height:32px; border:0; color:#bbb; background:transparent; font:17px Georgia,serif; cursor:pointer; }
+.qq-note-editor nav button:hover { color:#fff; background:#353535; }
+.qq-note-editor textarea { box-sizing:border-box; width:100%; height:100%; padding:26px 22px; resize:none; border:0; outline:0; color:#f0f0f0; background:#171717; font:17px/1.8 "Microsoft YaHei",sans-serif; }
+.qq-note-error { padding:0 20px; color:#ff8e8e; }
+
+.qq-channel-error-window .window-content { margin:3px; background:#eee9d5; overflow:hidden; }
+.qq-channel-error { height:100%; box-sizing:border-box; display:grid; grid-template-columns:58px 1fr; grid-template-rows:1fr 45px; gap:4px 13px; padding:20px 24px 12px; color:#222; background:linear-gradient(90deg,#fffdf0,#e8e4d0); font:17px/1.6 SimSun,sans-serif; }
+.qq-error-mark { width:43px; height:43px; display:grid; place-items:center; align-self:center; justify-self:center; transform:translateY(-1px); border-radius:50%; color:#fff; background:linear-gradient(#fa2828,#b80000); border:2px solid #970000; box-shadow:inset 1px 1px #ff9b9b; font:bold 37px/1 Arial,sans-serif; }
+.qq-channel-error strong { display:block; margin-bottom:7px; font-size:18px; }
+.qq-channel-error p { margin:0; white-space:nowrap; }
+.qq-channel-error button { grid-column:1/3; justify-self:center; align-self:end; min-width:100px; height:29px; border:2px outset #ddd; background:#ece9d8; font:14px SimSun,sans-serif; }
+.qq-channel-error button:active { border-style:inset; }
+
+@media (max-width:720px) {
+  .qq-favorites-app { grid-template-columns:170px minmax(300px,1fr); }
+  .qq-favorite-item { grid-template-columns:1fr; gap:8px; }
+  .qq-favorite-item aside { justify-items:start; }
+}
+.qq-contact-main { flex: 1 1 0; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+.qq-contact-view { flex: 1 1 0; min-height: 0; }
+.qq-contact-view[hidden] { display: none!important; }
+.qq-friends-view { display: flex; flex-direction: column; }
+.qq-friends-view .friend-list { min-height: 0; }
+.qq-chatroom-view { overflow: auto; padding: 10px; background: #f8f8f4; }
+.qq-chatroom-warning { padding: 14px 12px; color: #c00000; background: #efefea; border: 2px solid; border-color: #777 #fff #fff #777; box-shadow: inset 1px 1px #b7b7b1; font-size: 15px; line-height: 1.65; }
+.qq-chatroom-warning>div { display: flex; align-items: center; gap: 13px; }
+.qq-chatroom-warning strong { padding: 4px 8px; color: #222; background: #c8c8c3; border: 2px solid; border-color: #fff #666 #666 #fff; font-size: 17px; }
+.qq-chatroom-warning span { font-size: 14px; }
+.qq-bottom-nav { flex: 0 0 auto; display: grid; gap: 2px; padding: 4px; background: #bdbdb8; border-top: 1px solid #666; }
+.qq-bottom-nav button { height: 31px; color: #222; background: linear-gradient(#deded9,#b9b9b4); border: 2px solid; border-color: #fff #666 #666 #fff; font-size: 15px; }
+.qq-bottom-nav button:active { border-color: #666 #fff #fff #666; transform: translate(1px,1px); }
+
+/* Keep the QQ main panel titlebar in the same deep blue as the retro browser. */
+.qq-contacts-window > .titlebar,
+.qq-contacts-window.inactive > .titlebar { background: #000080; }
+
+/* Local, no-API NPC input lock while the contact is replying. */
+.qq-chat textarea:disabled { color: #777; background: #e4e4df; }
+.chat-bottom .send-button:disabled { color: #777; background: #c0c0c0; text-shadow: 1px 1px #fff; }
+
+/* Clickable QQ Space window opened from the second rail item. */
+.qq-space-window .window-content { overflow:auto; background:#c0c0c0; }
+.qq-space-page { min-height:100%; color:#222; background:#c0c0c0; font:13px "SimSun",serif; }
+.qq-space-page * { box-sizing:border-box; }
+.qq-space-page>header { display:flex; align-items:center; gap:16px; padding:22px; color:white; background:#000080; border:2px solid; border-color:#fff #555 #555 #fff; }
+.qq-space-star { display:grid; place-items:center; width:58px; height:58px; font:42px Georgia; color:#fff; border:1px solid #a4a4ca; }
+.qq-space-page header div { display:grid; gap:8px; }.qq-space-page header strong { font-size:24px; }.qq-space-page header small { font:10px monospace; letter-spacing:2px; color:#c6c6df; }
+.qq-space-page>nav { display:flex; align-items:center; gap:5px; padding:9px 12px; border-bottom:1px solid #808080; }.qq-space-page button { cursor:pointer; color:#222; background:#c0c0c0; border:2px solid; border-color:#fff #555 #555 #fff; padding:6px 20px; font:13px "SimSun",serif; }.qq-space-page button[aria-pressed=true] { color:white; background:#000080; border-color:#555 #fff #fff #555; }.qq-space-page button:focus-visible { outline:2px dotted #000; outline-offset:2px; }.qq-space-page nav>span { margin-left:auto; color:#555; font-size:12px; }
+.qz-layout { display:grid; grid-template-columns:180px minmax(0,1fr); gap:12px; padding:12px; }.qz-layout main { min-width:0; }.qz-module { margin-bottom:12px; background:#f4f4f1; border:2px solid; border-color:#fff #808080 #808080 #fff; }.qz-module h3 { margin:0; padding:7px 10px; color:#fff; background:#000080; font-size:13px; }.qz-module h3 small { float:right; font:10px monospace; color:#d5d5e5; }.qz-profile { display:grid; justify-items:center; gap:8px; padding:16px 10px 8px; }.qz-avatar { display:grid; place-items:center; width:64px; height:64px; background:#c0c0c0; color:#555; border:2px solid; border-color:#808080 #fff #fff #808080; }.qz-profile>strong { color:#000080; }.qz-profile p { margin:4px 0; font-size:12px; }.qz-stats { display:flex; justify-content:space-around; border-top:1px solid #ccc; padding:10px 0; }.qz-stats span { display:grid; text-align:center; gap:5px; font-size:12px; }.qz-stats b { color:#000080; }.qz-note { padding:12px; line-height:1.8; margin:0; }.qz-welcome { padding:18px 14px; }.qz-welcome>strong { color:#000080; font-size:16px; }.qz-welcome p { margin:10px 0 0; color:#666; }.qz-album { display:flex; gap:12px; padding:12px; flex-wrap:wrap; }.qz-photo { display:grid; place-content:center; justify-items:center; gap:6px; width:150px; height:100px; background:#dededb; border:2px solid; border-color:#808080 #fff #fff #808080; color:#555; }.qz-photo>span:first-child { font-size:24px; }.qz-photo small { color:#777; font-size:11px; }.qz-post { padding:16px; border-bottom:1px dotted #aaa; }.qz-post:last-child { border-bottom:0; }.qz-post-meta { display:flex; justify-content:space-between; gap:12px; align-items:center; }.qz-post-meta strong { color:#000080; }.qz-post time { color:#666; font:12px Arial,sans-serif; }.qz-post p { line-height:1.8; margin:12px 0; white-space:pre-wrap; overflow-wrap:anywhere; }.qz-like { margin-top:12px; color:#626262; font-size:12px; }.qz-like strong { color:#000080; font-weight:normal; }.qz-comment { margin-top:10px; background:#e6e6e3; padding:10px; line-height:1.7; }.qz-comment strong { color:#000080; }.qz-empty { padding:16px; color:#777; }.qz-message-form label { display:grid; gap:4px; margin-bottom:10px; }.qz-message-form input,.qz-message-form textarea { width:100%; padding:8px; background:white; color:#222; border:2px solid; border-color:#808080 #fff #fff #808080; font:13px "SimSun",serif; }.qz-message-form textarea { resize:vertical; }.qz-message-form small { display:block; color:#666; margin-top:6px; }.qq-space-page>footer { padding:8px 12px 14px; text-align:center; font-size:11px; color:#555; }
+@media(max-width:600px) { .qz-layout { grid-template-columns:130px minmax(0,1fr); gap:8px; padding:8px; }.qq-space-page nav>span { display:none; }.qz-post { padding:10px; }.qz-photo { max-width:100%; }.qz-post-meta { flex-wrap:wrap; } }
+
+.qq-user-info-window .window-content { margin:4px; overflow:hidden; background:#efefeb; }
+.qq-user-card { height:100%; display:flex; flex-direction:column; padding:15px; color:#222; background:linear-gradient(#f7f7f4,#e4e4df); }
+.qq-user-card>header { display:flex; align-items:center; gap:14px; padding-bottom:13px; border-bottom:1px solid #aaa; box-shadow:0 1px #fff; }
+.qq-user-avatar { flex:0 0 76px; width:76px; height:76px; display:grid; place-items:center; overflow:hidden; background:#d2d2cd; border:2px solid;border-color:#fff #666 #666 #fff; }
+.qq-user-avatar { padding:2px; background:#cfd1cc; box-sizing:border-box; }
+.qq-user-avatar img,.qq-profile-placeholder { width:100%; height:100%; object-fit:cover; mix-blend-mode:multiply; transform:scale(1.08); }
+.qq-user-avatar img[src$="shiqian-bear.png"] { transform:scale(1.3); }
+.friend .avatar,.chat-head .avatar.profile-link { cursor:pointer; }
+.friend .avatar:hover,.chat-head .avatar.profile-link:hover { outline:2px solid #f3cf45; outline-offset:1px; }
+.qq-profile-placeholder { display:grid; place-items:center; color:#fff; font:bold 30px SimSun; text-shadow:1px 1px #333; }.qq-profile-placeholder.gold{background:#b88136}.qq-profile-placeholder.pink{background:#a8607f}.qq-profile-placeholder.blue{background:#4775a4}.qq-profile-placeholder.orange{background:#c46531}
+.qq-user-card>header>div:last-child { display:flex; flex-direction:column; gap:5px; }.qq-user-card>header strong{color:#000080;font-size:21px}.qq-user-card>header small{font-size:15px}.qq-user-card>header em{width:max-content;padding:2px 6px;color:#315c31;background:#dcebd9;border:1px solid #83a180;font-style:normal;font-size:13px}
+.qq-user-signature { display:grid;grid-template-columns:82px 1fr;align-items:start;min-height:61px;margin:11px 0;padding:9px 5px;border:1px solid #aaa;background:rgba(255,255,255,.42);box-shadow:inset 1px 1px #fff}.qq-user-signature span{color:#666}.qq-user-signature p{margin:0;line-height:1.55;font-weight:bold;overflow-wrap:anywhere}
+.qq-user-space { min-height:105px;display:grid;grid-template-columns:68px 1fr auto;align-items:center;gap:8px;width:100%;padding:11px 8px;color:#222;text-align:left;background:#deded9;border:2px solid;border-color:#fff #666 #666 #fff}.qq-user-space:active{border-color:#666 #fff #fff #666}.qq-space-thumbs{display:flex;gap:5px}.qq-space-thumbs i{display:grid;place-items:center;width:50px;height:55px;color:#777;background:#c1c1bc;border:1px solid #888;font:normal 11px SimSun}.qq-user-space b{color:#000080}
+.qq-user-card>footer { margin-top:auto; display:grid; grid-template-columns:1fr 1fr; gap:10px; padding-top:12px; }.qq-user-card>footer button{height:38px;display:flex;align-items:center;justify-content:center;gap:7px;background:#c8c8c3;border:2px solid;border-color:#fff #555 #555 #fff;font-size:16px}.qq-user-card>footer button:active{border-color:#555 #fff #fff #555}.qq-user-card>footer button:last-child{color:#fff;background:#000080}.qq-user-card>footer button span{font-size:19px}.qq-user-card>footer button.confirmed{color:#174f24;background:#cbe3c7}
+.retro-window>.titlebar .window-mini-icon.qq,.retro-window>.titlebar .window-mini-icon.qq-chat-icon { background-size:16px 16px!important; }
+.qq-icon,.start-app-icon.qq { background-image:url("assets/icons/qq-reference-penguin.png")!important; }
+.task-app-icon.qq,.task-app-icon.qq-chat-icon,.window-mini-icon.qq,.window-mini-icon.qq-chat-icon,.tray-asset.qq { background-image:url("assets/icons/qq-reference-penguin.png")!important; }
+.desktop-icon[data-app="qq"] .qq-icon { background-size:64px 64px; }
+
+/* 收藏与笔记使用 QQ 2001 的浅色窗口皮肤。 */
+.qq-favorites-window .window-content,
+.qq-note-editor-window .window-content { background:#d4d4cf; }
+.qq-favorites-app { color:#222; background:#f5f5f1; font-family:"SimSun","Microsoft YaHei",sans-serif; }
+.qq-favorites-sidebar { background:linear-gradient(90deg,#deded9,#c7c7c2); border-right:2px solid; border-color:#777; box-shadow:inset 1px 0 #fff; }
+.qq-favorites-sidebar label { border:2px solid; border-color:#666 #fff #fff #666; border-radius:0; color:#555; background:#f8f8f5; }
+.qq-favorites-sidebar input { color:#222; font-family:SimSun,sans-serif; }
+.qq-favorites-sidebar input::placeholder { color:#777; }
+.qq-favorites-sidebar nav { gap:2px; }
+.qq-favorites-sidebar nav button { border:1px solid transparent; border-radius:0; color:#222; font-family:SimSun,sans-serif; }
+.qq-favorites-sidebar nav button:hover { color:#000080; background:#edf0ff; border-color:#9aa6d8; }
+.qq-favorites-sidebar nav button.selected { color:#fff; background:linear-gradient(90deg,#000080,#4668bd); border-color:#fff #222 #222 #fff; text-shadow:1px 1px #333; }
+.create-favorite-note { border:2px solid; border-color:#fff #555 #555 #fff; border-radius:0; color:#111; background:linear-gradient(#eeeeea,#bbbcb7); font-family:SimSun,sans-serif; }
+.create-favorite-note:hover { color:#000080; background:linear-gradient(#fff,#c9c9c4); }
+.create-favorite-note:active { border-color:#555 #fff #fff #555; transform:translate(1px,1px); }
+.qq-favorites-main { color:#222; background:#fafaf7; }
+.qq-favorites-main>header { border-bottom:2px solid #898989; color:#000080; background:linear-gradient(#f8f8f5,#d6d6d1); box-shadow:inset 0 1px #fff; }
+.qq-favorites-main>header span { color:#555; }
+.qq-favorites-list { background:linear-gradient(90deg,#fff,#f0f2ed); }
+.qq-favorite-item { border-bottom:1px solid #aaa; box-shadow:0 1px #fff; }
+.qq-favorite-item:hover { background:#e6eaff; }
+.qq-favorite-item strong { color:#000080; font-family:SimSun,sans-serif; }
+.qq-favorite-item p { color:#555; }
+.qq-favorite-item aside { color:#667386; }
+.qq-favorites-empty { color:#666; }
+
+.qq-note-editor { color:#222; background:#efefeb; font-family:SimSun,"Microsoft YaHei",sans-serif; }
+.qq-note-editor>header { border-bottom:1px solid #777; background:linear-gradient(#f8f8f5,#d1d1cc); box-shadow:inset 0 1px #fff; }
+.qq-note-title { color:#000080; border:2px solid; border-color:#777 #fff #fff #777; background:#fff; font-family:SimSun,sans-serif; }
+.qq-note-title:focus { border-bottom-color:#fff; outline:1px dotted #000080; outline-offset:-4px; }
+.publish-note { border:2px solid; border-color:#fff #333 #333 #fff; border-radius:0; color:#fff; background:linear-gradient(#315bb6,#000080); font-family:SimSun,sans-serif; text-shadow:1px 1px #222; }
+.publish-note:hover { background:linear-gradient(#496fd0,#11119b); }
+.publish-note:active { border-color:#333 #fff #fff #333; transform:translate(1px,1px); }
+.qq-note-editor nav { border-bottom:1px solid #777; background:#d6d6d1; box-shadow:inset 0 1px #fff; }
+.qq-note-editor nav button { border:2px solid transparent; color:#222; background:transparent; }
+.qq-note-editor nav button:hover { color:#000080; background:#efefeb; border-color:#fff #666 #666 #fff; }
+.qq-note-editor nav button:active { border-color:#666 #fff #fff #666; }
+.qq-note-editor textarea { margin:8px; width:calc(100% - 16px); height:calc(100% - 16px); padding:18px; border:2px solid; border-color:#666 #fff #fff #666; color:#222; background:#fffef4; font-family:SimSun,"Microsoft YaHei",sans-serif; }
+.qq-note-error { color:#a00000; background:#d6d6d1; }
+
+/* 收藏栏更紧凑；笔记标题与清晰线框工具图标。 */
+.qq-favorites-app { grid-template-columns:154px minmax(420px,1fr); }
+.qq-favorites-sidebar { padding:10px 7px 56px; }
+.qq-favorites-sidebar label { height:31px; margin-bottom:7px; padding:0 7px; }
+.qq-favorites-sidebar nav button { height:32px; padding:0 9px; }
+.create-favorite-note { left:8px; right:8px; bottom:9px; height:34px; }
+.qq-note-editor { grid-template-rows:58px 50px 1fr 24px; }
+.qq-note-editor>header { grid-template-columns:minmax(0,1fr) 132px; gap:13px; padding:8px 14px; }
+.qq-note-title { grid-column:1; width:100%; height:38px; box-sizing:border-box; padding:7px 11px; text-align:left; }
+.publish-note { grid-column:2; width:132px; height:38px; padding:0 14px; font-size:15px; font-weight:bold; }
+.qq-note-editor nav { gap:2px; padding:0 10px; overflow-x:auto; }
+.qq-note-editor nav button { flex:0 0 39px; width:39px; height:36px; display:grid; place-items:center; padding:0; font-size:19px; }
+.qq-note-editor nav svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; shape-rendering:geometricPrecision; }
+.qq-note-editor nav b,.qq-note-editor nav i,.qq-note-editor nav u { font:inherit; }
+.qq-note-editor nav b { font-weight:bold; }
+.qq-note-editor nav i { font-style:italic; }
+.qq-note-editor nav u { text-decoration:underline; text-underline-offset:3px; }
+
+@media (max-width:720px) {
+  .qq-favorites-app { grid-template-columns:138px minmax(300px,1fr); }
+}
+
+/* Windows 98 风格的“我的电脑 / 我的文件”。 */
+.file-explorer-window .window-content { margin:2px; overflow:hidden; background:#fff; border:2px solid; border-color:#777 #fff #fff #777; }
+.file-explorer-window>.titlebar .window-mini-icon.computer,
+.file-explorer-window>.titlebar .window-mini-icon.folder { width:22px; height:22px; flex-basis:22px; border:0; box-shadow:none; background-size:22px 22px!important; }
+.file-explorer-window>.titlebar .window-mini-icon.computer { background-image:url("assets/icons/computer-32.png")!important; }
+.file-explorer-window>.titlebar .window-mini-icon.folder { background-image:url("assets/icons/folder-32.png")!important; }
+.file-explorer-window .toolbar { height:48px; gap:8px; padding:6px; }
+.file-explorer-window .toolbar button { width:40px; min-width:40px; height:34px; padding:0; font:bold 24px/28px "Fixedsys",Arial,sans-serif; }
+.file-explorer-window .address-label { margin-left:5px; font-size:17px; }
+.file-explorer-window .address-field { height:34px; padding:0 8px; font-size:17px; line-height:30px; }
+.file-explorer-window .toolbar button:disabled { color:#888; text-shadow:1px 1px #fff; }
+.explorer-shell { height:100%; min-height:280px; display:grid; grid-template-columns:185px 1fr; color:#111; background:#fff; font:13px/1.35 "MS Sans Serif",Tahoma,SimSun,sans-serif; }
+.explorer-web-view { box-sizing:border-box; padding:20px 14px; overflow:hidden; color:#111; background:linear-gradient(135deg,#fff 0,#f5f5f0 54%,#d9e2ec 100%); border-right:1px solid #aaa; }
+.explorer-large-icon { width:48px; height:48px; margin-bottom:8px; background:center/48px 48px no-repeat; image-rendering:pixelated; }
+.explorer-large-icon.computer { background-image:url("assets/icons/computer-32.png"); }
+.explorer-large-icon.drive { background-image:url("assets/icons/hard-drive-32.svg"); }
+.explorer-large-icon.folder { background-image:url("assets/icons/folder-32.png"); }
+.explorer-web-view>strong { display:block; color:#000080; font-size:17px; overflow-wrap:anywhere; }
+.explorer-web-view hr { height:1px; margin:12px 0; border:0; background:linear-gradient(90deg,#000080,transparent); }
+.explorer-help { color:#555; line-height:1.6; }
+.explorer-selection-detail { display:grid; gap:5px; margin-top:18px; color:#333; }
+.explorer-selection-detail b { color:#000080; overflow-wrap:anywhere; }
+.explorer-selection-detail span { color:#666; }
+.explorer-content{min-width:0;min-height:0;display:flex;flex-direction:column;overflow:auto;background:#fff}
+.explorer-items { flex:1 0 auto; align-content:start; display:grid; grid-template-columns:repeat(auto-fill,minmax(172px,1fr)); grid-auto-rows:142px; gap:8px 5px; padding:18px 14px; background:#fff; }
+.explorer-item { min-width:0; height:138px; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:5px; padding:5px; border:1px solid transparent; color:#111; background:transparent; font:13px/1.25 SimSun,"MS Sans Serif",sans-serif; cursor:default; }
+.explorer-item-icon { flex:0 0 68px; width:74px; height:68px; background:center/64px 64px no-repeat; image-rendering:pixelated; }
+.explorer-item-icon.drive { background-image:url("assets/icons/hard-drive-32.svg"); }
+.explorer-item-icon.folder { background-image:url("assets/icons/folder-32.png"); }
+.explorer-item-icon.folder.locked { filter:grayscale(1) brightness(.84); }
+.explorer-item-icon.jpeg { background-image:url("assets/icons/file-jpg-32.svg"); }
+.explorer-item-icon.txt { background-image:url("assets/icons/file-txt-32.svg"); }
+.explorer-item-icon.excel { position:relative; background:none; }
+.explorer-item-icon.excel:before { content:""; position:absolute; left:15px; top:3px; width:43px; height:57px; background:repeating-linear-gradient(0deg,transparent 0 8px,#a7c4ae 8px 9px),repeating-linear-gradient(90deg,#fff 0 12px,#bad7c3 12px 13px); border:2px solid #315844; box-shadow:3px 3px #777; }
+.explorer-item-icon.excel:after { content:"X"; position:absolute; left:7px; top:18px; width:35px; height:28px; display:grid; place-items:center; color:#fff; background:#087b43; border:2px solid #174d32; font:bold 22px/1 Arial; }
+.explorer-item-copy { min-width:0; width:100%; display:grid; justify-items:center; gap:2px; }
+.explorer-item-copy strong { max-width:100%; padding:1px 3px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-weight:normal; }
+.explorer-item-copy small { max-width:100%; color:#555; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-size:12px; }
+.explorer-drive-meter { box-sizing:border-box; width:132px; height:14px; margin-top:3px; padding:2px; border:2px solid; border-color:#555 #fff #fff #555; background:#fff; }
+.explorer-drive-meter i { display:block; height:100%; min-width:2px; background:repeating-linear-gradient(90deg,#000080 0 7px,#4169b1 7px 9px); }
+.explorer-item.selected { outline:1px dotted #000; outline-offset:-2px; }
+.explorer-item.selected strong { color:#fff; background:#000080; }
+.notepad-document { box-sizing:border-box; width:100%; height:100%; resize:none; padding:5px; border:0; outline:0; color:#000; background:#fff; font:15px/1.45 "Fixedsys",SimSun,monospace; }
+
+@media (max-width:640px) {
+  .explorer-shell { grid-template-columns:132px 1fr; }
+  .explorer-items { grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); }
+}
+
+/* 导航箭头沿用浏览器的深色 Win98 按钮，不用浅灰禁用图。 */
+.file-explorer-window .toolbar button,
+.file-explorer-window .toolbar button:disabled,
+.recycle-window .toolbar button,
+.recycle-window .toolbar button:disabled { color:#171717; opacity:1; text-shadow:none; }
+.retro-nav-button { position:relative; font-size:0!important; }
+.retro-nav-button::before { content:""; position:absolute; left:10px; top:15px; width:18px; height:2px; background:#252525; box-shadow:0 1px #888; }
+.retro-nav-button::after { content:""; position:absolute; left:8px; top:11px; width:0; height:0; border-top:5px solid transparent; border-bottom:5px solid transparent; border-right:7px solid #252525; }
+.retro-nav-forward::before { left:9px; }
+.retro-nav-forward::after { left:25px; border-right:0; border-left:7px solid #252525; }
+.retro-nav-up::before { left:10px; transform:rotate(90deg); }
+.retro-nav-up::after { left:16px; top:6px; transform:rotate(90deg); }
+.retro-nav-button:active::before { transform:translate(1px,1px); }
+.retro-nav-button:active::after { transform:translate(1px,1px); }
+.retro-nav-up:active::before { transform:rotate(90deg) translate(1px,-1px); }
+.retro-nav-up:active::after { transform:rotate(90deg) translate(1px,-1px); }
+
+/* Windows 98 记事本。 */
+.notepad-window .window-content { margin:1px; overflow:hidden; background:#fff; }
+.notepad-window .menu-bar { overflow:visible; }
+.notepad-menu { position:relative; height:22px; }
+.notepad-menu>button { height:22px; padding:0 8px; border:0; background:transparent; }
+.notepad-menu.open>button { color:#fff; background:#000080; }
+.notepad-menu>div { position:absolute; z-index:100; top:22px; left:0; min-width:150px; display:none; padding:2px; color:#111; background:#c0c0c0; border:2px solid; border-color:#fff #333 #333 #fff; box-shadow:1px 1px #777; }
+.notepad-menu.open>div { display:grid; }
+.notepad-menu>div button { height:25px; padding:0 20px 0 19px; border:0; color:#111; background:transparent; text-align:left; white-space:nowrap; font:13px SimSun,sans-serif; }
+.notepad-menu>div button:hover { color:#fff; background:#000080; }
+.notepad-menu>div hr { width:100%; height:1px; margin:2px 0; border:0; border-top:1px solid #777; border-bottom:1px solid #fff; }
+.notepad-shell { height:100%; min-height:0; display:flex; flex-direction:column; background:#c0c0c0; }
+.notepad-findbar { display:flex; align-items:center; gap:7px; padding:6px; border-bottom:1px solid #777; background:#c0c0c0; }
+.notepad-findbar[hidden] { display:none; }
+.notepad-findbar input { width:220px; height:24px; box-sizing:border-box; border:2px solid; border-color:#555 #fff #fff #555; }
+.notepad-findbar button { height:27px; border:2px solid; border-color:#fff #444 #444 #fff; background:#c0c0c0; }
+.notepad-findbar button:active { border-color:#444 #fff #fff #444; }
+.notepad-shell .notepad-document { flex:1 1 auto; min-height:0; height:auto; margin:0; border:0; }
+.notepad-save-state{margin-left:auto;padding:0 9px;color:#345b36;font:13px SimSun;white-space:nowrap}
+
+/* Windows 98 回收站。 */
+.recycle-window .toolbar { height:48px; gap:8px; padding:6px; }
+.recycle-window .toolbar .recycle-nav { width:40px; min-width:40px; height:34px; padding:0; font:bold 24px/28px "Fixedsys",Arial,sans-serif; }
+.recycle-window .toolbar .address-label { margin-left:5px; font-size:17px; }
+.recycle-window .toolbar .address-field { height:34px; padding:0 8px; font-size:17px; line-height:30px; }
+.recycle-window .toolbar [data-recycle-action] { width:58px; height:34px; white-space:nowrap; }
+.recycle-window .window-content { margin:2px; overflow:hidden; background:#fff; }
+.recycle-shell { height:100%; min-height:280px; display:grid; grid-template-columns:190px 1fr; color:#111; background:#fff; font:13px/1.45 SimSun,sans-serif; }
+.recycle-shell>aside { box-sizing:border-box; padding:20px 14px; background:linear-gradient(135deg,#fff,#edf0f2); border-right:1px solid #aaa; }
+.recycle-large-icon { display:block; width:64px; height:64px; background:url("assets/icons/recycle-32.png") center/58px 58px no-repeat; image-rendering:pixelated; }
+.recycle-shell>aside>strong { display:block; color:#000080; font-size:18px; }
+.recycle-shell>aside hr { height:1px; margin:10px 0; border:0; background:linear-gradient(90deg,#000080,transparent); }
+.recycle-shell>aside p { color:#555; line-height:1.65; }
+.recycle-detail { display:grid; gap:4px; margin-top:14px; color:#555; overflow-wrap:anywhere; }.recycle-detail b{color:#000080}.recycle-detail span{display:block}
+.recycle-list { align-content:start; display:grid; padding:8px; overflow:auto; }
+.recycle-item { min-width:0; height:78px; display:grid; grid-template-columns:78px 1fr; align-items:center; gap:7px; padding:4px 8px; border:1px solid transparent; color:#111; background:#fff; text-align:left; }
+.recycle-item>span:last-child { min-width:0; display:grid; gap:3px; }.recycle-item strong{font-weight:normal}.recycle-item small{color:#555;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.recycle-item.selected { outline:1px dotted #000; outline-offset:-3px; background:#e8e8ff; }.recycle-item.selected strong{width:max-content;color:#fff;background:#000080}
+.recycle-empty { margin:auto; color:#777; }
+
+@media (max-width:640px) { .recycle-shell { grid-template-columns:135px 1fr; } }
+
+/* 回收站还原属性窗口。 */
+.recycle-properties-window .window-content { margin:3px; overflow:hidden; background:#c0c0c0; border:0; }
+.recycle-properties { height:100%; box-sizing:border-box; display:grid; grid-template-rows:31px 1fr 48px; padding:8px 8px 0; color:#111; background:#c0c0c0; font:14px/1.35 SimSun,"MS Sans Serif",sans-serif; }
+.property-tab { align-self:end; width:68px; height:30px; box-sizing:border-box; display:grid; place-items:center; background:#c0c0c0; border:2px solid; border-color:#fff #555 transparent #fff; }
+.recycle-properties>main { position:relative; min-height:0; padding:18px 18px 58px; background:#f2f2f2; border:2px solid; border-color:#fff #555 #555 #fff; overflow:auto; }
+.recycle-properties main>header { display:flex; align-items:center; gap:18px; min-height:68px; }.recycle-properties main>header strong{font-size:17px;overflow-wrap:anywhere}
+.property-file-icon { flex:0 0 58px; width:58px; height:58px; background:center/54px 54px no-repeat; image-rendering:pixelated; }.property-file-icon.txt{background-image:url("assets/icons/file-txt-32.svg")}.property-file-icon.jpeg{background-image:url("assets/icons/file-jpg-32.svg")}.property-file-icon.folder{background-image:url("assets/icons/folder-32.png")}
+.recycle-properties hr { height:1px; margin:12px 0; border:0; border-top:1px solid #888; border-bottom:1px solid #fff; }
+.recycle-properties dl { display:grid; grid-template-columns:102px minmax(0,1fr); gap:9px 10px; margin:0; }.recycle-properties dt,.recycle-properties dd{margin:0}.recycle-properties dd{overflow-wrap:anywhere}
+.recycle-properties fieldset { display:grid; grid-template-columns:1fr 1fr; gap:7px; margin:0; padding:2px 0; border:0; }.recycle-properties legend{float:left;width:102px}.recycle-properties fieldset label{margin-left:102px;white-space:nowrap}.recycle-properties fieldset label:nth-of-type(even){margin-left:0}
+.property-restore { position:absolute; right:18px; bottom:14px; min-width:115px; height:32px; background:#c0c0c0; border:2px solid; border-color:#fff #444 #444 #fff; }
+.property-restore:active,.recycle-properties>footer button:active{border-color:#444 #fff #fff #444}
+.recycle-properties>footer { display:flex; justify-content:flex-end; align-items:center; gap:9px; }.recycle-properties>footer button{min-width:94px;height:30px;background:#c0c0c0;border:2px solid;border-color:#fff #444 #444 #fff}.recycle-properties>footer button:disabled{color:#777;text-shadow:1px 1px #fff}
+
+.restored-file-icon { display:block; width:52px; height:52px; margin:auto; background:center/48px 48px no-repeat; image-rendering:pixelated; }.restored-file-icon.txt{background-image:url("assets/icons/file-txt-32.svg")}.restored-file-icon.jpeg{background-image:url("assets/icons/file-jpg-32.svg")}.restored-file-icon.folder{background-image:url("assets/icons/folder-32.png")}
+
+/* Windows 98 Kodak/Wang Imaging 风格的统一照片查看窗口。 */
+.window-mini-icon.photo-viewer-icon,.task-app-icon.photo-viewer-icon { background-image:url("assets/icons/file-jpg-32.svg")!important; background-color:transparent!important; border:0!important; box-shadow:none!important; }
+.photo-viewer-window .menu-bar { min-width:max-content; }
+.photo-viewer-window .toolbar { height:50px; gap:4px; padding:5px 6px; }
+.photo-viewer-window .toolbar button,.photo-viewer-window .toolbar .photo-primary-tool { flex:0 0 40px; width:40px; min-width:40px; height:40px; display:grid; place-items:center; align-self:center; padding:0; color:#111; text-align:center; }
+.photo-viewer-window .toolbar button svg { display:block; width:24px; height:24px; overflow:visible; fill:none; stroke:#202020; stroke-width:1.8; stroke-linecap:square; stroke-linejoin:miter; shape-rendering:geometricPrecision; }
+.photo-viewer-window .toolbar button svg.filled-icon { width:23px; height:23px; fill:#303030; stroke:#303030; }
+.photo-viewer-window .toolbar .photo-primary-tool svg { width:27px; height:27px; stroke-width:2.8; }
+.photo-viewer-window .toolbar .photo-rotate-tool { padding:0; }
+.photo-viewer-window .toolbar .photo-primary-tool:active { padding:2px 0 0 2px; }
+.photo-viewer-window .toolbar>i { width:1px; height:27px; margin:0 4px; border-left:1px solid #777; border-right:1px solid #fff; }
+.photo-viewer-window .window-content { margin:2px; overflow:hidden; background:#858585; }
+.photo-viewer { height:100%; min-height:280px; display:grid; grid-template-rows:minmax(0,1fr) 24px; background:#858585; }
+.photo-stage { min-width:0; min-height:0; display:grid; place-items:center; overflow:auto; padding:25px; background:repeating-linear-gradient(45deg,#858585 0 2px,#828282 2px 4px); }
+.photo-placeholder-art { position:relative; width:min(510px,72vw); aspect-ratio:4/3; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; box-sizing:border-box; padding:28px; color:#fff; background:linear-gradient(#8fc7db 0 55%,#426c40 55% 100%); border:4px ridge #ddd; box-shadow:3px 3px 0 rgba(0,0,0,.45); text-align:center; transform-origin:center; }
+.photo-placeholder-art[data-variant="1"]{background:linear-gradient(#e1b98f 0 48%,#6f8c5b 48% 100%)}.photo-placeholder-art[data-variant="2"]{background:linear-gradient(#9aa8c4 0 52%,#635f79 52% 100%)}.photo-placeholder-art[data-variant="3"]{background:linear-gradient(#b9d4d3 0 50%,#987352 50% 100%)}
+.photo-placeholder-mark { position:absolute; left:16%; bottom:29%; width:65%; height:45%; background:#315b3e; clip-path:polygon(0 100%,30% 38%,48% 70%,69% 19%,100% 100%); filter:drop-shadow(4px 4px rgba(0,0,0,.2)); }
+.photo-placeholder-mark::after { content:""; position:absolute; right:-18%; top:-48%; width:42px; height:42px; border-radius:50%; background:#fff2a2; box-shadow:0 0 0 2px rgba(80,80,40,.18); }
+.photo-placeholder-art strong,.photo-placeholder-art small { position:relative; z-index:2; padding:3px 8px; background:rgba(0,0,0,.58); text-shadow:1px 1px #000; }.photo-placeholder-art strong{font:16px SimSun}.photo-placeholder-art small{margin-top:4px;font:12px SimSun}
+.photo-placeholder-art.has-photo{width:min(650px,78vw);aspect-ratio:4/3;padding:0;background-position:center;background-repeat:no-repeat;background-size:contain;background-color:#6f6f6f;border-color:#ddd}.photo-placeholder-art.has-photo>*{display:none}
+.photo-viewer>footer { display:flex; justify-content:space-between; align-items:center; padding:0 7px; color:#111; background:#c0c0c0; border-top:2px solid;border-color:#fff; font:12px SimSun; }
+
+/* 2001 desktop refinement: modal QQ faults, readable QZone, restrained Win98 glyphs. */
+.browser-favorites-bar { flex:0 0 36px; min-width:0; display:flex; align-items:center; gap:5px; box-sizing:border-box; padding:4px 6px; color:#222; background:#c0c0c0; border-top:1px solid #fff; border-bottom:1px solid #777; font:15px/1 SimSun,"MS Sans Serif",sans-serif; }
+.favorites-label { flex:0 0 auto; padding:0 7px 0 3px; border-right:1px solid #777; box-shadow:1px 0 #fff; }
+.browser-favorite-links { flex:1; min-width:0; display:flex; align-items:center; gap:4px; overflow:hidden; }
+.browser-favorites-bar button { height:27px; display:inline-flex; align-items:center; gap:4px; padding:0 10px; color:#111; background:#c0c0c0; border:2px solid; border-color:#fff #555 #555 #fff; font:15px SimSun,"MS Sans Serif",sans-serif; white-space:nowrap; }
+.browser-favorites-bar button:active { padding:1px 9px 0 11px; border-color:#555 #fff #fff #555; }
+.browser-favorite-link::before { content:"★"; color:#d5a400; font-size:15px; text-shadow:1px 1px #fff; }
+.add-browser-favorite { flex:0 0 auto; margin-left:auto; }
+.add-browser-favorite span { color:#000080; font-size:18px; }
+
+/* 2009 public-beta inspired Sina Weibo page inside the retro browser. */
+.weibo-page { min-width:0; min-height:100%; overflow-x:hidden; color:#333; background:#f4f8fb; font:16px/1.55 SimSun,"MS Song",serif; user-select:text; }
+.weibo-page[hidden],.nav-page[hidden] { display:none!important; }
+.weibo-site-head { height:66px; display:flex; align-items:flex-end; justify-content:space-between; padding:0 22px 9px; color:#234e70; background:linear-gradient(#fafdff,#d7eaf6); border-bottom:4px solid #78acd0; box-sizing:border-box; }
+.weibo-logo { display:flex; align-items:baseline; gap:4px; white-space:nowrap; }.weibo-logo b { color:#e54818; font:bold 24px Arial,"Microsoft YaHei"; }.weibo-logo strong { color:#276589; font:bold 31px SimSun; letter-spacing:2px; }.weibo-logo em { padding:0 4px; color:#fff; background:#f08319; font:bold 12px Arial; font-style:normal; }
+.weibo-site-head nav { display:flex; align-items:center; }.weibo-site-head nav button { padding:2px 7px; color:#174d73; background:transparent; border:0; border-right:1px solid #94b1c4; font:16px SimSun; cursor:pointer; }
+.weibo-body { width:calc(100% - 20px); display:grid; grid-template-columns:minmax(0,1fr) 190px; gap:10px; margin:10px auto; }.weibo-body main,.weibo-body aside>section,.weibo-side-links { min-width:0; background:#fff; border:1px solid #a9c7d9; }
+.weibo-compose { padding:11px 13px 10px; background:#eef8fd; border-bottom:1px solid #a9c7d9; }.weibo-compose>div { display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; color:#356783; }.weibo-compose>div strong { font-size:18px; }.weibo-compose>div span { font-size:15px; }
+.weibo-compose textarea { width:100%; height:72px; resize:none; padding:6px; box-sizing:border-box; border:2px solid; border-color:#777 #fff #fff #777; background:#fff; font:17px/1.45 SimSun; outline:none; }.weibo-compose footer { display:flex; justify-content:space-between; align-items:center; padding-top:7px; color:#47718a; }.weibo-compose footer button { width:84px; height:31px; color:#fff; background:linear-gradient(#ffad38,#e76b08); border:1px solid #af4e00; box-shadow:inset 1px 1px #ffd795; font:bold 17px SimSun; }
+.weibo-feed-head { display:flex; justify-content:space-between; padding:8px 12px; color:#265d7d; background:#e3f1f8; border-bottom:1px solid #a9c7d9; }.weibo-feed-head span { color:#777; font-size:14px; }.weibo-feed article { display:flex; gap:10px; min-height:92px; padding:12px; border-bottom:1px dotted #a9bac5; box-sizing:border-box; }.weibo-feed article>img,.weibo-avatar { flex:0 0 auto; width:48px; height:48px; border:1px solid #7894a5; object-fit:cover; }.weibo-avatar { display:grid; place-items:center; color:#fff; font:bold 18px SimSun; }.weibo-feed article>div { flex:1; min-width:0; }.weibo-feed p { margin:0 0 6px; overflow-wrap:anywhere; }.weibo-feed p b { color:#176295; }.weibo-feed small { color:#888; font-size:14px; }.weibo-feed footer { float:right; color:#aaa; }.weibo-feed footer button { padding:1px 3px; color:#176295; background:transparent; border:0; font:15px SimSun; }
+.weibo-body aside { display:flex; flex-direction:column; gap:10px; }.weibo-profile { display:flex; align-items:center; gap:10px; padding:11px; background:#eef7fb!important; }.weibo-profile img { width:58px; height:58px; object-fit:cover; border:1px solid #7894a5; }.weibo-profile div { display:flex; flex-direction:column; gap:5px; }.weibo-profile b { color:#176295; font-size:18px; }.weibo-profile small { color:#777; }
+.weibo-counts { display:grid; grid-template-columns:repeat(3,1fr); padding:8px 3px; text-align:center; background:#fff; border:1px solid #a9c7d9; }.weibo-counts span { border-right:1px solid #ccd9e1; font-size:14px; }.weibo-counts span:last-child { border:0; }.weibo-counts b { display:block; color:#e06616; font-size:17px; }.weibo-side-links { display:flex; flex-direction:column; padding:5px 0; }.weibo-side-links button { padding:7px 14px; color:#285e80; text-align:left; background:transparent; border:0; font:16px SimSun; }.weibo-side-links button:hover { background:#e4f2f9; }.weibo-invite { padding:10px 12px; }.weibo-invite b { color:#285e80; }.weibo-invite p { margin:5px 0 0; color:#777; font-size:14px; }.weibo-site-footer { padding:14px; color:#68808e; text-align:center; border-top:1px solid #b7ccd8; font-size:14px; }
+.qq-modal-shield { position:fixed; z-index:20000; inset:0; background:transparent; pointer-events:auto; }
+.qq-modal-shield .qq-channel-error-window { z-index:1!important; }
+
+/* Excel 2000 风格只读成绩单。 */
+.excel-window { min-width:640px; min-height:420px; }
+.excel-window .menu-bar { min-width:max-content; }
+.excel-window .toolbar { height:38px; gap:3px; overflow:hidden; }
+.excel-window .toolbar>button { flex:0 0 30px; width:30px; height:28px; font:bold 16px/1 Arial; color:#26352d; }
+.excel-window .toolbar>i { flex:0 0 1px; height:28px; margin:0 2px; background:#777; border-right:1px solid #fff; }
+.excel-window .toolbar select { height:27px; min-width:60px; background:#fff; border:2px solid; border-color:#555 #fff #fff #555; font:15px SimSun; }.excel-window .toolbar select:first-of-type{width:98px}
+.excel-window .window-content { margin:0 1px; overflow:hidden; background:#c0c0c0; }
+.excel-shell { height:100%; min-height:0; display:grid; grid-template-rows:32px 1fr 28px; background:#c0c0c0; font:15px/1.25 Arial,SimSun,sans-serif; }
+.excel-formula { display:flex; align-items:center; gap:3px; padding:3px; border-bottom:1px solid #666; }
+.excel-formula output { width:68px; height:24px; padding:2px 5px; background:#fff; border:2px solid; border-color:#555 #fff #fff #555; }
+.excel-formula button { width:25px; height:24px; padding:0; color:#174e2f; background:#c0c0c0; border:1px solid #777; font:bold 16px Arial; }
+.excel-formula b { width:27px; color:#333; text-align:center; font:italic bold 16px Georgia; }
+.excel-formula input { flex:1; min-width:0; height:24px; padding:1px 5px; background:#fff; border:2px solid; border-color:#555 #fff #fff #555; font:15px Arial,SimSun; cursor:not-allowed; }
+.excel-grid-wrap { min-height:0; overflow:auto; background:#808080; border-bottom:1px solid #555; }
+.excel-grid { min-width:100%; border-collapse:separate; border-spacing:0; table-layout:fixed; background:#fff; user-select:none; }
+.excel-grid th,.excel-grid td { height:27px; padding:3px 6px; border-right:1px solid #8b8b8b; border-bottom:1px solid #8b8b8b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.excel-grid thead th { position:sticky; z-index:3; top:0; height:25px; padding:1px; text-align:center; background:#c0c0c0; border-top:1px solid #fff; border-left:1px solid #fff; font-weight:normal; }
+.excel-grid thead th:first-child { left:0; z-index:4; width:42px; }.excel-grid thead th:not(:first-child){width:104px}
+.excel-grid tbody th { position:sticky; z-index:2; left:0; width:42px; padding:1px; color:#222; text-align:center; background:#c0c0c0; border-top:1px solid #fff; border-left:1px solid #fff; font-weight:normal; }
+.excel-grid td { position:relative; text-align:right; background:#fff; }
+.excel-grid td:nth-child(2),.excel-grid td:nth-child(3){text-align:left}.excel-grid td.excel-header-row{text-align:center;font-weight:bold;background:#d9eadf}.excel-grid td.excel-title-row{height:35px;background:#edf4ef;font:bold 19px SimSun;text-align:center}.excel-grid td.excel-student-row{background:#fff19a}.excel-grid td.excel-score-red{color:#c00000;font-weight:bold}
+.excel-grid td.selected:after { content:""; position:absolute; z-index:1; inset:-1px; border:3px solid #087b43; pointer-events:none; }
+.excel-sheet-tabs { display:flex; align-items:center; gap:2px; padding:2px 4px; border-top:1px solid #fff; }
+.excel-sheet-tabs button { height:23px; min-width:25px; padding:0 7px; background:#c0c0c0; border:2px solid; border-color:#fff #555 #555 #fff; }.excel-sheet-tabs button.selected{min-width:92px;background:#fff;border-bottom-color:#fff}.excel-sheet-tabs span{flex:1;border-top:2px solid #777;border-bottom:2px solid #fff}
+.excel-modal-shield { position:fixed; z-index:30000; inset:0; display:grid; place-items:center; background:transparent; pointer-events:auto; }
+.excel-readonly-dialog { width:min(485px,calc(100vw - 28px)); color:#111; background:#c0c0c0; border:2px solid; border-color:#fff #222 #222 #fff; box-shadow:2px 2px #000; font:17px/1.55 SimSun,"MS Sans Serif",sans-serif; }
+.excel-readonly-dialog>header { height:29px; display:flex; align-items:center; gap:6px; padding:3px; color:#fff; background:#000080; }.excel-readonly-dialog>header strong{flex:1}.excel-readonly-dialog>header button{width:22px;height:21px;padding:0;background:#c0c0c0;border:2px solid;border-color:#fff #333 #333 #fff;font:bold 17px/15px Arial}.excel-mini-mark{width:17px;height:17px;display:grid;place-items:center;background:#087b43;border:1px solid #fff;font:bold 11px Arial}
+.excel-readonly-dialog>main { min-height:112px; display:flex; align-items:center; gap:20px; padding:20px 28px 10px; background:#eee; }.excel-readonly-dialog p{margin:0}.excel-readonly-dialog small{font-size:16px}.excel-error-mark{flex:0 0 43px;width:43px;height:43px;display:grid;place-items:center;color:#fff;background:#d93636;border:2px solid #9b1515;border-radius:50%;font:bold 30px/1 Arial}
+.excel-readonly-dialog>footer { display:flex; justify-content:center; padding:9px 0 15px; background:#eee; }.excel-readonly-dialog>footer button{width:100px;height:31px;background:#c0c0c0;border:2px solid;border-color:#fff #444 #444 #fff;font:16px SimSun}
+
+.file-explorer-window .window-content{position:relative}
+.explorer-lock-slot:empty{display:none}.explorer-lock-slot:not(:empty){padding:12px 14px 0}
+.my-files-lock-panel{width:100%;box-sizing:border-box;color:#111;background:#f1f1ec;border:2px solid;border-color:#fff #555 #555 #fff;box-shadow:2px 2px #777;font:16px/1.45 SimSun,"MS Sans Serif",sans-serif}
+.my-files-lock-panel>header{height:32px;display:flex;align-items:center;gap:8px;padding:5px 12px 0;color:#111;background:transparent}
+.my-files-lock-panel>header strong{flex:1}.my-files-lock-panel>header button{width:24px;height:23px;padding:0;border:2px solid;border-color:#fff #555 #555 #fff;background:#c0c0c0;color:#111;font:bold 18px/17px Arial}
+.my-files-lock-body{padding:16px 18px 14px}.my-files-lock-body>p:first-child{margin:0 0 16px}.my-files-lock-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.my-files-lock-row input{flex:1;min-width:130px;height:31px;padding:2px 6px;border:2px solid;border-color:#555 #fff #fff #555;background:#fff;font:17px SimSun}.my-files-lock-row button{min-width:70px;height:31px;border:2px solid;border-color:#fff #555 #555 #fff;background:#c0c0c0;font:16px SimSun}.my-files-lock-hint{margin:12px 0 0;padding:8px 10px;border:1px solid #aaa;background:#fffde9}.my-files-lock-body small{display:block;min-height:23px;margin-top:8px;color:#a00000}
+.qq-space-page { font-size:17px; line-height:1.5; }
+.qq-space-page>header { gap:18px; padding:22px 24px; }
+.qq-space-page header strong { font-size:25px; }
+.qq-space-page header small { font-size:14px; }
+.qq-space-page>nav { gap:7px; padding:10px 14px; }
+.qq-space-page button { font-size:17px; padding:7px 22px; }
+.qq-space-page nav>span,.qz-module h3,.qz-profile p,.qz-stats span,.qz-post time,.qz-like,.qz-photo small,.qz-message-form small,.qq-space-page>footer { font-size:15px; }
+.qz-module h3 { padding:8px 11px; }
+.qz-module h3 small { font-size:13px; }
+.qz-layout { grid-template-columns:220px minmax(0,1fr); gap:14px; padding:14px; }
+.qq-space-star { width:68px; height:68px; overflow:hidden; background:#c0c0c0; }
+.qq-space-star img,.qz-avatar img { width:100%; height:100%; display:block; object-fit:cover; image-rendering:auto; }
+.qz-avatar { width:82px; height:82px; overflow:hidden; }
+.qz-profile>strong { font-size:18px; }
+.qz-message-form input,.qz-message-form textarea { font-size:17px; }
+.tray { min-width:104px; gap:7px; padding:2px 8px; }
+.retro-nav-button::before { left:11px; top:16px; width:17px; height:1px; background:#282828; box-shadow:none; }
+.retro-nav-button::after { left:9px; top:12px; border-top-width:4px; border-bottom-width:4px; border-right-width:6px; }
+.retro-nav-forward::before { left:10px; }
+.retro-nav-forward::after { left:24px; border-right:0; border-left:6px solid #282828; }
+.retro-nav-up::after { left:16px; top:8px; }
+.photo-viewer-window .toolbar button svg { width:21px; height:21px; stroke-width:1.35; stroke-linecap:butt; stroke-linejoin:miter; }
+.photo-viewer-window .toolbar button svg.filled-icon { width:20px; height:20px; fill:none; stroke:#202020; stroke-width:1.5; }
+.photo-viewer-window .toolbar .photo-primary-tool svg { width:23px; height:23px; stroke-width:1.7; }
+@media(max-width:660px) { .qq-channel-error p { white-space:normal; } .qq-channel-error-window { max-width:calc(100vw - 24px); } }
+.photo-zoom { min-width:65px; padding-left:7px; border-left:2px solid;border-color:#777 #fff; }
+
+/* Keep every application menu strip at the browser's readable size. */
+.qq-window .menu-bar { flex:0 0 27px; }
+.notepad-menu { height:24px; }
+.notepad-menu>button { height:24px; font:15px/1 SimSun,"MS Sans Serif",sans-serif; }
+.notepad-menu>div { top:24px; }
+
+/* Final QZone type scale: navigation and module headings share 17px. */
+.qq-space-page .qz-module h3{font-size:17px}
+.qq-space-page .qz-post p{font-size:19px}
+.qq-space-page .qz-post-meta strong{font-size:21px}
+.qq-space-page .qz-post-photo{width:min(330px,100%);height:auto;max-height:none}
+
+.qz-repost{margin:14px 0;padding:17px 20px;border-left:3px solid #d7dad9;background:rgba(253,254,251,.48);color:#697177;font-size:18px;line-height:2;letter-spacing:.035em;white-space:normal}
+.qz-repost-link{display:block;width:100%;border-width:0 0 0 3px;text-align:left;font-family:inherit;cursor:pointer}.qz-repost-link:hover{background:rgba(248,250,248,.65);color:#50585e}.qz-repost-link:focus-visible{outline:2px dotted #aeb7bd;outline-offset:2px}.qz-external-notice{display:grid;gap:7px;margin:2px 0 14px;padding:13px 16px;border:1px solid #dfe2df;background:rgba(254,255,251,.55);color:#626a6d;line-height:1.65}.qz-external-notice[hidden]{display:none!important}.qz-external-notice strong{color:#4f5659;font-size:18px}.qz-external-notice span{font-size:16px}.qz-external-notice small{color:#858d90;font-size:14px}
+.qz-photo-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;width:min(340px,100%);margin:10px 0}
+.qq-space-page .qz-photo-grid button{display:block;width:100%;height:155px;padding:0;overflow:hidden;border:1px solid #999;background:#ddd;cursor:zoom-in}
+.qz-photo-grid img{display:block;width:100%;height:100%;object-fit:cover}
+.qz-comments{margin-top:10px;border-top:1px solid #d2d2d2;padding-top:3px}
+.qz-comments .qz-comment{margin-top:5px;padding:6px 9px;font-size:16px}
+.photo-viewer-window .toolbar{height:45px;gap:5px;padding:4px 6px}
+.photo-viewer-window .toolbar button{display:flex;flex:0 0 auto;width:auto;min-width:82px;height:36px;align-items:center;justify-content:center;gap:5px;padding:0 8px;font:17px SimSun,"MS Sans Serif",sans-serif;white-space:nowrap}
+.photo-viewer-window .toolbar button svg{display:block;flex:0 0 21px;width:21px;height:21px;stroke:#202020;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.photo-viewer-window .toolbar>i{height:28px;margin:0 4px}
+.photo-viewer-window .window-content,.photo-viewer{background:#626468}
+.photo-stage{background:repeating-linear-gradient(45deg,#626468 0 2px,#606266 2px 4px)}
+.photo-stage{display:block;padding:0;cursor:grab;user-select:none;touch-action:none}.photo-stage.dragging{cursor:grabbing}.photo-pan-surface{display:grid;place-items:center;min-width:100%;min-height:100%}
+.qz-photo-grid.is-single{display:block;width:min(330px,100%)}
+.qq-space-page .qz-photo-grid.is-single button{height:auto;line-height:0}
+.qz-photo-grid.is-single img{height:auto;object-fit:contain}
+.qz-comments{background:#e6e6e3;border-top:0;padding:6px 10px}
+.qz-comments .qz-comment{background:transparent;border:0;margin:0;padding:4px 0}
+.qq-space-page.is-zhenzhen>header{background-image:linear-gradient(to top,rgba(12,17,30,.86),rgba(24,27,35,.18) 88%),url("assets/photos/qzone-banner-cat.png");background-position:center,center 0%;background-size:cover;background-repeat:no-repeat}
+.qq-space-page.is-owner{background-image:linear-gradient(rgba(232,225,219,.2),rgba(232,225,219,.2)),url("assets/photos/qzone-owner-background-wide.png");background-position:center;background-size:cover;background-repeat:no-repeat;background-attachment:local}.qq-space-page.is-owner>header{min-height:210px;align-items:flex-end;background-image:linear-gradient(to top,rgba(15,18,27,.68),rgba(30,25,30,.06) 75%),url("assets/photos/qzone-owner-background-wide.png");background-position:center;background-size:cover;background-repeat:no-repeat}.qq-space-page.is-owner .qz-module{background:rgba(247,247,243,.88)}.qq-space-page.is-owner>nav{background:rgba(219,215,210,.82)}
+.group-chat .message time,.group-chat .message-date{display:none!important}
+.forum-replies p{white-space:pre-wrap}
+.forum-attachment-link{display:inline-flex;align-items:center;gap:7px;margin:4px 0 14px;padding:7px 12px;border:2px solid;border-color:#fff #777 #777 #fff;background:#e2e5e4;color:#376b91;font:17px SimSun,"宋体",serif;text-decoration:underline;cursor:pointer}.forum-attachment-link:before{content:"▧";color:#a45d35;text-decoration:none}.forum-attachment-link:hover{background:#f2f5f4;color:#204f75}.forum-attachment-link:active{border-color:#777 #fff #fff #777}
+.qq-space-page>header div>span{font-size:17px;color:#fff;text-shadow:0 1px 2px #111}
+.qq-space-page>header strong,.qq-space-page>header small{text-shadow:0 1px 2px #111}
+.qq-user-signature,.qq-user-signature p,.qq-user-space,.qq-user-space b{font-size:17px}
+.qq-user-space{min-height:123px;grid-template-columns:69px minmax(0,1fr) auto}
+.qq-space-thumbs{gap:5px;min-width:0}
+.qq-space-thumbs i{display:block;flex:0 0 72px;width:72px;height:72px;overflow:hidden;background:#c1c1bc;border:1px solid #888;cursor:zoom-in}
+.qq-space-thumbs i img{display:block;width:100%;height:100%;object-fit:cover}
+.qq-space-thumbs i:focus-visible{outline:2px solid #000080;outline-offset:1px}
+.qq-space-no-photo{color:#777;font-size:15px}
+.qq-chat-photo{display:block;width:min(190px,100%);padding:3px;background:#d5d5d0;border:2px solid;border-color:#fff #777 #777 #fff;cursor:zoom-in}
+.qq-chat-photo img{display:block;width:100%;height:auto;max-height:240px;object-fit:contain}
+.message-list .message-date{margin:28px 0 23px}
+.message-list .message-date:first-child{margin-top:4px}
+.qq-chat-window .qq-chat:not(.group-chat) .message{padding-left:9px;border-left:3px solid #999}
+.qq-chat-window .qq-chat:not(.group-chat) .message.me{border-left-color:#999}
+.qq-favorite-chat-link{cursor:pointer}
+.qq-favorite-chat-link:focus-visible{outline:2px dotted #233b8e;outline-offset:-2px}
+.qq-chat-window .message.favorite-chat-target{background:#fff8c9;box-shadow:0 0 0 3px #e5cc72}
+.yunyang-page-shell[hidden]{display:none!important}
+.yunyang-page-shell{height:100%;overflow:auto;background:#fff;color:#233349;font:15px/1.5 SimSun,"Microsoft YaHei",sans-serif;user-select:text}
+.yunyang-page{min-width:650px;padding:8px 12px 0;background:#fff}
+.yunyang-head{border:1px solid #9dbbd1;background:#fff}
+.yunyang-masthead{min-height:104px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:3px 13px;background:linear-gradient(90deg,#fff 0%,#fff 60%,#e8f3fd 100%)}
+.yunyang-logo-crop{width:320px;height:84px;overflow:hidden;flex:none}
+.yunyang-logo-crop img{display:block;width:100%;height:auto;transform:translateY(-32px)}
+.yunyang-edition{text-align:right;color:#13609d;font-size:16px;font-weight:bold;white-space:nowrap}
+.yunyang-edition small{color:#687b8a;font-size:12px;font-weight:normal}
+.yunyang-nav{display:grid;grid-template-columns:repeat(7,1fr);border-top:2px solid #1376b8;background:linear-gradient(#e7f6ff,#bbdced)}
+.yunyang-nav button{padding:7px 4px;border:0;border-right:1px solid #a6cbdd;background:transparent;color:#17476b;font:17px SimSun;cursor:pointer}
+.yunyang-nav button.active,.yunyang-nav button:hover{background:#1c74ab;color:white}
+.yunyang-ticker{display:flex;align-items:center;gap:8px;min-height:33px;margin:7px 0;border:1px solid #d6dfeb;background:#f6f8fa;font-size:13px;white-space:nowrap;overflow:hidden}
+.yunyang-ticker b{align-self:stretch;display:grid;place-items:center;padding:0 10px;background:#d02722;color:#fff}
+.yunyang-ticker span{color:#ab2f28;font-weight:bold}
+.yunyang-ticker small{margin-left:auto;padding-right:8px;color:#87939b}
+.yunyang-lead{display:grid;grid-template-columns:minmax(0,1.18fr) minmax(0,1fr);gap:13px}
+.yunyang-carousel{position:relative;height:270px;overflow:hidden;background:#dbe8f2;border:1px solid #97adbd}
+.yunyang-slide{display:none;position:absolute;inset:0}
+.yunyang-slide.active{display:block}
+.yunyang-slide img{display:block;width:100%;height:100%;object-fit:cover}
+.yunyang-caption{position:absolute;right:0;bottom:0;left:0;min-height:38px;display:flex;align-items:center;padding:0 85px 0 12px;background:linear-gradient(transparent,rgba(5,20,42,.88));color:#fff;font-size:16px;font-weight:bold;text-shadow:1px 1px #111}
+.yunyang-placeholder{background:linear-gradient(135deg,#dfeefa,#a9c9e0 55%,#587d9a);color:#1f5481}
+.yunyang-placeholder.place-three{background:linear-gradient(135deg,#fff0d2,#d4b18a 55%,#82705c)}
+.yunyang-placeholder.place-four{background:linear-gradient(135deg,#e9f2e0,#a8c3a5 55%,#607d71)}
+.yunyang-placeholder>span{position:absolute;top:40%;left:0;width:100%;text-align:center;font-size:18px;letter-spacing:2px}
+.yunyang-dots{position:absolute;right:10px;bottom:12px;display:flex;gap:5px;z-index:1}
+.yunyang-dots button{width:14px;height:14px;padding:0;border:1px solid #fff;background:#b6c5d2;cursor:pointer}
+.yunyang-dots button.active{background:#ffb83e}
+.yunyang-headlines{min-width:0;border:1px solid #bdd0de;background:#fff}
+.yunyang-headlines h2{margin:0;padding:6px 9px;border-bottom:2px solid #2c78ad;background:#eef6fb;color:#145b8d;font:bold 18px SimSun}
+.yunyang-headlines h2 small{margin-left:6px;color:#829bad;font:10px Arial}
+.yunyang-headlines a{display:block;overflow:hidden;padding:5px 8px;border-bottom:1px dotted #cbd9e2;color:#183e60;text-overflow:ellipsis;white-space:nowrap;text-decoration:none;font-size:14px}
+.yunyang-headlines a:hover,.yunyang-columns a:hover{color:#bf2b23;text-decoration:underline}
+.yunyang-columns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}
+.yunyang-columns section{border:1px solid #b8ccda;background:#fbfdff}
+.yunyang-columns h3{display:flex;justify-content:space-between;margin:0;padding:5px 8px;border-bottom:2px solid #3b82ae;background:#e5f2f8;color:#145b8d;font:bold 16px SimSun}
+.yunyang-columns h3 small{font:12px SimSun;color:#718b9d}
+.yunyang-columns a{display:block;overflow:hidden;padding:6px 8px 2px;color:#2c4355;text-overflow:ellipsis;white-space:nowrap;text-decoration:none;font-size:13px}
+.yunyang-footer{margin-top:12px;padding:9px;text-align:center;border-top:1px solid #a6c1d3;color:#8897a4;background:#f3f7fa;font-size:12px}
+.my-files-lock-panel{position:relative;border:0;box-shadow:none;background:#f7f7f3}
+.my-files-lock-close{position:absolute;right:10px;top:8px;width:24px;height:23px;padding:0;border:2px solid;border-color:#fff #555 #555 #fff;background:#c0c0c0;color:#111;font:bold 18px/17px Arial}
+.my-files-lock-body{padding:20px 18px 14px}
+.my-files-lock-body>p:first-child{padding-right:32px}
+.yunyang-logo-crop{width:255px;height:70px}
+.yunyang-logo-crop img{transform:translateY(-25px)}
+.yunyang-masthead{min-height:83px}
+.yunyang-edition{font-size:18px}
+.yunyang-edition small{font-size:16px}
+.yunyang-ticker{min-height:42px;font-size:17px}
+.yunyang-ticker b{min-width:108px;padding:0 13px;font-size:19px}
+.yunyang-ticker span{font-size:17px}
+.yunyang-ticker small{font-size:13px}
+.yunyang-carousel{height:auto;aspect-ratio:1672/941}
+.yunyang-slide img{object-fit:contain}
+.yunyang-headlines h2{font-size:20px}
+.yunyang-headlines h2 small{font-size:17px}
+.yunyang-headlines a{font-size:17px;white-space:normal;line-height:1.4}
+.yunyang-columns h3{font-size:19px}
+.yunyang-columns h3 small{font-size:17px}
+.yunyang-columns a{font-size:17px;white-space:normal;line-height:1.4}
+.word-window .window-content{background:#777;overflow:hidden}
+.explorer-item-icon.word{position:relative;background:none}
+.explorer-item-icon.word:before{content:"";position:absolute;left:16px;top:4px;width:42px;height:55px;background:repeating-linear-gradient(#fff 0 10px,#cbd8ed 10px 11px);border:2px solid #426193;box-shadow:3px 3px #777}
+.explorer-item-icon.word:after{content:"W";position:absolute;left:8px;top:20px;width:33px;height:29px;display:grid;place-items:center;color:#fff;background:#214f9d;border:1px solid #10366f;font:bold 21px Georgia}
+.window-mini-icon.word{width:15px;height:15px;background:#214f9d;color:#fff;font:bold 12px/15px Georgia;text-align:center;box-shadow:inset 0 0 0 1px #dbe7ff}
+.window-mini-icon.word:before{content:"W";position:static;width:auto;height:auto;background:transparent;border:0}
+.task-app-icon.word{background:#214f9d;color:#fff;border:1px solid #fff;font:bold 13px/16px Georgia}
+.task-app-icon.word:after{content:"W"}
+.word-mini-mark{width:17px;height:17px;display:grid;place-items:center;background:#214f9d;border:1px solid #fff;color:#fff;font:bold 12px Georgia}
+.word-window .toolbar{gap:4px}
+.word-toolbar-label{margin-left:10px;color:#444;font:15px SimSun}
+.word-shell{height:100%;overflow:auto;padding:20px;background:#8b8b8b}
+.word-page{box-sizing:border-box;width:min(100%,730px);min-height:900px;margin:auto;padding:54px 58px;background:white;box-shadow:2px 2px 0 #555;color:#111;font:17px/1.65 SimSun,"Microsoft YaHei",sans-serif;user-select:text}
+.word-page p{margin:0 0 10px}
+.word-page .word-document-title{text-align:center;font-size:23px;font-weight:bold;margin-bottom:28px}
+.word-page .word-section-title{font-size:19px;font-weight:bold;margin:24px 0 12px}
+.window-mini-icon.word,.window-mini-icon.excel{width:16px;height:16px;border:0;background-color:transparent;background-repeat:no-repeat;background-position:center;background-size:16px 16px;box-shadow:none}
+.window-mini-icon.word{background-image:url("assets/icons/word-16.svg")}
+.window-mini-icon.excel{background-image:url("assets/icons/excel-16.svg")}
+.window-mini-icon.word:before,.window-mini-icon.excel:before,.task-app-icon.word:after,.task-app-icon.excel:after{display:none}
+.task-app-icon.word,.task-app-icon.excel{width:18px;height:18px;flex-basis:18px;border:0;background-color:transparent;background-repeat:no-repeat;background-position:center;background-size:16px 16px}
+.task-app-icon.word{background-image:url("assets/icons/word-16.svg")}
+.task-app-icon.excel{background-image:url("assets/icons/excel-16.svg")}
+.yunyang-banner{position:relative;width:100%;aspect-ratio:2172/130;margin:12px 0;overflow:hidden;background:#e91818}
+.yunyang-banner-slide{display:none;position:absolute;inset:0;overflow:hidden}
+.yunyang-banner-slide.active{display:block}
+.yunyang-banner-slide img{display:block;position:absolute;left:0;top:50%;width:100%;height:auto;transform:translateY(-50%);max-width:none}
+.yunyang-banner[hidden],.yunyang-ticker[hidden],.yunyang-content[hidden],.yunyang-article[hidden],.yunyang-footer[hidden]{display:none!important}
+.yunyang-ticker{margin:0 0 12px}
+.yunyang-headlines a{padding:10px 10px;min-height:27px;line-height:1.5}
+.yunyang-columns a{padding:10px 10px 7px;line-height:1.5}
+.yunyang-columns{gap:14px;margin-top:16px}
+.word-window .menu-bar{overflow-x:auto;white-space:nowrap}
+.word-window .toolbar{height:auto;display:block;padding:0;border-bottom:1px solid #777}
+.word-toolbar-row{display:flex;align-items:center;gap:4px;min-height:32px;padding:3px 5px;box-sizing:border-box;overflow-x:auto;white-space:nowrap}
+.word-toolbar-row+.word-toolbar-row{border-top:1px solid #fff}
+.word-toolbar-row button{flex:0 0 26px;width:26px;height:24px;font:17px/1 SimSun,Arial;cursor:pointer}
+.word-toolbar-row select{flex:none;height:24px;border:2px solid;border-color:#555 #fff #fff #555;background:white;font:14px SimSun}
+.word-standard-tools select{width:60px;margin-left:auto}
+.word-format-tools select:nth-child(1){width:82px}.word-format-tools select:nth-child(2){width:76px}.word-format-tools select:nth-child(3){width:48px}
+.word-tool-separator{flex:0 0 1px;height:21px;margin:0 4px;border-left:1px solid #888;border-right:1px solid #fff}
+.word-ruler{height:23px;margin:-20px -20px 18px;border-bottom:1px solid #777;background:repeating-linear-gradient(90deg,#d3d3d3 0 1px,transparent 1px 16px),linear-gradient(#f1f1f1,#ccc)}
+.yunyang-article{max-width:860px;margin:20px auto 28px;padding:0 28px;color:#25384b;font:21px/1.9 SimSun,"Microsoft YaHei",sans-serif}
+.yunyang-article-back{border:0;padding:5px 0;background:transparent;color:#176ba5;font:19px SimSun;cursor:pointer}
+.yunyang-article-back:hover{text-decoration:underline}
+.yunyang-article-category{margin:15px 0 10px;color:#46789c;font-size:19px}
+.yunyang-article h1{margin:0;padding-bottom:18px;border-bottom:1px solid #bfd3e1;text-align:center;font:bold 32px/1.45 SimSun}
+.yunyang-article-meta{padding:12px 0;text-align:center;color:#8393a0;font-size:17px}
+.yunyang-article-intro{margin:19px 0 25px;padding:17px 20px;border:1px solid #d1e0ea;background:#f3f8fb;color:#41556a;font-size:22px;line-height:1.8}
+.yunyang-article h2{margin:24px 0 11px;color:#1d5b89;font:bold 24px SimSun}
+.yunyang-article p{margin-top:0}
+.yunyang-admin-warning{margin:8px 0 0;padding:7px 10px;border:1px solid #e4cd78;background:#fff9db;color:#795923;font:15px/1.5 SimSun,"Microsoft YaHei",sans-serif}
+.yunyang-admin-warning strong{color:#885710}
+.yunyang-access-warning{margin-top:5px;padding-top:5px;border-top:1px solid #e8dca8;color:#a34e13}
+.yunyang-access-warning[hidden]{display:none}
+.yunyang-article-navigation{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left}
+.yunyang-article-back{font-size:19px}
+.yunyang-article-category{margin:4px 0 12px;font-size:19px}
+.yunyang-page-shell{overflow-y:scroll;scrollbar-gutter:stable}
+.yunyang-page{box-sizing:border-box;min-height:100%;display:flex;flex-direction:column}
+.yunyang-article{box-sizing:border-box;width:min(100%,860px);flex:1 0 auto}
+.yunyang-footer{margin-top:auto}
+.yunyang-caption{min-height:66px;padding:10px 95px 10px 16px;box-sizing:border-box;background:linear-gradient(to bottom,transparent 0%,rgba(5,20,42,.52) 24%,rgba(5,20,42,.94) 100%);font-size:20px;line-height:1.4}
+.yunyang-slide-old-town img{object-fit:cover}
+.forum-page-shell[hidden],.forum-page [hidden]{display:none!important}
+.forum-page-shell{height:100%;overflow:auto;background:#c7c7c7;user-select:text}
+.forum-page{box-sizing:border-box;min-width:680px;min-height:100%;padding:8px 10px 0;display:flex;flex-direction:column;background:repeating-linear-gradient(0deg,#d0d0d0 0 1px,#c5c5c5 1px 3px);color:#242424;font:18px/1.55 SimSun,"Microsoft YaHei",sans-serif}
+.forum-header{min-height:52px;display:flex;align-items:center;gap:20px;padding:5px 10px;border:2px solid;border-color:#f1f1f1 #494949 #494949 #f1f1f1;background:linear-gradient(#28313c,#526375);color:#e4f7ff}
+.forum-brand{display:flex;align-items:center;gap:9px;white-space:nowrap}.forum-brand strong{font-size:26px;font-weight:normal;text-shadow:1px 1px #1e334d}.forum-computer{width:29px;height:26px;display:grid;place-items:center;border:2px solid #151c23;background:#94a8af;color:#111;font-size:23px}
+.forum-header nav{display:flex;gap:14px}.forum-header nav button{border:0;background:transparent;color:#b8e8ff;font:22px SimSun;white-space:nowrap;cursor:pointer}.forum-header nav button:hover{text-decoration:underline}
+.forum-search{display:flex;align-items:center;margin-left:auto;padding:2px 8px;border:2px solid;border-color:#252e35 #fff #fff #252e35;background:#e8e8e8;color:#242424}.forum-search input{width:170px;min-width:0;border:0;outline:0;background:transparent;font:17px SimSun}
+.forum-breadcrumb{padding:11px 2px;color:#397190;font-size:17px}.forum-breadcrumb span{color:#a05b21}
+.forum-layout{display:grid;grid-template-columns:195px minmax(0,1fr);gap:8px;flex:1}
+.forum-sidebar{padding:9px;border:1px solid #444;background:#c5c5c5}.forum-profile{border-bottom:1px solid #888;padding-bottom:12px}.forum-profile h2{margin:0 0 7px;color:#8c4c22;font:22px SimSun}.forum-profile p{margin:8px 0;color:#445364;font-size:16px}.forum-logout{padding:4px 9px;border:2px outset #eee;background:#ccc;font:16px SimSun;cursor:pointer}
+.forum-main{min-width:0;padding:11px;border:1px solid #4d5258;background:#d3d3d3}
+.forum-login-gate{padding:18px 16px;border:2px solid #586672;background:linear-gradient(90deg,#b3cad9,#f4f4f4 40%,#b4cbdc);text-align:center}.forum-login-gate h2{margin:0;color:#9b481d;font:bold 27px SimSun}.forum-login-gate>p{margin:6px 0 12px;font-size:18px}.forum-login-form{display:flex;justify-content:center;align-items:end;flex-wrap:wrap;gap:10px}.forum-login-form label{display:flex;flex-direction:column;gap:3px;text-align:left;color:#394c61;font-size:16px}.forum-login-form input{box-sizing:border-box;width:150px;height:30px;padding:3px 5px;border:2px inset #ddd;background:white;font:17px SimSun}.forum-login-form button{height:30px;padding:0 18px;border:2px outset #eee;background:#e0bd75;color:#633414;font:bold 17px SimSun;cursor:pointer}.forum-login-error{color:#b22420!important;font-weight:bold}
+.forum-board{margin-top:15px;border:1px solid #737373;background:#efefef}.forum-board-heading{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;border-bottom:2px solid #777;background:#bbb}.forum-board-heading h2{margin:0;color:#526e85;font:22px SimSun}.forum-board-heading span{color:#666;font-size:15px}.forum-thread-list button{box-sizing:border-box;width:100%;display:flex;justify-content:space-between;gap:12px;padding:10px;border:0;border-bottom:1px dotted #aaa;background:#f5f5f5;text-align:left;cursor:pointer}.forum-thread-list button:nth-child(even){background:#e8ecf0}.forum-thread-list button:hover{background:#fff8dd}.forum-thread-list strong{color:#395a80;font:19px SimSun}.forum-thread-list small{color:#78808a;font:15px SimSun;white-space:nowrap}
+.forum-teaser,.forum-full-content{margin-top:16px;padding:13px 15px;border:2px solid;border-color:#fff #777 #777 #fff;background:#e5e5e5}.forum-teaser h2,.forum-thread-head h2{margin:0 0 8px;color:#2a455d;font:26px/1.4 SimSun}.forum-teaser h2 small{color:#916241;font:19px SimSun}.forum-teaser p{margin:7px 0;font-size:19px}.forum-locked-line{padding:7px;border:1px solid #baaa86;background:#fff6d9;color:#8b571e}.forum-thread-head{border-bottom:1px solid #999;padding-bottom:9px}.forum-thread-head span{color:#78808a;font-size:16px}.forum-post{display:grid;grid-template-columns:120px 1fr;gap:13px;margin-top:13px;padding:12px;border:1px solid #aaa;background:#f6f6f6}.forum-post-author{display:flex;flex-direction:column;color:#8c4c22;font-size:19px}.forum-post-author small{color:#77808a;font-size:15px}.forum-post-body p{margin:0 0 13px;font-size:20px;line-height:1.8}.forum-full-content h3{margin:18px 0 8px;color:#365d7b;font:22px SimSun}.forum-replies article{margin-bottom:8px;padding:10px 13px;border:1px solid #aaa;background:#f7f7f7}.forum-replies strong{color:#825129;font-size:18px}.forum-replies p{margin:5px 0;font-size:19px}
+.forum-footer{margin-top:15px;padding:9px;border-top:2px solid #4c5964;background:#d3d3d3;color:#617182;text-align:center;font-size:15px}
+.forum-page{background-image:url("assets/forum-noise.svg"),repeating-linear-gradient(0deg,#d0d0d0 0 1px,#c4c4c4 1px 3px);background-size:128px 128px,auto;background-blend-mode:multiply,normal}
+.forum-header{background-image:url("assets/forum-noise.svg"),linear-gradient(#26313d,#536477);background-size:128px 128px,auto;background-blend-mode:overlay,normal}
+.forum-sidebar{background-image:url("assets/forum-noise.svg"),linear-gradient(#d2d2d2,#bcbcbc);background-size:128px 128px,auto;background-blend-mode:multiply,normal}
+.forum-main{background-image:url("assets/forum-noise.svg"),linear-gradient(#d3d3d3,#c9c9c9);background-size:128px 128px,auto;background-blend-mode:multiply,normal}
+.forum-pinned{border:1px solid #66717a;background:#ededed}.forum-pinned h2{margin:0;padding:5px 7px;border-bottom:2px solid #536d80;background:#7e96a5;color:white;font:bold 18px SimSun}.forum-pinned button{box-sizing:border-box;display:block;width:100%;padding:8px 7px;border:0;border-bottom:1px dotted #a8a8a8;background:#efefef;color:#415d7c;text-align:left;font:16px/1.4 SimSun;cursor:pointer}.forum-pinned button:hover{background:#fff8e3}.forum-pinned button span{color:#ba7028;font-weight:bold}
+.forum-welcome{margin-top:12px;padding:10px 8px;border:2px solid;border-color:#fff #777 #777 #fff;background:#ececec;color:#3b3b3b}.forum-welcome h2{margin:0 0 11px;color:#ad4c47;font:bold 20px/1.4 SimSun}.forum-welcome p{margin:7px 0;padding-bottom:5px;border-bottom:1px solid #aaa;font-size:16px}.forum-welcome p b{color:#475f86}.forum-stats{display:flex;flex-direction:column;gap:4px;margin-top:10px;font-size:15px}.forum-welcome>strong{display:block;margin-top:13px;color:#6b777d;text-align:center;font:15px SimSun}
+.forum-sidebar-actions{display:flex;gap:5px;margin-top:11px}.forum-sidebar-actions button{flex:1;min-width:0;padding:5px 2px;border:2px outset #eee;background:#d9d9d9;color:#4a6079;font:15px SimSun;cursor:pointer}
+.forum-profile{margin-top:12px;padding:9px;border:2px inset #eee;background:#e7e7e7}.forum-profile h2{margin:0 0 5px}.forum-profile p{margin:4px 0 9px}
+.forum-login-gate{position:relative;min-height:155px;box-sizing:border-box;padding:20px 12px 14px;overflow:hidden;border:2px solid #5d7181;background-image:url("assets/forum-noise.svg"),repeating-linear-gradient(90deg,transparent 0 17px,rgba(43,76,104,.08) 17px 18px),linear-gradient(90deg,#849db0 0%,#dceaf2 35%,#eaf0f1 51%,#c7d9e6 72%,#7992a7 100%);background-size:128px 128px,auto,auto;background-blend-mode:multiply,normal,normal;box-shadow:inset 0 0 0 5px rgba(255,255,255,.13),inset 0 -7px 0 rgba(57,84,106,.13)}
+.forum-login-gate:before,.forum-login-gate:after{content:"";position:absolute;top:17px;bottom:16px;width:9px;background:repeating-linear-gradient(0deg,rgba(55,81,104,.55) 0 1px,transparent 1px 9px);pointer-events:none}.forum-login-gate:before{left:5px}.forum-login-gate:after{right:5px}
+.forum-login-gate h2{color:#a44b16;font:bold 31px/1.35 SimSun;text-shadow:1px 1px #f4e6d7}.forum-login-gate>p{margin:8px 0 5px;color:#1d2022;font:bold 21px/1.45 SimSun}.forum-login-link,.forum-register-link{padding:0;border:0;background:transparent;color:#144d69;text-decoration:underline;font:inherit;cursor:pointer}.forum-register-link{color:#07596b}.forum-gate-links{display:flex;justify-content:center;gap:12px}.forum-gate-links button{padding:0;border:0;background:transparent;color:#965022;font:18px SimSun;cursor:pointer}.forum-gate-links button:nth-child(3){color:#396480}
+.forum-login-form{margin:13px auto 2px;padding:8px 10px;width:max-content;max-width:100%;border:1px solid #8997a1;background:rgba(255,255,255,.72)}.forum-login-form input[readonly]{background:#e7e7e7;color:#555}.forum-login-gate .forum-login-error,.forum-login-notice{margin:8px 0 0;font-size:17px}.forum-login-notice{color:#9b481d!important;font-weight:bold}
+.forum-ad{width:100%;aspect-ratio:2172/607;margin-top:12px;border:2px solid;border-color:#e0e4e6 #35414a #35414a #e0e4e6;box-sizing:border-box;overflow:hidden;background:#184f99}.forum-ad img{display:block;width:100%;height:100%;object-fit:contain}
+.forum-footer{border-top:4px solid #4a6371;background-image:url("assets/forum-noise.svg"),radial-gradient(#294d62 0.8px,transparent 0.9px),linear-gradient(#9fb5c0,#a9b9bd);background-size:128px 128px,5px 5px,auto;color:#345165}
+.forum-page-shell{background:#536c73}
+.forum-page{background-image:url("assets/forum-noise.svg"),repeating-linear-gradient(0deg,#b5bfc0 0 1px,#a6b2b3 1px 3px);color:#20272a}
+.forum-header{border-color:#b8c4c7 #1b2932 #1b2932 #b8c4c7;background-image:url("assets/forum-noise.svg"),linear-gradient(#1b2e3a,#324c5a);color:#e7f7fc}
+.forum-header nav button{color:#a4d4e7}
+.forum-sidebar{border-color:#35464d;background-image:url("assets/forum-noise.svg"),linear-gradient(#b9c5c6,#a5b3b5)}
+.forum-main{border-color:#36494f;background-image:url("assets/forum-noise.svg"),linear-gradient(#bbc5c6,#adb9bb)}
+.forum-pinned{border-color:#405563;background:#e5eaeb}.forum-pinned h2{border-bottom-color:#2b485b;background:#46667b}.forum-pinned button{background:#e8ecec;border-bottom-color:#929fa4}
+.forum-welcome{background:#e4e8e8;border-color:#f3f5f5 #627279 #627279 #f3f5f5}
+.forum-login-gate{border-color:#364d5b;background-image:url("assets/forum-noise.svg"),repeating-linear-gradient(90deg,transparent 0 17px,rgba(24,52,72,.12) 17px 18px),linear-gradient(90deg,#5f7f91 0%,#c3d6df 35%,#d3e1e5 51%,#b4cbd7 72%,#5b798d 100%)}
+.forum-board{border-color:#465c65;background:#dbe2e3}.forum-board-heading{border-bottom-color:#4a6471;background:#aababe}.forum-thread-list button{background:#e9eeee;border-bottom-color:#9caeae}.forum-thread-list button:nth-child(even){background:#dce6e9}
+.forum-teaser,.forum-full-content{background:#dce3e4;border-color:#f2f5f5 #53666c #53666c #f2f5f5}
+.forum-footer{border-top-color:#344e5b;background-image:url("assets/forum-noise.svg"),radial-gradient(#1b394b 0.8px,transparent 0.9px),linear-gradient(#7e9aa6,#899fa5);color:#253f4b}
+.forum-orange-button{position:relative;min-width:112px;min-height:37px;padding:3px 16px 3px 36px!important;border:3px solid!important;border-color:#ffe09a #70421c #70421c #ffe09a!important;background:radial-gradient(circle at 9px 8px,#9b571c 0 2px,transparent 3px),radial-gradient(circle at calc(100% - 9px) 8px,#9b571c 0 2px,transparent 3px),radial-gradient(circle at 9px calc(100% - 8px),#9b571c 0 2px,transparent 3px),radial-gradient(circle at calc(100% - 9px) calc(100% - 8px),#9b571c 0 2px,transparent 3px),repeating-linear-gradient(0deg,rgba(145,82,20,.14) 0 1px,transparent 1px 3px),linear-gradient(#fbc77b,#de943c)!important;box-shadow:inset 0 0 0 2px #ad6228,inset 0 0 0 4px #ffd48a,2px 3px 0 #43515a;color:#533011!important;text-shadow:1px 1px #ffe0a5;font:bold 17px SimSun!important;cursor:pointer}
+.forum-orange-button:before{content:"▣";position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:17px;color:#163945;text-shadow:1px 1px #86ced0}.forum-orange-button:hover{filter:brightness(1.08)}.forum-orange-button:active{border-color:#70421c #ffe09a #ffe09a #70421c!important;box-shadow:inset 0 0 0 2px #ad6228,inset 0 0 0 4px #ffd48a;transform:translate(2px,2px)}
+.forum-page,.forum-page *{font-family:"Microsoft YaHei","SimHei",sans-serif!important}
+.forum-brand strong,.forum-header nav button,.forum-pinned h2,.forum-welcome h2,.forum-board-heading h2,.forum-thread-list strong,.forum-teaser h2,.forum-thread-head h2,.forum-full-content h3{font-weight:700!important}
+.forum-login-gate h2{font-weight:800!important;letter-spacing:.035em}.forum-login-gate>p{font-weight:700!important}.forum-login-link,.forum-register-link{font-weight:800!important}.forum-gate-links button{font-weight:600!important}.forum-login-form label{font-weight:600!important;text-align:center}.forum-login-form button{font-weight:700!important}
+.forum-login-gate{background-image:url("assets/forum-noise.svg"),linear-gradient(90deg,#7896a6 0%,#d3e1e5 34%,#e2eaec 50%,#cadbe2 72%,#7792a2 100%);background-size:128px 128px,auto;background-blend-mode:multiply,normal;text-align:center}
+.forum-login-gate:before,.forum-login-gate:after{display:none}.forum-login-form{justify-content:center;text-align:center}.forum-orange-button{padding-left:16px!important}.forum-orange-button:before{display:none}
+.forum-ad{position:relative;aspect-ratio:1603/419;border-color:#e0e4e6 #35414a #35414a #e0e4e6;background:#ec651d}.forum-ad>img{width:100%;height:100%;object-fit:contain}.forum-ad-play{position:absolute;left:50%;bottom:10%;width:19.5%;padding:0;border:0;background:transparent;transform:translateX(-50%);cursor:pointer;animation:forum-ad-pulse 1s ease-in-out infinite}.forum-ad-play img{display:block;width:100%;height:auto;image-rendering:pixelated}.forum-ad-play:hover{animation-play-state:paused;transform:translateX(-50%) scale(1.09)}.forum-ad-play:focus-visible{outline:3px solid #fff;outline-offset:4px}
+@keyframes forum-ad-pulse{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.06)}}
+@media (prefers-reduced-motion:reduce){.forum-ad-play{animation:none}}
+.forum-ad-play,.forum-ad-play:hover{animation:forum-ad-pulse 1s ease-in-out infinite!important;animation-play-state:running!important}
+@keyframes forum-ad-pulse{0%,100%{transform:translateX(-50%) scale(.94)}50%{transform:translateX(-50%) scale(1.12)}}
+.forum-layout{grid-template-columns:245px minmax(0,1fr)}
+.forum-welcome h2{font-size:18px!important;white-space:nowrap}.forum-welcome p:first-of-type,.forum-welcome p:first-of-type b{white-space:nowrap}.forum-welcome>strong{font-size:13px!important;white-space:nowrap;letter-spacing:-.04em}.forum-stats span{white-space:nowrap}
+.forum-page-shell{position:relative}.forum-corner-ad[hidden]{display:none!important}.forum-corner-ad{position:absolute;z-index:15;bottom:12px;right:12px;width:180px;padding:3px;border:2px solid;border-color:#e9eef0 #34444c #34444c #e9eef0;background:#354d5b;box-shadow:3px 3px 0 rgba(16,29,34,.48)}.forum-corner-ad img{display:block;width:100%;height:auto;image-rendering:pixelated}.forum-corner-ad-close{position:absolute;z-index:1;right:5px;top:5px;width:25px;height:25px;padding:0;border:2px solid;border-color:#fff #4a5155 #4a5155 #fff;background:#d7dbdb;color:#20333b;font:bold 21px/19px Arial,sans-serif;cursor:pointer}.forum-corner-ad-close:hover{background:#fff}
+.forum-ad{aspect-ratio:1603/363;background:transparent}.forum-ad>img{object-fit:fill}
+@keyframes forum-ad-pulse{0%,100%{transform:translateX(-50%) scale(.98)}50%{transform:translateX(-50%) scale(1.04)}}
+.forum-corner-ad{top:0;bottom:auto;right:14px;width:220px;padding:0;border:2px solid #203a4e;background:#2c526a;box-shadow:3px 3px 0 rgba(16,29,34,.55)}
+.forum-corner-ad-title{height:28px;display:flex;align-items:center;justify-content:space-between;padding:0 5px;background:linear-gradient(90deg,#16344e,#7395ae);border-bottom:2px solid #0f293b;color:#93e4f5;font:20px/1 Arial,sans-serif}
+.forum-corner-ad-close{position:static;flex:0 0 24px;width:24px;height:23px;font:bold 20px/18px Arial,sans-serif}
+.forum-corner-ad-image{position:relative}.forum-corner-ad-image img{display:block;width:100%;height:auto;image-rendering:pixelated}.forum-corner-ad-fake-close{position:absolute;top:8px;right:7px;padding:1px 5px;border:1px solid #a1bce0;background:rgba(220,231,253,.82);color:#456dd4;font:14px "Microsoft YaHei",sans-serif;cursor:pointer}.forum-corner-ad-fake-close:hover{color:#1746a7;text-decoration:underline}
+.forum-ad-host{position:relative}.forum-ad-host .forum-corner-ad{top:auto;bottom:12px;right:12px}
+.forum-search-view .forum-ad,.forum-search-view .forum-teaser,.forum-search-view .forum-full-content,.forum-detail-view .forum-ad,.forum-detail-view .forum-board{display:none!important}
+.forum-search-empty{margin:0;padding:18px 12px;color:#5b6b73;font-size:18px;text-align:center}.forum-search-reserved{padding:7px 10px;color:#87949d;font-size:16px}
+.forum-breadcrumb{font-size:17px}.forum-breadcrumb .forum-crumb-home,.forum-breadcrumb .forum-crumb-section{padding:0;border:0;background:transparent;color:#4f83ae;font:inherit;text-decoration:underline;cursor:pointer}.forum-breadcrumb .forum-crumb-section:hover,.forum-breadcrumb .forum-crumb-home:hover{color:#2f6796;background:#e2edf2}.forum-breadcrumb .forum-crumb-title{color:#aa6732}.forum-breadcrumb .forum-crumb-tail[hidden]{display:none!important}
+.forum-pinned{background:#e4e6e7}.forum-pinned h2{background:#426a82;color:#f4f8ff;font-size:20px!important;font-weight:600!important;letter-spacing:.04em}.forum-pinned-list button{width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;background:#e7e8ea!important;color:#6267b6!important;font-size:17px!important;font-weight:650!important}.forum-pinned-list button:nth-child(even){background:#dfe1e3!important}.forum-pinned-list button:hover{background:#f6f6fb!important}.forum-pinned-list button span{color:#d77b2e!important;font-weight:750!important}.forum-pinned-list button:nth-child(n+3) span{color:#ce6651!important}
+.forum-pin-pager{display:flex;justify-content:center;gap:7px;padding:10px 4px 9px;background:#e1e3e5}.forum-pin-pager button{display:inline-grid!important;place-items:center;flex:0 0 31px;width:31px!important;height:28px;padding:0!important;border:2px solid!important;border-color:#fff #62696e #62696e #fff!important;background:#d9dcde!important;color:#222!important;font:bold 16px Arial,sans-serif!important;text-align:center;cursor:pointer}.forum-pin-pager button[aria-current="page"]{border-color:#666 #fff #fff #666!important;background:#bfc6ca!important}.forum-pin-pager button:hover{filter:brightness(1.08)}
+.forum-thread-list strong{font-weight:600!important}.forum-teaser h2,.forum-thread-head h2{font-size:24px!important}
+.forum-pinned h2,.forum-pinned-list button,.forum-pinned-list button span{font-family:SimSun,"宋体",serif!important}.forum-pinned-list button{color:#777ad2!important;font-weight:600!important}.forum-pinned-list button span{color:#ec9135!important}.forum-pinned-list button:nth-child(n+3) span{color:#e76d53!important}
+.forum-pinned-list button[data-forum-open="old-town"] span,.forum-pinned-list button[data-forum-open="night-bus"] span,.forum-pinned-list button[data-forum-open="school"] span{color:#d9342b!important}.forum-unavailable-notice{margin:8px 12px 0;padding:10px 13px;border:1px solid #b78c68;background:#fff1db;color:#9b3c25;font:17px SimSun,"宋体",serif}.forum-unavailable-notice[hidden]{display:none!important}
+.forum-ad-host .forum-corner-ad{width:260px}
+.forum-thread-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}.forum-thread-head>div{min-width:0}.forum-thread-head .forum-reply-button{flex:0 0 auto}
+.forum-reply-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.forum-reply-head strong{min-width:0}.forum-reply-button{min-width:76px!important;min-height:31px!important;height:31px!important;padding:2px 12px!important;font-size:15px!important;line-height:1!important}
+.forum-reply-form{margin-top:18px;padding:13px;border:2px solid;border-color:#fff #7a8a90 #7a8a90 #fff;background:#e4ebed}.forum-reply-form label{display:block;margin-bottom:8px;color:#375269;font-size:18px;font-weight:700}.forum-reply-form textarea{box-sizing:border-box;display:block;width:100%;min-height:100px;padding:9px;border:2px inset #c3cbd0;background:#fff;color:#20282c;font:18px/1.5 "Microsoft YaHei",sans-serif;resize:vertical}.forum-reply-actions{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:10px}.forum-reply-cancel{height:32px;padding:3px 14px;border:2px outset #d7dcdf;background:#cfd8dc;color:#394e5c;font-size:16px;cursor:pointer}
+.forum-reply-button,.forum-reply-actions .forum-orange-button{background:repeating-linear-gradient(0deg,rgba(145,82,20,.11) 0 1px,transparent 1px 3px),linear-gradient(#fbc77b,#de943c)!important}
+.forum-ad-error[hidden]{display:none!important}.forum-ad-error{position:absolute;z-index:20;inset:0;display:grid;place-items:center;overflow:auto;background:#fff;color:#111;font:16px Arial,"Microsoft YaHei",sans-serif}.forum-ad-error-message{display:flex;align-items:flex-start;gap:15px;width:min(640px,calc(100% - 55px));padding:24px 0}.forum-ad-error-icon{flex:0 0 26px;width:26px;height:26px;display:grid;place-items:center;border-radius:50%;background:#d5372d;color:#fff;font:bold 20px Arial}.forum-ad-error h2{margin:0 0 17px;font:bold 23px Arial,"Microsoft YaHei",sans-serif}.forum-ad-error p{margin:0 0 14px;line-height:1.6}.forum-ad-error hr{margin:18px 0;border:0;border-top:1px solid #aaa}.forum-ad-error small{font:13px/1.6 Arial,"Microsoft YaHei",sans-serif;color:#444}
+.browser-favorites-bar{position:relative;z-index:25;flex-basis:39px;font-size:17px}.browser-favorite-links{gap:10px}.browser-favorites-bar .browser-favorite-link{height:28px;padding:0 4px;border:0!important;background:transparent!important;font:17px SimSun,"Microsoft YaHei",sans-serif;color:#273039}.browser-favorites-bar .browser-favorite-link:active{padding:0 4px}.browser-favorite-link::before{content:"";display:inline-block;flex:0 0 18px;width:18px;height:18px;background:url("assets/icons/browser-globe-gray.svg") center/contain no-repeat;vertical-align:middle}.browser-favorites-bar .add-browser-favorite{font-size:16px}.add-browser-favorite span{font-size:20px;color:#456b7a}
+.browser-favorite-dialog[hidden]{display:none!important}.browser-favorite-dialog{position:absolute;top:calc(100% + 2px);right:5px;z-index:30;min-width:225px;padding:10px;border:2px solid;border-color:#fff #555 #555 #fff;background:#d7dad8;box-shadow:3px 3px 0 rgba(0,0,0,.25);font:16px SimSun,"Microsoft YaHei",sans-serif}.browser-favorite-dialog strong{display:block;margin-bottom:5px;font-size:17px}.browser-favorite-dialog p{margin:5px 0 10px;color:#53616a}.browser-favorite-dialog>div{display:flex;justify-content:flex-end;gap:6px}.browser-favorite-dialog button{height:27px!important;padding:0 10px!important;font-size:15px!important}
+.browser-favorites-bar .browser-favorite-link:hover{border:0!important;background:transparent!important;box-shadow:none!important;outline:0}.forum-thread-list button,.forum-thread-list button:nth-child(even),.forum-thread-list button:hover{background:transparent!important}
+.forum-post-author img,.forum-reply-avatar{display:block;width:46px;height:46px;object-fit:cover;border:2px solid;border-color:#fff #777 #777 #fff;background:#d6d6d6}.forum-post-author img{margin:0 0 7px}.forum-reply-head .forum-reply-avatar{flex:0 0 46px;width:46px;height:46px}.forum-reply-head strong{flex:1;align-self:center;margin-left:8px}.forum-reply-head .forum-reply-button{align-self:center}
+.browser-favorites-bar .browser-favorite-link{position:relative}.browser-favorites-bar .browser-favorite-link:hover:after{content:"";position:absolute;right:3px;bottom:0;left:3px;height:2px;background:#858d90;box-shadow:0 1px #e9eded}.browser-favorites-bar .add-browser-favorite:hover{background:#d7d9d8;border-color:#fff #4f5659 #4f5659 #fff;box-shadow:1px 1px 0 #73797c}.browser-favorites-bar .add-browser-favorite:active{background:#bfc4c3;box-shadow:none}
+.forum-post-author{display:flex;flex-direction:row;align-items:flex-start;gap:10px}.forum-post-author img{flex:0 0 46px;margin:0}.forum-post-author>div{display:flex;min-width:0;flex-direction:column;padding-top:2px}.forum-post-author b{white-space:normal;line-height:1.35}
+.forum-board-heading h2{font-size:20px!important;font-weight:650!important}.forum-thread-list strong{font-size:18px!important;font-weight:600!important}.forum-teaser h2,.forum-thread-head h2{font-size:21px!important;font-weight:650!important}.forum-teaser h2 small{font-size:17px!important;font-weight:500!important}.forum-full-content h3{font-size:20px!important;font-weight:650!important}.forum-replies strong,.forum-post-author b{font-size:17px!important;font-weight:650!important}.forum-welcome h2{font-size:17px!important;font-weight:650!important}.forum-pinned h2{font-size:19px!important}
+.browser-favorites-bar .browser-favorite-link:hover:after{display:none}.browser-favorites-bar .browser-favorite-link:hover{padding:0 7px!important;border:1px solid #aeb4b5!important;background:#d8dada!important;box-shadow:inset 1px 1px #f3f5f5,inset -1px -1px #969d9f!important}
+.forum-post{display:block}.forum-post-author{display:flex;width:100%;align-items:center;padding-bottom:10px;border-bottom:1px solid #c2c9ca}.forum-post-author>div{flex:0 1 auto;padding:0}.forum-post-author b{display:block;white-space:nowrap}.forum-post-author small{display:block}.forum-post-heat{margin-left:auto;color:#78858c;font-size:16px;white-space:nowrap}.forum-post-body{padding:13px 4px 0}.forum-post-body p{margin:0 0 14px}
+.forum-thread-list button:hover{background:#eef2f2!important;box-shadow:inset 0 1px #fff,inset 0 -1px #aeb9bb}.forum-thread-list button:focus-visible{outline:1px dotted #425c69;outline-offset:-3px}
+.favorite-header-chevron{flex:0 0 auto;width:10px;height:10px;margin:0 3px 4px 0;border-right:2px solid #424242;border-bottom:2px solid #424242;transform:rotate(45deg)}
+.qq-favorite-photo{display:block;margin-top:10px;padding:3px;background:#e1e1dc;border:2px solid;border-color:#fff #777 #777 #fff;cursor:zoom-in}
+.qq-favorite-photo img{display:block;width:110px;height:110px;object-fit:cover}
+
+/* SKY STRIKER — compact 16-bit desktop game */
+.sky-game-icon{background-image:url("assets/icons/pixel-air-combat.png")!important;image-rendering:pixelated}
+.task-app-icon.sky-game,.window-mini-icon.sky-game{background-image:url("assets/icons/pixel-air-combat.png")!important}
+.desktop-icon .sky-game-icon{width:68px;height:68px;background-size:66px 66px}
+.sky-download-dialog{position:absolute;left:50%;top:43%;width:min(470px,calc(100vw - 28px));box-sizing:border-box;padding:3px;transform:translate(-50%,-50%);border:2px solid;border-color:var(--light) var(--dark) var(--dark) var(--light);background:var(--silver);box-shadow:1px 1px 0 #000,inset 1px 1px #dfdfdf;color:#273139;font-family:"Microsoft YaHei",SimSun,sans-serif}.sky-download-dialog>header{height:27px;display:flex;align-items:center;gap:6px;padding:3px 3px 3px 5px;background:#000080;color:#fff}.sky-download-dialog>header img{width:18px;height:18px;object-fit:contain;image-rendering:pixelated}.sky-download-dialog>header strong{flex:1;font-size:15px}.sky-download-dialog>header button{width:21px;height:20px;padding:0;border:2px solid;border-color:#fff #555 #555 #fff;background:var(--silver);color:#303030;font:400 16px/14px "Segoe UI Symbol",Arial,sans-serif;cursor:pointer}.sky-download-dialog>header button:hover{background:#d8d8d8;color:#111}.sky-download-dialog>header button:active{padding:1px 0 0 1px;border-color:#555 #fff #fff #555}.sky-download-dialog>main{display:flex;align-items:center;gap:18px;padding:22px 23px 18px;background:#d7dbdc}.sky-download-logo{flex:0 0 72px;width:72px;height:72px;object-fit:contain;image-rendering:pixelated}.sky-download-dialog main>div{flex:1;min-width:0}.sky-download-dialog h2{margin:0 0 4px;color:#263e60;font-size:20px}.sky-download-dialog p{margin:0 0 14px;color:#67747b;font-size:14px}.sky-download-track{height:18px;padding:2px;border:2px solid;border-color:#777 #fff #fff #777;background:#f5f7f7}.sky-download-track span{display:block;width:0;height:100%;background:repeating-linear-gradient(90deg,#769cbc 0 8px,#c1d4df 8px 10px);transition:width .16s linear}.sky-download-dialog small{display:block;margin-top:7px;color:#58666d;font-size:14px}.sky-download-dialog>footer{padding:8px 12px;border-top:1px solid #9da5a7;background:#c6cbcc;color:#5a6469;font-size:13px}.sky-download-dialog.complete .sky-download-track span{background:repeating-linear-gradient(90deg,#75a384 0 8px,#bed2c3 8px 10px)}.sky-download-dialog.complete h2{color:#356d44}
+.sky-game-window{min-width:410px;min-height:560px;background:#090f2c}.sky-game-window>.menu-bar,.sky-game-window>.toolbar,.sky-game-window>.statusbar{display:none}.sky-game-window>.window-content{position:relative;display:grid;place-items:center;min-height:0;padding:0;overflow:hidden;background:#07102e}
+.sky-game-shell{position:relative;width:100%;height:100%;min-height:500px;overflow:hidden;background:#09163d;font-family:"Courier New",monospace;color:#fff}.sky-game-canvas{display:block;width:100%;height:100%;outline:none;image-rendering:pixelated;image-rendering:crisp-edges}
+.sky-game-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;box-sizing:border-box;padding:26px;text-align:center;background:rgba(5,12,40,.72);text-shadow:3px 3px #15245b;z-index:2}.sky-game-overlay[hidden]{display:none}.sky-game-overlay h1{margin:0;color:#fff36a;font:bold 38px/1 "Courier New",monospace;letter-spacing:2px}.sky-game-overlay h1 small{display:block;margin-top:10px;color:#75eaff;font-size:18px;letter-spacing:5px}.sky-game-overlay p{margin:19px 0 6px;font:bold 16px/1.65 "Courier New",monospace}.sky-game-overlay .sky-game-score{color:#aaf7ff;font-size:18px}.sky-game-overlay button{margin-top:17px;padding:9px 25px;border:4px solid;border-color:#fff #253264 #253264 #fff;background:#387ad7;color:#fff;font:bold 18px "Courier New",monospace;box-shadow:4px 4px 0 #05091c;cursor:pointer}.sky-game-overlay button:hover{background:#56a8f5;color:#fff96b}.sky-game-overlay button:active{transform:translate(3px,3px);box-shadow:1px 1px 0 #05091c}.sky-game-overlay .access{color:#7cff9a;font-size:32px;animation:sky-access .28s steps(2,end) 4}.sky-game-overlay .invite{margin-top:20px;padding:10px 14px;border:2px solid #7cff9a;background:#051b18;color:#fff36a;font:bold 21px "Courier New",monospace;letter-spacing:2px;text-shadow:none}@keyframes sky-access{50%{opacity:.2}}
+.sky-download-dialog>header button{display:grid;place-items:center;flex:0 0 23px;width:23px;height:22px;padding:0!important;font:400 19px/1 "Segoe UI Symbol",Arial,sans-serif}
+.sky-download-track span,.sky-download-dialog.complete .sky-download-track span{background:repeating-linear-gradient(90deg,#4148ad 0 9px,#eef0f8 9px 12px)}
+.forum-download-link{display:inline-flex;align-items:center;gap:9px;padding:7px 12px;border:2px solid;border-color:#fff #667176 #667176 #fff;background:#d9dfe0;color:#315d91;font:17px "Microsoft YaHei",sans-serif;text-decoration:underline;cursor:pointer}.forum-download-link:hover{background:#edf2f3}.forum-download-link:active{border-color:#667176 #fff #fff #667176}.forum-download-link img{width:38px;height:31px;object-fit:contain;image-rendering:pixelated}.case-archive-icon,.task-app-icon.case-archive,.window-mini-icon.case-archive{background-image:url("assets/icons/case-archive-transparent.png")!important;image-rendering:pixelated}.case-archive-icon{background-size:58px 48px!important}.case-archive-desktop-entry .pixel-icon{width:64px;height:54px}
+.case-archive-window{min-width:520px}.case-password-panel{display:flex;align-items:center;justify-content:center;gap:24px;min-height:100%;box-sizing:border-box;padding:28px;background:#d9dede}.case-password-panel>img{width:92px;height:76px;object-fit:contain;image-rendering:pixelated}.case-password-panel h3{margin:0 0 7px;color:#294b70;font-size:22px}.case-password-panel p{margin:0 0 15px;font-size:16px}.case-password-panel label{display:flex;align-items:center;gap:8px;font-size:16px}.case-password-panel input{width:190px;height:27px;box-sizing:border-box;border:2px inset #ddd;background:#fff;font:17px Arial}.case-password-panel small{display:block;min-height:22px;margin:6px 0;color:#a32924;font-size:14px}.case-password-panel div>div{display:flex;justify-content:flex-end;gap:7px}.case-password-panel button{min-width:72px;height:28px;border:2px outset #eee;background:#d4d7d7;font-size:15px}.case-archive-folder{height:100%;box-sizing:border-box;padding:8px;background:#e7ebeb}.case-folder-note{padding:5px 8px;border:1px solid #a1aaad;background:#d3dada;color:#4e5e68;font-size:14px}.case-image-grid{display:grid;grid-template-columns:repeat(4,minmax(95px,1fr));gap:12px;padding:16px}.case-image-placeholder{min-width:0;padding:7px 4px;border:1px solid transparent;background:transparent;color:#26343c;text-align:center}.case-image-placeholder:hover{border-color:#879caf;background:#d8e5ed}.case-image-placeholder>span{position:relative;display:block;width:58px;height:48px;margin:0 auto 7px;border:2px solid #65767c;background:linear-gradient(145deg,#eef5f4 0 48%,#a9bec5 49% 65%,#6d8994 66%);box-shadow:inset 0 0 0 2px #fff}.case-image-placeholder>span:before{content:"";position:absolute;left:8px;top:8px;width:11px;height:11px;border-radius:50%;background:#e5bd53}.case-image-placeholder b,.case-image-placeholder small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.case-image-placeholder b{font:14px SimSun}.case-image-placeholder small{margin-top:3px;color:#6a777d;font:12px SimSun}
+.case-archive-window>.archive-toolbar{display:flex;align-items:stretch;gap:4px;min-height:76px;padding:5px 8px;border-bottom:1px solid #8e999e;background:linear-gradient(#d8e9f7,#c7deef)}.archive-toolbar button{display:flex;min-width:72px;flex-direction:column;align-items:center;gap:3px;padding:3px 7px;border:1px solid transparent;background:transparent;color:#354d61;font:14px "Microsoft YaHei",sans-serif}.archive-toolbar button:hover{border-color:#8eb5d0;background:#e8f4fb}.archive-toolbar i{display:grid;width:34px;height:34px;place-items:center;border-radius:4px;background:#168ed7;color:#fff;font:bold 24px/1 Arial;font-style:normal;box-shadow:inset 0 0 0 2px #51b8ec}.archive-toolbar span{white-space:nowrap}.archive-root{height:100%;background:#f5f7f8;font:15px SimSun,"Microsoft YaHei",sans-serif}.archive-address{height:38px;display:flex;align-items:center;gap:7px;padding:3px 8px;border-bottom:1px solid #9aadb7;background:#dcebf5}.archive-address>button{width:26px;height:26px;border:0;background:transparent;color:#6c91b0;font-size:20px}.archive-address>span{display:flex;min-width:0;flex:1;align-items:center;gap:6px;height:28px;padding:0 8px;border:1px solid #9db4c2;background:#fff;white-space:nowrap}.archive-address>span img{width:20px;height:18px;object-fit:contain}.archive-address label{display:flex;align-items:center;justify-content:space-between;width:155px;height:28px;padding:0 7px;border:1px solid #9db4c2;background:#fff;color:#84939c}.archive-address label b{font-size:20px;color:#477ba3}.archive-columns,.archive-row{display:grid;grid-template-columns:minmax(220px,1.8fr) 82px 82px 105px 145px;align-items:center}.archive-columns{height:29px;border-bottom:1px solid #b5bec2;background:#edf2f4}.archive-columns b{padding:0 7px;border-right:1px solid #d1d9dc;font-weight:400}.archive-row{box-sizing:border-box;width:100%;min-height:30px;padding:0;border:0;border-bottom:1px solid #edf0f1;background:#fff;color:#24292c;text-align:left;font:15px SimSun,"Microsoft YaHei",sans-serif}.archive-row>span{overflow:hidden;padding:5px 7px;text-overflow:ellipsis;white-space:nowrap}.archive-row.selected,.archive-row:hover{background:#dcecf8}.archive-protected-folder{cursor:default}.archive-protected-folder em{font-style:normal;font-size:12px}.case-folder-note{display:flex;align-items:center;gap:7px;height:30px;padding:3px 6px}.case-folder-note button{width:27px;height:25px;border:1px solid #99aab1;background:#eef3f4;color:#48647a;font-size:18px}.case-folder-note span{flex:1;padding:4px 8px;border:1px solid #a7b4b9;background:#fff}.case-archive-window .window-content{font-size:15px}

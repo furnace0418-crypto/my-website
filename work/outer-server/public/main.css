@@ -1,0 +1,505 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    overflow: hidden;
+}
+
+.webgl {
+    position: fixed;
+    top: 0;
+    left: 0;
+    outline: none;
+}
+
+.jitter {
+    animation-duration: 0.3s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-name: jittery;
+    z-index: -10;
+}
+
+.interface-wrapper {
+    width: 100%;
+    top: 64px;
+    left: 64px;
+}
+
+.icon-control-container {
+    height: 26.5px;
+    width: 26.5px;
+}
+
+@media only screen and (max-width: 768px) {
+    .interface-wrapper {
+        width: 100%;
+        top: 24px;
+        left: 24px;
+    }
+
+    .icon-control-container {
+        height: 19.5px;
+        width: 19.5px;
+    }
+}
+
+/* Custom compact controls */
+.interface-wrapper {
+    display: none !important;
+}
+
+#custom-fixed-controls {
+    position: fixed;
+    z-index: 10001;
+    top: 32px;
+    left: 32px;
+    display: flex;
+    gap: 10px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition:
+        opacity 180ms ease,
+        transform 180ms ease,
+        visibility 180ms;
+}
+
+#custom-fixed-controls.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.custom-control {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 999px;
+    background: rgba(5, 7, 10, 0.28);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 8px 24px rgba(0, 0, 0, 0.14);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    cursor: pointer;
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        transform 160ms ease;
+}
+
+.custom-control:hover {
+    border-color: #fff;
+    background: rgba(255, 255, 255, 0.16);
+    transform: translateY(-1px);
+}
+
+.custom-control.is-active {
+    border-color: #fff;
+    background: rgba(255, 255, 255, 0.22);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+        0 0 18px rgba(255, 255, 255, 0.14);
+}
+
+.custom-control::before {
+    content: "";
+    width: 19px;
+    height: 19px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+#custom-audio-control::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 5 6.5 9H3v6h3.5l4.5 4V5Z'/%3E%3Cpath d='M15.5 8.5a5 5 0 0 1 0 7'/%3E%3Cpath d='M18 6a8.5 8.5 0 0 1 0 12'/%3E%3C/svg%3E");
+}
+
+#custom-view-control::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 12S6 6 12 6s9.5 6 9.5 6-3.5 6-9.5 6S2.5 12 2.5 12Z'/%3E%3Ccircle cx='12' cy='12' r='2.6'/%3E%3C/svg%3E");
+}
+
+#custom-audio-control.is-active::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 5 6.5 9H3v6h3.5l4.5 4V5Z'/%3E%3Cpath d='m16 9 5 6'/%3E%3Cpath d='m21 9-5 6'/%3E%3C/svg%3E");
+}
+
+#custom-view-control.is-active::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v18M3 12h18'/%3E%3Cpath d='m8 7 4-4 4 4M8 17l4 4 4-4M7 8l-4 4 4 4M17 8l4 4-4 4'/%3E%3C/svg%3E");
+}
+
+/* Pixel loading experience */
+#custom-pixel-loader {
+    position: fixed;
+    z-index: 10000;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+    color: #fff;
+    background: #000;
+    opacity: 1;
+    transition: opacity 360ms ease;
+}
+
+#custom-pixel-loader.is-finished {
+    opacity: 0;
+    pointer-events: none;
+}
+
+body.pixel-loading #webgl,
+body.pixel-loading #overlay,
+body.pixel-loading #ui-interactive {
+    opacity: 0 !important;
+}
+
+.pixel-loader-card {
+    width: min(202px, calc(100vw - 48px));
+    padding: 0;
+    border: 0;
+    box-sizing: border-box;
+    background: transparent;
+    text-align: center;
+    transition: opacity 120ms steps(2, end);
+}
+
+#custom-pixel-loader.is-starting .pixel-loader-card {
+    opacity: 0;
+}
+
+.pixel-loader-title {
+    color: #fff;
+    font-family: "Courier New", monospace;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.1em;
+    text-align: center;
+    text-shadow: none;
+}
+
+.pixel-loader-dots::after {
+    content: "";
+    animation: pixel-loader-dots 900ms steps(4, end) infinite;
+}
+
+@keyframes pixel-loader-dots {
+    0% { content: ""; }
+    25% { content: "."; }
+    50% { content: ".."; }
+    75%, 100% { content: "..."; }
+}
+
+.pixel-progress-frame {
+    width: 100%;
+    height: 18px;
+    margin-top: 9px;
+    padding: 2px 5px;
+    box-sizing: border-box;
+    background: #fff;
+    clip-path: polygon(7px 0, calc(100% - 7px) 0, 100% 50%, calc(100% - 7px) 100%, 7px 100%, 0 50%);
+}
+
+.pixel-progress-track {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    clip-path: polygon(5px 0, calc(100% - 5px) 0, 100% 50%, calc(100% - 5px) 100%, 5px 100%, 0 50%);
+}
+
+#pixel-progress-fill {
+    width: 6%;
+    height: 100%;
+    background: #fff;
+    image-rendering: pixelated;
+    will-change: width;
+}
+
+#pixel-start-button {
+    margin-top: 14px;
+    padding: 6px 18px 5px;
+    border: 2px solid #fff;
+    color: #fff;
+    background: #000;
+    font-family: "Courier New", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    opacity: 0;
+    visibility: hidden;
+    cursor: pointer;
+}
+
+#custom-pixel-loader.is-ready #pixel-start-button {
+    opacity: 1;
+    visibility: visible;
+}
+
+#pixel-start-button:hover,
+#pixel-start-button:focus-visible {
+    color: #000;
+    background: #fff;
+    outline: none;
+}
+
+@media only screen and (max-width: 768px) {
+    #custom-fixed-controls {
+        top: 20px;
+        left: 20px;
+    }
+
+    .custom-control {
+        width: 36px;
+        height: 36px;
+    }
+
+    .custom-control::before {
+        width: 17px;
+        height: 17px;
+    }
+
+    .pixel-loader-card {
+        width: min(202px, calc(100vw - 40px));
+    }
+}
+
+@keyframes jittery {
+    10% {
+        transform: translate(-0.1px, -0.15px) scale(1, 1);
+    }
+
+    20% {
+        transform: translate(0.15px, 0.1px) scale(1, 1);
+    }
+
+    30% {
+        transform: translate(-0.2px, -0.25px) scale(1, 1);
+    }
+
+    40% {
+        transform: translate(0.05px, 0.1px) scale(1, 1);
+    }
+
+    50% {
+        transform: translate(-0.025px, -0.05px) scale(1, 1);
+    }
+
+    60% {
+        transform: translate(0px, 0.075px) scale(1, 1);
+    }
+
+    70% {
+        transform: translate(-0.075px, -0.1px) scale(1, 1);
+    }
+
+    80% {
+        transform: translate(0.075px, 0.125px) scale(1, 1);
+    }
+
+    90% {
+        transform: translate(-0.125px, -0.075px) scale(1, 1);
+    }
+
+    100% {
+        transform: translate(0.075px, 0.025px) scale(1, 1);
+    }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+p {
+    /* font-family: ocr-a-std, monospace; */
+    font-family: monospace;
+    font-weight: 400;
+    font-style: normal;
+    color: white;
+    /* mobile friendly font size */
+    font-size: 16px;
+}
+
+/* if on mobile */
+@media only screen and (max-width: 768px) {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    p {
+        font-size: 10px;
+    }
+}
+
+br {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    height: 16px;
+}
+
+.loading::after {
+    display: inline-block;
+    animation: dotty steps(1, end) 1s infinite;
+    content: '';
+}
+
+@keyframes dotty {
+    0% {
+        content: '   ';
+    }
+    25% {
+        content: '. ';
+    }
+    50% {
+        content: '.. ';
+    }
+    75% {
+        content: '...';
+    }
+    100% {
+        content: '   ';
+    }
+}
+.blinking-cursor {
+    background-color: #fff;
+    width: 0.8em;
+    height: 0.15em;
+    -webkit-animation: 0.65s blink step-end infinite;
+    -moz-animation: 0.65s blink step-end infinite;
+    -ms-animation: 0.65s blink step-end infinite;
+    -o-animation: 0.65s blink step-end infinite;
+    animation: 0.65s blink step-end infinite;
+}
+
+@keyframes blink {
+    from,
+    to {
+        background-color: transparent;
+    }
+    50% {
+        background-color: white;
+    }
+}
+
+@-moz-keyframes blink {
+    from,
+    to {
+        background-color: transparent;
+    }
+    50% {
+        background-color: white;
+    }
+}
+
+@-webkit-keyframes blink {
+    from,
+    to {
+        background-color: transparent;
+    }
+    50% {
+        background-color: white;
+    }
+}
+
+@-ms-keyframes blink {
+    from,
+    to {
+        background-color: transparent;
+    }
+    50% {
+        background-color: white;
+    }
+}
+
+@-o-keyframes blink {
+    from,
+    to {
+        background-color: transparent;
+    }
+    50% {
+        background-color: white;
+    }
+}
+
+.bios-start-button {
+    background-color: #000;
+    border: 4px solid #fff;
+    border-width: 4px 3px 4px 3px;
+}
+
+.bios-start-button p {
+    box-sizing: border-box;
+    padding: 8px;
+}
+
+.bios-start-button:hover p {
+    background-color: #fff;
+    cursor: pointer;
+    color: #000;
+}
+
+.loading-screen-header {
+    padding: 48px;
+}
+
+.loading-screen-body {
+    padding-left: 48px;
+    padding-right: 48px;
+}
+
+.loading-screen-footer {
+    padding: 48px;
+    padding-bottom: 64px;
+}
+
+.info-wrapper {
+    top: 64px;
+    left: 64px;
+}
+
+/* if on mobile make all loading screen elements have a padding of 16 */
+@media only screen and (max-width: 768px) {
+    .loading-screen-header {
+        padding: 16px;
+    }
+
+    .info-wrapper {
+        top: 16px;
+        left: 16px;
+    }
+
+    .blinking-cursor {
+        background-color: #fff;
+        width: 0.4em;
+        height: 0.08em;
+        -webkit-animation: 0.65s blink step-end infinite;
+        -moz-animation: 0.65s blink step-end infinite;
+        -ms-animation: 0.65s blink step-end infinite;
+        -o-animation: 0.65s blink step-end infinite;
+        animation: 0.65s blink step-end infinite;
+    }
+    
+    .loading-screen-body {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .loading-screen-footer {
+        padding: 16px;
+        padding-bottom: 32px;
+    }
+}
+
+
+/*# sourceMappingURL=main.css.map*/

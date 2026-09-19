@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <base href="/" />
+    <style>
+      body {
+        background-color: #000;
+        margin: 0;
+      }
+      #webgl {
+        pointer-events: none;
+      }
+      #ui-app {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
+      }
+      #ui {
+        position: absolute;
+        overflow: hidden;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
+      }
+      #monitor-videos {
+        pointer-events: none;
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+        top: 0;
+        left: 0;
+      }
+      #css {
+        cursor: pointer;
+      }
+      #ui-interactive {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 256px;
+      }
+      video {
+        position: absolute;
+        top: 0;
+        pointer-events: none;
+      }
+    </style>
+    <title>Henry Heffernan - Portfolio 2022</title>
+    <meta name="title" content="Henry Heffernan - Software Engineer" />
+    <meta
+      name="description"
+      content="I'm Henry, a Software Engineer based in NY. Rensselaer Polytechnic Institute Graduate with my B.S. in Computer Science, currently looking for a full time role."
+    />
+    <link rel="shortcut icon" href="/ffbcd8e4fac59356.ico" type="image/x-icon" />
+    <script defer src="/bundle.cf64568055686c74.js"></script>
+    <link href="/main.css" rel="stylesheet" />
+  </head>
+  <body class="pixel-loading">
+    <div id="css"></div>
+    <div id="webgl"></div>
+    <div id="overlay"></div>
+    <div id="ui-interactive"></div>
+    <div id="ui"></div>
+    <div id="custom-pixel-loader" role="status" aria-live="polite" aria-label="Loading">
+      <div class="pixel-loader-card">
+        <div class="pixel-loader-title">LOADING<span class="pixel-loader-dots" aria-hidden="true"></span></div>
+        <div class="pixel-progress-frame" aria-hidden="true">
+          <div class="pixel-progress-track">
+            <div id="pixel-progress-fill"></div>
+          </div>
+        </div>
+        <button id="pixel-start-button" type="button">START</button>
+      </div>
+    </div>
+    <div id="custom-fixed-controls" aria-label="Scene controls">
+      <button id="custom-audio-control" class="custom-control" type="button" aria-label="Toggle audio"></button>
+      <button id="custom-view-control" class="custom-control" type="button" aria-label="Change view"></button>
+    </div>
+    <div id="monitor-videos">
+      <video
+        id="video-1"
+        muted
+        loop
+        autoplay
+        width="0"
+        height="0"
+        src="/c28874fa5b347023.mp4"
+        style="opacity: 0"
+      ></video>
+      <video
+        id="video-2"
+        muted
+        loop
+        autoplay
+        width="0"
+        height="0"
+        src="/78d1c080b40532e6.mp4"
+        style="opacity: 0"
+      ></video>
+    </div>
+    <script>
+      (() => {
+        // The legacy interface dispatches synthetic _AUTO_ key events only to play
+        // its typewriter pop. Stop those events while leaving startup/office audio intact.
+        document.addEventListener("keydown", (event) => {
+          if (typeof event.key === "string" && event.key.includes("_AUTO_")) {
+            event.stopImmediatePropagation();
+          }
+        }, true);
+
+        const loader = document.querySelector("#custom-pixel-loader");
+        const fill = document.querySelector("#pixel-progress-fill");
+        const start = document.querySelector("#pixel-start-button");
+        const controls = document.querySelector("#custom-fixed-controls");
+        const audioControl = document.querySelector("#custom-audio-control");
+        const viewControl = document.querySelector("#custom-view-control");
+        const startedAt = performance.now();
+        let finishing = false;
+        let ready = false;
+        let started = false;
+        let originalStart = null;
+        let pendingAudioToggle = false;
+
+        const controlAssets = {
+          audio: ["fa9623e40006eda6", "8bbd53f7e797a91c"],
+          view: ["0a262c7c9669cd40", "e2b639cbd11be706"]
+        };
+
+        const findOriginalControl = (assets) => {
+          for (const asset of assets) {
+            const control = document.querySelector(`.icon-control-container:has(img[src*="${asset}"])`);
+            if (control) return control;
+          }
+          return null;
+        };
+
+        const syncControlStates = () => {
+          const muted = Boolean(document.querySelector('.icon-control-container img[src*="8bbd53f7e797a91c"]'));
+          const freeView = Boolean(document.querySelector('.icon-control-container img[src*="e2b639cbd11be706"]'));
+          audioControl.classList.toggle("is-active", muted);
+          viewControl.classList.toggle("is-active", freeView);
+          audioControl.setAttribute("aria-pressed", String(muted));
+          viewControl.setAttribute("aria-pressed", String(freeView));
+          audioControl.setAttribute("aria-label", muted ? "Restore office ambience" : "Mute office ambience");
+          viewControl.setAttribute("aria-label", freeView ? "Disable free view" : "Enable free view");
+        };
+
+        const pressOriginalControl = (control) => {
+          const eventOptions = { bubbles: true, cancelable: true, view: window };
+          control.dispatchEvent(new MouseEvent("mousedown", eventOptions));
+          control.dispatchEvent(new MouseEvent("mouseup", eventOptions));
+          requestAnimationFrame(syncControlStates);
+          window.setTimeout(syncControlStates, 80);
+        };
+
+        const findVisibleStart = () => {
+          const button = document.querySelector(".bios-start-button");
+          const modal = button?.parentElement?.parentElement?.parentElement;
+          if (!button || !modal) return null;
+          return Number.parseFloat(getComputedStyle(modal).opacity) > 0.95 ? button : null;
+        };
+
+        const finishLoading = (button) => {
+          if (finishing) return;
+          finishing = true;
+          originalStart = button;
+          const finishStartedAt = performance.now();
+          const complete = (now) => {
+            const progress = Math.min(1, (now - finishStartedAt) / 760);
+            fill.style.width = `${88 + progress * 12}%`;
+            if (progress < 1) {
+              requestAnimationFrame(complete);
+              return;
+            }
+            ready = true;
+            loader.classList.add("is-ready");
+          };
+          requestAnimationFrame(complete);
+        };
+
+        const revealWhenStable = () => {
+          const revealStartedAt = performance.now();
+          const check = (now) => {
+            const screen = document.querySelector("#computer-screen");
+            const screenWidth = screen?.getBoundingClientRect().width || 0;
+            const stableWidth = Math.max(24, window.innerWidth * 0.016);
+            if (screenWidth >= stableWidth || now - revealStartedAt > 900) {
+              document.body.classList.remove("pixel-loading");
+              controls.classList.add("is-visible");
+              loader.classList.add("is-finished");
+              window.setTimeout(() => loader.remove(), 420);
+              return;
+            }
+            requestAnimationFrame(check);
+          };
+          requestAnimationFrame(check);
+        };
+
+        start.addEventListener("click", () => {
+          if (!ready || started || !originalStart) return;
+          started = true;
+          loader.classList.remove("is-ready");
+          loader.classList.add("is-starting");
+
+          // Keep this click synchronous with the user's gesture so browsers may start audio.
+          originalStart.click();
+          revealWhenStable();
+        });
+
+        controls.addEventListener("pointerdown", (event) => event.stopPropagation());
+        controls.addEventListener("mousedown", (event) => event.stopPropagation());
+
+        audioControl.addEventListener("click", (event) => {
+          event.stopPropagation();
+          const original = findOriginalControl(controlAssets.audio);
+          if (original) pressOriginalControl(original);
+          else pendingAudioToggle = !pendingAudioToggle;
+        });
+
+        viewControl.addEventListener("click", (event) => {
+          event.stopPropagation();
+          const original = findOriginalControl(controlAssets.view);
+          if (original) {
+            pressOriginalControl(original);
+          } else if (!document.body.classList.contains("pixel-loading")) {
+            document.dispatchEvent(new MouseEvent("mousedown", {
+              bubbles: true,
+              clientX: window.innerWidth / 2,
+              clientY: window.innerHeight / 2
+            }));
+          }
+        });
+
+        window.setInterval(() => {
+          if (!pendingAudioToggle) return;
+          if (pendingAudioToggle) {
+            const original = findOriginalControl(controlAssets.audio);
+            if (original) {
+              pendingAudioToggle = false;
+              pressOriginalControl(original);
+            }
+          }
+          syncControlStates();
+        }, 200);
+
+        const update = (now) => {
+          if (finishing) return;
+          const elapsed = now - startedAt;
+          const progress = Math.min(88, 6 + elapsed / 72);
+          fill.style.width = `${progress}%`;
+          const startButton = findVisibleStart();
+          if (startButton && elapsed > 1200) {
+            finishLoading(startButton);
+            return;
+          }
+          requestAnimationFrame(update);
+        };
+
+        requestAnimationFrame(update);
+      })();
+    </script>
+  </body>
+</html>

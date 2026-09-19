@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>我的复古电脑</title>
+  <link rel="stylesheet" href="styles.css?v=20260916-41" />
+  <link rel="stylesheet" href="archive-overrides.css?v=20260917-1" />
+</head>
+<body>
+  <section class="boot-login" id="bootLogin" aria-label="系统登录">
+    <article class="boot-login-dialog" role="dialog" aria-modal="true" aria-labelledby="bootLoginTitle">
+      <header><strong id="bootLoginTitle">欢迎使用系统</strong></header>
+      <main><div class="boot-login-icon" aria-hidden="true"><img src="assets/boot-key-reference.png" alt="" /></div><section><p>请输入用户名和密码以登录系统。</p><label><span>用户名：</span><input id="bootUsername" value="访客用户" readonly /></label><label><span>密码：</span><input id="bootPassword" type="password" maxlength="4" inputmode="numeric" autocomplete="off" autofocus /></label><small id="bootLoginError" role="alert" aria-live="polite"></small></section></main>
+      <footer><button id="bootLoginConfirm" type="button">确定</button><button id="bootLoginCancel" type="button">取消</button></footer>
+    </article>
+  </section>
+  <section class="boot-progress" id="bootProgress" aria-label="正在登录" hidden>
+    <article class="boot-progress-dialog" role="status" aria-live="polite"><header>正在登录</header><main><p>正在载入用户配置文件，请稍候……</p><div class="boot-progress-track"><span id="bootProgressFill"></span></div></main></article>
+  </section>
+  <section class="login-error" id="loginError" aria-label="用户配置文件错误">
+    <div class="login-error-panel">
+      <div class="login-message" id="loginMessage">
+        <strong>User Profile Service 服务登录失败。</strong>
+        <strong>无法加载用户配置文件。</strong>
+      </div>
+      <button id="loginConfirm">确定</button>
+    </div>
+  </section>
+  <main class="desktop" id="desktop" aria-label="复古电脑桌面">
+    <div class="desktop-noise" aria-hidden="true"></div>
+    <section class="desktop-icons" aria-label="桌面应用">
+      <button class="desktop-icon" data-app="computer"><span class="pixel-icon computer-icon"><i></i></span><span class="icon-label">我的电脑</span></button>
+      <button class="desktop-icon" data-app="browser"><span class="pixel-icon browser-icon"><i></i></span><span class="icon-label">网络浏览器</span></button>
+      <button class="desktop-icon" data-app="qq"><span class="pixel-icon qq-icon"><i></i></span><span class="icon-label">QQ 2001</span></button>
+      <button class="desktop-icon" data-app="notes"><span class="pixel-icon note-icon"><i></i></span><span class="icon-label">文本文档</span></button>
+      <button class="desktop-icon" data-app="recycle"><span class="pixel-icon recycle-icon"><i></i></span><span class="icon-label">回收站</span></button>
+    </section>
+    <section class="window-layer" id="windowLayer" aria-live="polite"></section>
+    <aside class="start-menu" id="startMenu" aria-hidden="true">
+      <div class="start-rail"><span>RETRO</span></div>
+      <div class="start-content">
+        <div class="start-profile"><span class="profile-pixel"><img src="assets/icons/user-16.png" alt="" /></span><strong>访客用户</strong></div>
+        <button data-app="computer"><span class="start-app-icon computer"></span> 我的电脑</button>
+        <button data-app="browser"><span class="start-app-icon browser"></span> 网络浏览器</button><button data-app="qq"><span class="start-app-icon qq"></span> QQ 2001</button>
+        <button data-app="notes"><span class="start-app-icon notes"></span> 文本文档</button><div class="start-divider"></div>
+        <button class="shutdown"><span class="start-app-icon shutdown"></span> 关闭计算机…</button>
+      </div>
+    </aside>
+    <aside class="volume-popup" id="volumePopup" aria-hidden="true">
+      <strong>音量</strong><input id="volumeSlider" type="range" min="0" max="100" value="50" aria-label="系统音量" />
+      <span id="volumeValue">50%</span><label><input id="muteToggle" type="checkbox" /> 静音</label>
+      <small id="volumeMode">正在连接系统音量…</small>
+    </aside>
+    <footer class="taskbar">
+      <button class="start-button" id="startButton" aria-expanded="false"><span class="start-mark"><i></i><i></i><i></i><i></i></span><strong>开始</strong></button>
+      <div class="task-separator"></div><div class="task-items" id="taskItems" aria-label="已打开的窗口"></div>
+      <div class="tray" aria-label="系统托盘">
+        <button class="tray-tool volume-tool" id="volumeButton" title="音量" aria-expanded="false"><span class="tray-asset volume" id="volumeIcon"></span></button>
+        <time id="clock" title="当前时间"></time>
+      </div>
+    </footer>
+  </main>
+  <template id="windowTemplate">
+    <article class="retro-window" role="dialog">
+      <header class="titlebar"><span class="window-mini-icon"></span><h2></h2><div class="window-controls"><button data-action="minimize" aria-label="最小化">_</button><button data-action="maximize" aria-label="最大化">□</button><button data-action="close" aria-label="关闭">×</button></div></header>
+      <nav class="menu-bar"><button>文件(<u>F</u>)</button><button>编辑(<u>E</u>)</button><button>查看(<u>V</u>)</button><button>帮助(<u>H</u>)</button></nav>
+      <div class="toolbar"><button>←</button><button>→</button><span class="address-label">地址</span><div class="address-field"></div></div>
+      <div class="window-content"><div class="empty-state"></div></div><footer class="statusbar"><span>就绪</span><span class="resize-grip">◢</span></footer>
+    </article>
+  </template>
+  <template id="browserHomeTemplate">
+    <div class="nav-page">
+      <header class="nav-head">
+        <div class="nav-utility"><span id="navDate"></span></div>
+        <div class="nav-brand-row">
+          <div class="nav-logo"><b>星网</b><strong>网址导航</strong><em>2001</em></div>
+          <div class="nav-slogan">中文上网，从这里开始！<small>收录实用网址 · 每日人工整理</small></div>
+        </div>
+        <form class="nav-search" id="navSearchForm" autocomplete="off">
+          <select aria-label="搜索类型"><option>网站</option><option>新闻</option><option>软件</option></select>
+          <input id="navSearchInput" name="xingwang-search" placeholder="输入网站名称或类别" autocomplete="off" autocapitalize="off" spellcheck="false" />
+          <button type="submit">搜索</button><button type="button" id="navReset">全部网址</button>
+        </form>
+        <div class="nav-notice" id="navNotice">欢迎使用星网导航！提示：单击网址可在地址栏查看历史网址。</div>
+      </header>
+      <aside class="nav-warning" id="navWarning" role="alert">
+        <div class="nav-warning-head"><strong><span aria-hidden="true">⚠</span> 警告</strong><span>系统管理员　2001-07-18 09:00</span></div>
+        <p><b aria-hidden="true">❗</b> 当前使用临时用户配置文件，无法载入网络访问凭据。下列网站暂时无法使用，请恢复用户配置文件后重试。</p>
+      </aside>
+      <main class="nav-directory" id="navDirectory">
+        <section class="nav-featured"><b>常用网站</b><a class="nav-link hot" href="#" data-site="新浪网" data-url="http://www.sina.com.cn/">新浪网</a><a class="nav-link" href="#" data-site="搜狐" data-url="http://www.sohu.com/">搜狐</a><a class="nav-link hot" href="#" data-site="网易" data-url="http://www.163.com/">网易</a><a class="nav-link" href="#" data-site="雅虎中国" data-url="http://cn.yahoo.com/">雅虎中国</a><a class="nav-link" href="#" data-site="ChinaRen校友录" data-url="http://www.chinaren.com/">ChinaRen</a><a class="nav-link" href="#" data-site="中华网" data-url="http://www.china.com/">中华网</a></section>
+        <section class="nav-category"><h3>新闻资讯</h3><div><a class="nav-link hot" href="#" data-site="云阳新闻网" data-url="http://news.yunyang.cn/">云阳新闻网</a><a class="nav-link" href="#" data-site="人民网" data-url="http://www.people.com.cn/">人民网</a><a class="nav-link" href="#" data-site="新华网" data-url="http://www.xinhuanet.com/">新华网</a><a class="nav-link" href="#" data-site="央视国际" data-url="http://www.cctv.com/">央视国际</a><a class="nav-link" href="#" data-site="千龙网" data-url="http://www.qianlong.com/">千龙网</a><a class="nav-link" href="#" data-site="东方网" data-url="http://www.eastday.com/">东方网</a></div></section>
+        <section class="nav-category"><h3>邮箱通讯</h3><div><a class="nav-link" href="#" data-site="163电子邮局" data-url="http://mail.163.net/">163电子邮局</a><a class="nav-link hot" href="#" data-site="263电子邮局" data-url="http://www.263.net/">263电子邮局</a><a class="nav-link" href="#" data-site="新浪邮箱" data-url="http://mail.sina.com.cn/">新浪邮箱</a><a class="nav-link" href="#" data-site="搜狐闪电邮箱" data-url="http://mail.sohu.com/">搜狐邮箱</a><a class="nav-link" href="#" data-site="21CN邮箱" data-url="http://mail.21cn.com/">21CN邮箱</a><a class="nav-link" href="#" data-site="QQ网络寻呼机" data-url="http://www.tencent.com/">QQ网络寻呼机</a></div></section>
+        <section class="nav-category"><h3>社区聊天</h3><div><a class="nav-link" href="#" data-site="碧海银沙" data-url="http://www.silversand.net/">碧海银沙</a><a class="nav-link" href="#" data-site="天涯社区" data-url="http://www.tianyaclub.com/">天涯社区</a><a class="nav-link" href="#" data-site="西祠胡同" data-url="http://www.xici.net/">西祠胡同</a><a class="nav-link" href="#" data-site="网易社区" data-url="http://club.163.com/">网易社区</a><a class="nav-link" href="#" data-site="榕树下" data-url="http://www.rongshuxia.com/">榕树下</a></div></section>
+        <section class="nav-category"><h3>电脑网络</h3><div><a class="nav-link hot" href="#" data-site="中关村在线" data-url="http://www.zol.com.cn/">中关村在线</a><a class="nav-link" href="#" data-site="PChome电脑之家" data-url="http://www.pchome.net/">PChome</a><a class="nav-link" href="#" data-site="电脑报" data-url="http://www.cpcw.com/">电脑报</a><a class="nav-link" href="#" data-site="太平洋电脑网" data-url="http://www.pconline.com.cn/">太平洋电脑网</a><a class="nav-link" href="#" data-site="驱动之家" data-url="http://www.mydrivers.com/">驱动之家</a><a class="nav-link" href="#" data-site="华军软件园" data-url="http://www.newhua.com/">华军软件园</a></div></section>
+        <section class="nav-category"><h3>娱乐休闲</h3><div><a class="nav-link" href="#" data-site="联众世界" data-url="http://www.ourgame.com/">联众世界</a><a class="nav-link hot" href="#" data-site="网易游戏" data-url="http://game.163.com/">网易游戏</a><a class="nav-link" href="#" data-site="鲨威体坛" data-url="http://sports.sina.com.cn/">体育世界</a><a class="nav-link" href="#" data-site="笑话大全" data-url="http://www.joke.com.cn/">笑话大全</a><a class="nav-link" href="#" data-site="音乐频道" data-url="http://music.sina.com.cn/">音乐频道</a><a class="nav-link" href="#" data-site="动画天地" data-url="http://cartoon.sohu.com/">动画天地</a></div></section>
+        <section class="nav-category"><h3>生活服务</h3><div><a class="nav-link hot" href="#" data-site="携程旅行" data-url="http://www.ctrip.com/">携程旅行</a><a class="nav-link" href="#" data-site="当当网上书店" data-url="http://www.dangdang.com/">当当书店</a><a class="nav-link" href="#" data-site="易趣网" data-url="http://www.eachnet.com/">易趣网</a><a class="nav-link" href="#" data-site="中国移动" data-url="http://www.chinamobile.com/">中国移动</a><a class="nav-link" href="#" data-site="天气预报" data-url="http://www.weather.com.cn/">天气预报</a><a class="nav-link" href="#" data-site="列车时刻" data-url="http://www.chinamor.cn/">列车时刻</a></div></section>
+        <section class="nav-category"><h3>搜索引擎</h3><div><a class="nav-link hot" href="#" data-site="百度" data-url="http://www.baidu.com/">百度</a><a class="nav-link" href="#" data-site="搜狐搜索" data-url="http://search.sohu.com/">搜狐搜索</a><a class="nav-link" href="#" data-site="新浪搜索" data-url="http://search.sina.com.cn/">新浪搜索</a><a class="nav-link" href="#" data-site="网易搜索" data-url="http://search.163.com/">网易搜索</a><a class="nav-link" href="#" data-site="雅虎中国" data-url="http://cn.yahoo.com/">雅虎中国</a><a class="nav-link" href="#" data-site="中文搜索联盟" data-url="http://www.fm365.com/">FM365</a></div></section>
+      </main>
+      <footer class="nav-footer"><span>星网导航 2001 · 共收录 1,286 个中文网址</span><span>关于本站　|　意见信箱　|　网址报错</span></footer>
+    </div>
+  </template>
+  <template id="yunyangNewsTemplate">
+    <div class="yunyang-page">
+      <header class="yunyang-head">
+        <div class="yunyang-masthead"><div class="yunyang-logo-crop"><img src="assets/yunyang-news-logo.png" alt="云阳新闻网 Yunyang News" /></div><div class="yunyang-edition">传递城市声音，凝聚奋进力量<br><small>2024年9月13日　星期五　｜　云阳地方资讯</small></div></div>
+        <nav class="yunyang-nav" aria-label="新闻栏目"><button class="active" type="button">首页</button><button type="button">云阳资讯</button><button type="button">区县</button><button type="button">民生</button><button type="button">文旅</button><button type="button">专题</button><button type="button">图片</button></nav>
+      </header>
+      <div class="yunyang-admin-warning" role="status"><strong>⚠ 系统管理员提示：</strong>临时用户配置文件未载入完整权限，本站仅开放部分资讯浏览。<div class="yunyang-access-warning" hidden aria-live="polite"></div></div>
+      <div class="yunyang-banner" aria-label="云阳新闻网宣传横幅"><div class="yunyang-banner-slide active"><img src="assets/yunyang-banner-voice.png" alt="传递城市声音，凝聚奋进力量" /></div><div class="yunyang-banner-slide"><img src="assets/yunyang-banner-energy.png" alt="弘扬主旋律，传播正能量" /></div></div>
+      <div class="yunyang-ticker"><b>今日关注</b><span>云阳秋季文旅消费季启动，多项惠民活动陆续推出</span></div>
+      <main class="yunyang-content">
+        <section class="yunyang-lead" aria-label="首页资讯">
+          <div class="yunyang-carousel" aria-label="焦点图片轮播">
+            <div class="yunyang-slide active"><img src="assets/yunyang-autumn-promo.png" alt="云阳文旅秋季消费券宣传图" /><div class="yunyang-caption">云阳文旅秋季消费券本周五开抢</div></div>
+            <div class="yunyang-slide"><img src="assets/yunyang-anti-fraud-campus.png" alt="校园反诈宣传活动" /><div class="yunyang-caption">反诈宣传进校园，警惕“兼职刷单”陷阱</div></div>
+            <div class="yunyang-slide yunyang-slide-old-town"><img src="assets/yunyang-old-town-after-rain.png" alt="雨后的云阳老城区" /><div class="yunyang-caption">雨后云阳老城区，巷子里的烟火气回来了</div></div>
+            <div class="yunyang-slide"><img src="assets/yunyang-autumn-pastry.png" alt="本地老字号糕点店秋季礼盒" /><div class="yunyang-caption">本地老字号糕点店推出秋季限定礼盒</div></div>
+            <div class="yunyang-dots"><button class="active" type="button" aria-label="第1张" aria-current="true"></button><button type="button" aria-label="第2张"></button><button type="button" aria-label="第3张"></button><button type="button" aria-label="第4张"></button></div>
+          </div>
+          <div class="yunyang-headlines"><h2>云阳资讯</h2><a href="#" data-yunyang-story="old-housing">云阳市城南片区启动老旧小区改造</a><a href="#" data-yunyang-story="night-bus">蓉城至云阳城际公交新增夜间班次</a><a href="#" data-yunyang-story="gas-check">持续高温，云阳市开展燃气安全专项检查</a><a href="#" data-yunyang-story="anti-fraud">云阳市多所学校开展防诈骗主题宣传</a><a href="#" data-yunyang-story="gas-incident">云阳市城北区一居民住宅发生疑似燃气中毒事件</a><a href="#" data-yunyang-story="business">云阳市开展优化营商环境专项行动</a><a href="#" data-yunyang-story="governance">云阳市推进基层治理服务平台建设</a><a href="#" data-yunyang-story="industry">云阳市政府与蓉城高新区签署产业协同合作框架协议</a></div>
+        </section>
+        <div class="yunyang-columns"><section><h3>云阳发布 <small>更多 ›</small></h3><a href="#">关于秋季文旅活动安排的公告</a><a href="#">城区公共服务设施维护计划公布</a><a href="#">便民服务窗口办事时间提示</a></section><section><h3>民生关注 <small>更多 ›</small></h3><a href="#">居民身边的“小事”如何办得更顺心</a><a href="#">校门口新增临时接送等候区</a><a href="#">社区志愿者开展入户探访</a></section><section><h3>文旅云阳 <small>更多 ›</small></h3><a href="#">秋游云阳：从山间到江畔</a><a href="#">地方美食地图征集正式开启</a><a href="#">老照片里看云阳街巷变迁</a></section></div>
+      </main>
+      <article class="yunyang-article" hidden><div class="yunyang-article-navigation"><button type="button" class="yunyang-article-back">‹ 返回云阳新闻网首页</button><div class="yunyang-article-category">云阳资讯　›　城南区</div></div><h1>云阳市城南片区启动老旧小区改造</h1><div class="yunyang-article-meta">云阳新闻网　｜　云阳·城南区</div><p class="yunyang-article-intro">城南片区多个老旧居民小区近日启动基础设施改造，内容包括排水、照明、外墙及公共空间整治。</p><h2>简讯</h2><div class="yunyang-article-body"><p>9月初，云阳市城南区正式启动新一轮老旧小区改造工程。本次改造涉及12个居民院落，重点对老化管网、楼道照明、道路破损及公共活动区域进行集中整治。相关负责人表示，首批工程预计于年底前完成，施工期间将尽量减少对居民正常生活的影响。</p></div></article>
+      <footer class="yunyang-footer">云阳新闻网　｜　传递城市声音，凝聚奋进力量</footer>
+    </div>
+  </template>
+  <template id="forumTemplate">
+    <div class="forum-page">
+      <header class="forum-header"><div class="forum-brand"><span class="forum-computer" aria-hidden="true">▣</span><strong>浮光论坛</strong></div><nav aria-label="论坛导航"><button type="button" data-forum-nav="home">论坛首页</button><button type="button" data-forum-nav="boards">全站板块</button></nav><label class="forum-search">⌕ <input type="search" name="forum-search" placeholder="搜索帖子" aria-label="搜索论坛帖子" autocomplete="off" autocapitalize="off" spellcheck="false"></label></header>
+      <div class="forum-breadcrumb" hidden><button type="button" class="forum-crumb-home">首页</button> &gt; <button type="button" class="forum-crumb-section">近期热帖</button><span class="forum-crumb-tail"> &gt; <span class="forum-crumb-title">云阳旧城的雨后街巷</span></span></div>
+      <div class="forum-layout">
+        <aside class="forum-sidebar"><section class="forum-pinned"><h2>入站必看热帖</h2><div class="forum-pinned-list"><button type="button" data-forum-open="forum-rules"><span>[置顶☝]</span> 论坛发帖及评论规范｜发帖前请看</button><button type="button" data-forum-open="old-town"><span>[热]</span> 【热帖】结婚三年才发现老公一直用另一个手机号，里面还有个老婆</button><button type="button" data-forum-open="night-bus"><span>[热]</span> 【求助】我家楼道每天凌晨三点都会有人停在我门口，但监控拍不到脸</button><button type="button" data-forum-open="school"><span>[热]</span> 【经历】说个我大学宿舍遇到的怪事，到现在也没想明白</button></div></section><section class="forum-welcome"><h2>欢迎光临 浮光论坛！</h2><p>本区版主：<b>浮光管理员</b></p><p>版主的话：请遵守版规，友善交流。</p><div class="forum-stats"><span>在线用户：1059</span><span>今日访问：12574</span><span>总帖子数：78268</span></div><strong>■ 入站请先浏览置顶帖 ■</strong></section><section class="forum-profile" hidden><h2>zy2625</h2><p>完整帖子与回复现已开放。</p><button type="button" class="forum-logout">退出登录</button></section><div class="forum-sidebar-actions"><button type="button" data-forum-action="messages">站内信 (0)</button><button type="button" data-forum-action="refresh">刷新帖子</button></div></aside>
+        <main class="forum-main"><section class="forum-login-gate"><h2>登录论坛，解锁更多乐趣！</h2><p>您需要 <button type="button" class="forum-login-link">登录</button> 才能下载或查看，没有账号？ <button type="button" class="forum-register-link">现在注册</button></p><div class="forum-gate-links"><button type="button" data-forum-section="featured">[精华区]</button><button type="button" data-forum-section="reading">[论坛阅读]</button><button type="button" data-forum-section="chat">[聊天室]</button></div><form class="forum-login-form" autocomplete="off" hidden><label>账户名 <input name="username" value="zy2625" autocomplete="username" readonly></label><label>密码 <input name="password" type="password" autocomplete="current-password" required></label><button type="submit" class="forum-orange-button">确认登录</button></form><p class="forum-login-error" role="alert" hidden></p><p class="forum-login-notice" role="status" hidden></p></section><div class="forum-ad"><img src="assets/forum-orange-sky-ad-v2.png" alt="像素空战广告"><button class="forum-ad-play" type="button" aria-label="立即开战"><img src="assets/forum-play-button-v2.png" alt="立即开战"></button></div>
+          <section class="forum-board"><div class="forum-board-heading"><h2>近期热帖</h2><span>共 3 条主题</span></div><div class="forum-thread-list"><button type="button" data-forum-open="old-town"><strong>【热帖】结婚三年才发现老公一直用另一个手机号，里面还有个老婆</strong><small>浏览 8.7万 · 2364 回复</small></button><button type="button" data-forum-open="night-bus"><strong>【求助】我家楼道每天凌晨三点都会有人停在我门口，但监控拍不到脸</strong><small>奇闻怪谈 · 浏览 2147 · 17 回复</small></button><button type="button" data-forum-open="school"><strong>【经历】说个我大学宿舍遇到的怪事，到现在也没想明白</strong><small>奇闻怪谈 · 浏览 3921 · 14 回复</small></button><button type="button" data-forum-open="taoyuan-dream" hidden><strong>梦到桃原市的预兆就是你改变的开始</strong><small>梦境记录 · 梦与心</small></button><button type="button" data-forum-open="taoyuan-sayings" hidden><strong>整理一下关于桃原市的各种说法</strong><small>线索整理 · 露露</small></button><button type="button" data-forum-open="taoyuan-understanding" hidden><strong>说说我对桃原市的理解吧</strong><small>个人经历 · 爱生活爱生命</small></button><div class="forum-search-reserved" hidden>其余相关帖子待更新</div><p class="forum-search-empty" hidden>没有找到相关内容。</p></div></section>
+          <section class="forum-teaser"><h2>云阳旧城的雨后街巷 <small>【城市角落】</small></h2><p>雨停之后从老城区走了一圈，巷子里的灯亮了，熟悉的小店也还在。</p><p class="forum-locked-line">以下正文及回帖仅登录后可见。</p></section>
+          <section class="forum-full-content" hidden><div class="forum-thread-head"><div><h2></h2><span></span></div><button type="button" class="forum-orange-button forum-reply-button" data-reply-to="">回复</button></div><div class="forum-post"><div class="forum-post-author"><img src="assets/avatars/forum-default-avatar.png" alt="楼主头像"><div><b></b><small>楼主</small></div><span class="forum-post-heat"></span></div><div class="forum-post-body"></div></div><h3>网友回复</h3><div class="forum-replies"></div><form class="forum-reply-form" hidden><label for="forumReplyText">回复帖子</label><textarea id="forumReplyText" name="reply" rows="4" maxlength="1000" required></textarea><div class="forum-reply-actions"><button type="button" class="forum-reply-cancel">取消</button><button type="submit" class="forum-orange-button">发表回复</button></div></form></section>
+        </main>
+      </div>
+      <footer class="forum-footer">浮光论坛　｜　旧日话题，仍有回声</footer>
+    </div>
+    <aside class="forum-corner-ad" aria-label="游戏广告"><div class="forum-corner-ad-title"><button type="button" class="forum-corner-ad-close" aria-label="关闭广告">×</button></div><div class="forum-corner-ad-image"><img src="assets/forum-corner-ad-sheep.png" alt="别笑，你也过不了第二关的游戏广告"><button type="button" class="forum-corner-ad-fake-close">× 关闭</button></div></aside>
+  </template>
+  <template id="qqLoginTemplate">
+    <form class="qq-login-form" id="qqLoginForm" autocomplete="off">
+      <aside class="qq-login-brand">
+        <img src="assets/icons/qq-reference-penguin.png" alt="QQ 企鹅" />
+        <strong>QQ 2001</strong>
+        <span>网络寻呼机</span>
+      </aside>
+      <section class="qq-login-fields">
+        <div class="login-welcome"><strong>欢迎使用 QQ 2001</strong><span>请输入您的 QQ 号码和密码</span></div>
+        <label><span>QQ号码：</span><input id="qqAccount" name="account" inputmode="numeric" maxlength="12" autofocus /></label>
+        <label><span>QQ密码：</span><input id="qqPassword" name="password" type="password" maxlength="24" /></label>
+        <label><span>登录状态：</span><select id="qqStatus"><option value="online">在线</option><option value="invisible">隐身</option><option value="away">离开</option></select></label>
+        <div class="qq-login-options"><span>刷新页面后需重新登录</span><a href="#" tabindex="-1">申请号码</a></div>
+        <p class="qq-login-error" id="qqLoginError" role="alert"></p>
+        <div class="qq-login-actions"><button type="button" data-login-action="settings">网络设置…</button><span></span><button type="submit" class="primary">登录</button><button type="button" data-login-action="cancel">取消</button></div>
+      </section>
+    </form>
+  </template>
+  <template id="qqContactsTemplate">
+    <div class="qq-contacts-panel">
+      <div class="qq-profile"><span class="avatar avatar-me avatar-image"><img src="assets/avatars/xiaohang-user.png" alt="" /></span><div><strong>愿珍惜你的每一天 <em>[27491863]</em></strong><small>状态：隐身</small></div></div>
+      <div class="qq-tabs"><button class="selected" data-qq-tab="friends">我的好友</button><button data-qq-tab="chatroom">聊天室</button></div>
+      <div class="qq-contact-workspace">
+        <aside class="qq-side-rail" aria-label="QQ功能栏">
+          <button type="button" title="QQ好友" class="selected"><span class="qq-friends-symbol" aria-hidden="true"><img src="assets/icons/qq-friend-list.svg" alt="" /></span><small>好友</small></button>
+          <button type="button" title="QQ空间" data-qq-action="space"><span class="qq-rail-image" aria-hidden="true"><img src="assets/icons/qq-space-sidebar.png" alt="" /></span><small>空间</small></button>
+          <button type="button" title="QQ收藏" data-qq-action="favorites"><span class="qq-rail-image" aria-hidden="true"><img src="assets/icons/qq-favorites-sidebar.png" alt="" /></span><small>收藏</small></button>
+          <button type="button" title="QQ频道" data-qq-action="channel"><span class="qq-rail-image" aria-hidden="true"><img src="assets/icons/qq-channel-sidebar.png" alt="" /></span><small>频道</small></button>
+        </aside>
+        <div class="qq-contact-main">
+          <section class="qq-contact-view qq-friends-view" data-qq-view="friends">
+            <div class="add-friend-row"><button>♙ 添加好友</button></div>
+            <div class="friend-list">
+              <button class="friend-group pinned-group" type="button" data-contact-toggle="pinned" aria-expanded="true"><span class="group-chevron" aria-hidden="true"></span><strong>置顶消息 (2)</strong></button>
+              <button class="friend pinned-conversation" data-contact-section="pinned" data-name="珍珍姐" data-type="direct" data-avatar-src="assets/avatars/zhenzhen-gray-v2.png"><span class="avatar avatar-image"><img src="assets/avatars/zhenzhen-gray-v2.png" alt="" /></span><span class="friend-copy"><span class="friend-title"><b>珍珍姐</b><em class="chat-kind direct-kind">个人</em><i class="pin-tag">置顶</i></span><small>[离线] 我到了，谢谢你，你会跟我一起去的吧。</small></span></button>
+              <button class="friend pinned-conversation group-conversation" data-contact-section="pinned" data-name="七班大家庭" data-type="group" data-avatar-src="assets/avatars/class-7-group-retro.png"><span class="avatar avatar-image group-avatar"><img src="assets/avatars/class-7-group-retro.png" alt="" /></span><span class="friend-copy"><span class="friend-title"><b>七班大家庭</b><em class="chat-kind group-kind">群聊</em><i class="pin-tag">置顶</i></span><small>你已退出群聊</small></span></button>
+              <button class="friend-group" type="button" data-contact-toggle="friends" aria-expanded="true"><span class="group-chevron" aria-hidden="true"></span><strong>我的好友 (0/3)</strong></button>
+              <button class="friend" data-contact-section="friends" data-name="谭某人（谭思远）" data-avatar-src="assets/avatars/chenyuan-user.png"><span class="avatar avatar-image"><img src="assets/avatars/chenyuan-user.png" alt="" /></span><span><b>谭某人（谭思远）</b><small>[离线]</small></span></button>
+              <button class="friend" data-contact-section="friends" data-name="不吃香菜（程语嫣）" data-avatar-src="assets/avatars/xiaoqiao-user.png"><span class="avatar avatar-image"><img src="assets/avatars/xiaoqiao-user.png" alt="" /></span><span><b>不吃香菜（程语嫣）</b><small>[离线] 今天也要早点睡</small></span></button>
+              <button class="friend" data-contact-section="friends" data-name="gzx（郭梓轩）" data-avatar-src="assets/avatars/twostroke-user.png"><span class="avatar avatar-image"><img src="assets/avatars/twostroke-user.png" alt="" /></span><span><b>gzx（郭梓轩）</b><small>[离线]</small></span></button>
+            </div>
+          </section>
+          <section class="qq-contact-view qq-chatroom-view" data-qq-view="chatroom" hidden>
+            <div class="qq-chatroom-warning" role="alert">聊天室暂时无法访问，请<br />恢复用户配置文件后重试。</div>
+          </section>
+          <nav class="qq-bottom-nav" aria-label="QQ快捷导航"><button>通讯录</button><button>QQ群</button><button>最近联系人</button></nav>
+        </div>
+      </div>
+    </div>
+  </template>
+  <template id="qqChatTemplate">
+    <section class="qq-chat">
+      <div class="chat-head"><span class="avatar gold" id="chatAvatar">谭</span><div><strong id="chatTitle">聊天记录</strong><small id="chatStatus">在线</small></div><span class="qq-number" id="chatIdentity"></span></div>
+      <div class="message-list" id="messageList"></div>
+      <div class="chat-tools"><button>📎 发送文件(F)</button><button class="history">▤ 消息记录</button></div>
+      <textarea id="messageInput" maxlength="512" placeholder="请输入消息内容（最多512字）…"></textarea>
+      <div class="chat-bottom"><span id="charCount">字数：0/512</span><button data-chat-action="close">关闭</button><button class="send-button" id="sendMessage">➤ 发送 (Alt+S)</button></div>
+    </section>
+  </template>
+  <script src="sky-game.js?v=20260916-11"></script>
+  <script src="script.js?v=20260918-1"></script>
+  <script src="assets/embed-pointer.js?v=20260910-7"></script>
+</body>
+</html>

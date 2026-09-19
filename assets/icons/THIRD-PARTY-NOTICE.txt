@@ -1,0 +1,5 @@
+Windows 95-style PNG assets in this folder are sourced from @react95/icons 2.5.3.
+Project: https://github.com/React95/React95
+Package license: MIT
+
+The QQ and security SVG assets are original pixel-art additions for this project.
