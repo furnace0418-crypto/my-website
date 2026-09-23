@@ -1,3 +1,51 @@
+(() => {
+  const params = new URLSearchParams(location.search);
+  if (!params.has("embedded") || window.parent === window) return;
+
+  const notify = (type, detail = {}) => {
+    window.parent.postMessage({ type, ...detail }, "*");
+  };
+
+  const preloadImages = async () => {
+    let paths = [];
+    try {
+      const response = await fetch("assets/image-preload-manifest.json", { cache: "force-cache" });
+      if (!response.ok) throw new Error(`manifest ${response.status}`);
+      paths = await response.json();
+    } catch (error) {
+      console.warn("Desktop image preload manifest unavailable", error);
+      notify("desktop-preload-ready", { loaded: 0, total: 0, failed: 1 });
+      return;
+    }
+
+    let cursor = 0;
+    let loaded = 0;
+    let failed = 0;
+    const total = paths.length;
+    const worker = async () => {
+      while (cursor < total) {
+        const index = cursor++;
+        try {
+          const response = await fetch(paths[index], { cache: "force-cache" });
+          if (!response.ok) throw new Error(String(response.status));
+          await response.arrayBuffer();
+        } catch (error) {
+          failed++;
+          console.warn("Desktop image preload failed", paths[index], error);
+        } finally {
+          loaded++;
+          notify("desktop-preload-progress", { loaded, total, failed, progress: total ? loaded / total : 1 });
+        }
+      }
+    };
+
+    await Promise.all(Array.from({ length: Math.min(6, total || 1) }, worker));
+    notify("desktop-preload-ready", { loaded, total, failed });
+  };
+
+  preloadImages();
+})();
+
 const apps = {
   computer: { title: "我的电脑", path: "我的电脑" }, folder: { title: "我的文件", path: "D:\\我的文件" },
   browser: { title: "网络浏览器", path: "http://www.2001nav.cn/" }, qq: { title: "QQ 2001 - 好友与聊天", path: "QQ：27491863" },
@@ -1565,3 +1613,4 @@ document.addEventListener("keydown",event=>{
   if(event.key==="Escape"){setStartMenu(false);setVolumePopup(false);}
   if(event.key==="Enter"&&document.body.contains(loginError)){event.preventDefault();}
 });
+
