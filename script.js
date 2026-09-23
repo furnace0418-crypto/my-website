@@ -22,13 +22,21 @@
     let loaded = 0;
     let failed = 0;
     const total = paths.length;
+    const decodedImages = [];
+    window.__preloadedDesktopImages = decodedImages;
     const worker = async () => {
       while (cursor < total) {
         const index = cursor++;
         try {
-          const response = await fetch(paths[index], { cache: "force-cache" });
-          if (!response.ok) throw new Error(String(response.status));
-          await response.arrayBuffer();
+          const image = new Image();
+          image.decoding = "async";
+          image.src = paths[index];
+          decodedImages.push(image);
+          if (typeof image.decode === "function") await image.decode();
+          else await new Promise((resolve, reject) => {
+            image.addEventListener("load", resolve, { once: true });
+            image.addEventListener("error", reject, { once: true });
+          });
         } catch (error) {
           failed++;
           console.warn("Desktop image preload failed", paths[index], error);
@@ -1545,7 +1553,9 @@ function openQQChat(name, avatar, requestedType = "direct", requestedAvatarSrc =
     content.querySelector("#sendMessage").addEventListener("click", send); input.addEventListener("keydown", e => { if ((e.altKey && e.key.toLowerCase() === "s") || (e.ctrlKey && e.key === "Enter")) { e.preventDefault(); send(); } });
     content.querySelector("[data-chat-action=close]")?.addEventListener("click", () => closeWindow(win));
   }
-  layer.appendChild(win); const task = document.createElement("button"); task.className = "task-item"; task.dataset.windowId = safeId; task.innerHTML = `<span class="task-app-icon qq-chat-icon" aria-hidden="true"></span><span class="task-title"></span>`; task.querySelector(".task-title").textContent = isGroup ? `${name}（群聊）` : `与 ${name} 交谈`;
+  layer.appendChild(win);
+  list.scrollTop = list.scrollHeight;
+  const task = document.createElement("button"); task.className = "task-item"; task.dataset.windowId = safeId; task.innerHTML = `<span class="task-app-icon qq-chat-icon" aria-hidden="true"></span><span class="task-title"></span>`; task.querySelector(".task-title").textContent = isGroup ? `${name}（群聊）` : `与 ${name} 交谈`;
   task.addEventListener("click", () => { if (win.classList.contains("minimized")) focusWindow(win); else if (task.classList.contains("active")) minimizeWindow(win); else focusWindow(win); }); taskItems.appendChild(task); bindWindow(win); focusWindow(win); win.classList.add("opening"); win.addEventListener("animationend", () => win.classList.remove("opening"), { once: true });
   return win;
 }
