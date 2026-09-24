@@ -70,6 +70,7 @@ let caseArchiveDownloadedThisPage = false;
 let caseArchiveUnlockedThisPage = false;
 const forumRepliesThisDesktopSession = {};
 let browserFavoritesThisDesktopSession = [{ title:"云阳新闻网", url:"http://news.yunyang.cn/" }];
+let browserFavoriteTipShownThisPage = false;
 const explorerNodes = {
   computer: {
     title: "我的电脑", path: "我的电脑", parent: null,
@@ -184,7 +185,7 @@ const qqConversations = {
       { sender: "谭某人（谭思远）", text: "数学69分的人果然对数字过敏" },
       { sender: "我", mine: true, text: "你再提69我真拉黑你" },
       { sender: "谭某人（谭思远）", text: "急了" },
-      { sender: "郑愿", mine: true, text: "我急你个头" },
+      { sender: "我", mine: true, text: "我急你个头" },
       { sender: "谭某人（谭思远）", text: "你不会真没看出来吧" },
       { sender: "谭某人（谭思远）", text: "哈哈哈哈哈哈哈哈哈哈哈哈哈哈" },
       { sender: "我", mine: true, text: "等着" },
@@ -953,7 +954,16 @@ function openRecycleRestoreDialog(item, recycleWindow, onDialogClosed) {
 function setupBrowserWindow(win) {
   win.classList.add("browser-window"); win.style.width = `${Math.min(860, innerWidth - 120)}px`; win.style.height = `${Math.min(610, innerHeight - 80)}px`; win.style.left = `${Math.max(85, Math.round((innerWidth - Math.min(860, innerWidth - 120)) / 2))}px`; win.style.top = "35px";
   const content = win.querySelector(".window-content"); content.replaceChildren(document.querySelector("#browserHomeTemplate").content.cloneNode(true));
-  const address = win.querySelector(".address-field"), status = win.querySelector(".statusbar span:first-child"), navPage = content.querySelector(".nav-page"), notice = content.querySelector("#navNotice"), input = content.querySelector("#navSearchInput"), directory = content.querySelector("#navDirectory"), warning = content.querySelector("#navWarning"), footer = content.querySelector(".nav-footer");
+  const addressDisplay = win.querySelector(".address-field");
+  const address = document.createElement("input");
+  address.className = "address-field browser-address-input";
+  address.type = "text";
+  address.value = apps.browser.path;
+  address.setAttribute("aria-label", "地址");
+  address.setAttribute("autocomplete", "off");
+  address.setAttribute("spellcheck", "false");
+  addressDisplay.replaceWith(address);
+  const status = win.querySelector(".statusbar span:first-child"), navPage = content.querySelector(".nav-page"), notice = content.querySelector("#navNotice"), input = content.querySelector("#navSearchInput"), directory = content.querySelector("#navDirectory"), warning = content.querySelector("#navWarning"), footer = content.querySelector(".nav-footer");
   input.name = `xingwang-search-${Date.now()}`; input.autocomplete = "off";
   const weiboUrl = "http://t.sina.com.cn/";
   const weiboPage = document.createElement("section");
@@ -981,9 +991,9 @@ function setupBrowserWindow(win) {
     "governance": { title: "云阳市推进基层治理服务平台建设", area: "基层治理", intro: "推动社区事务、矛盾调解和便民服务向数字化平台集中。", paragraphs: ["为提升基层治理效率，云阳市近期加快推进基层治理服务平台建设。平台建成后，将整合社区服务、网格管理、事项上报等功能，进一步提高基层响应和协同处置能力。"] },
     "industry": { title: "云阳市政府与蓉城高新区签署产业协同合作框架协议", area: "产业", intro: "双方将在产业转移、人才交流和科技成果转化等方面加强合作。", paragraphs: ["日前，云阳市政府与蓉城高新区签署产业协同合作框架协议。根据协议，双方将围绕智能制造、新材料、数字产业等领域深化合作，并探索建立常态化项目对接机制。"] }
   };
-  const showNewsFront = () => { newsFront.hidden = false; newsBanner.hidden = false; newsTicker.hidden = false; newsArticle.hidden = true; newsFooter.hidden = false; accessWarning.hidden = true; yunyangPage.scrollTop = 0; status.textContent = "完成"; };
-  const showNewsArticle = key => { const story = newsStories[key]; if (!story) return; newsArticle.querySelector("h1").textContent = story.title; newsArticle.querySelector(".yunyang-article-category").textContent = `云阳资讯　›　${story.area}`; newsArticle.querySelector(".yunyang-article-meta").textContent = `云阳新闻网　｜　云阳·${story.area}`; newsArticle.querySelector(".yunyang-article-intro").textContent = story.intro; const body = newsArticle.querySelector(".yunyang-article-body"); body.replaceChildren(...story.paragraphs.map(paragraph => { const p = document.createElement("p"); p.textContent = paragraph; return p; })); newsFront.hidden = true; newsBanner.hidden = true; newsTicker.hidden = true; newsArticle.hidden = false; newsFooter.hidden = false; accessWarning.hidden = true; yunyangPage.scrollTop = 0; status.textContent = "云阳资讯"; };
-  yunyangPage.querySelector(".yunyang-article-back").addEventListener("click", showNewsFront);
+  const showNewsFront = (record = false) => { newsFront.hidden = false; newsBanner.hidden = false; newsTicker.hidden = false; newsArticle.hidden = true; newsFooter.hidden = false; accessWarning.hidden = true; yunyangPage.scrollTop = 0; address.value = yunyangUrl; status.textContent = "完成"; if(record)recordHistory({type:"yunyang",url:yunyangUrl,title:"云阳新闻网"}); };
+  const showNewsArticle = (key, record = true) => { const story = newsStories[key]; if (!story) return; newsArticle.querySelector("h1").textContent = story.title; newsArticle.querySelector(".yunyang-article-category").textContent = `云阳资讯　›　${story.area}`; newsArticle.querySelector(".yunyang-article-meta").textContent = `云阳新闻网　｜　云阳·${story.area}`; newsArticle.querySelector(".yunyang-article-intro").textContent = story.intro; const body = newsArticle.querySelector(".yunyang-article-body"); body.replaceChildren(...story.paragraphs.map(paragraph => { const p = document.createElement("p"); p.textContent = paragraph; return p; })); newsFront.hidden = true; newsBanner.hidden = true; newsTicker.hidden = true; newsArticle.hidden = false; newsFooter.hidden = false; accessWarning.hidden = true; yunyangPage.scrollTop = 0; currentTitle = story.title; address.value = `${yunyangUrl}#${key}`; status.textContent = "云阳资讯"; if(record)recordHistory({type:"newsArticle",url:address.value,title:story.title,key}); };
+  yunyangPage.querySelector(".yunyang-article-back").addEventListener("click", () => showNewsFront(true));
   yunyangPage.querySelectorAll("a[href='#']").forEach(link => link.addEventListener("click", event => { event.preventDefault(); if (link.dataset.yunyangStory) showNewsArticle(link.dataset.yunyangStory); else status.textContent = "云阳新闻网"; }));
   yunyangPage.querySelectorAll(".yunyang-nav button").forEach(button => button.addEventListener("click", () => { if (button.textContent === "首页") { yunyangPage.querySelectorAll(".yunyang-nav button").forEach(item => item.classList.toggle("active", item === button)); showNewsFront(); } else { accessWarning.textContent = `无法访问：${button.textContent}　临时用户配置文件未载入该栏目的访问凭据。`; accessWarning.hidden = false; status.textContent = `无法访问：${button.textContent}`; } }));
   const forumUrl = "http://bbs.fuguang.cn/";
@@ -1169,7 +1179,7 @@ function setupBrowserWindow(win) {
   const forumAdError = document.createElement("section"); forumAdError.className = "forum-ad-error"; forumAdError.hidden = true; forumAdError.innerHTML = '<div class="forum-ad-error-message"><div class="forum-ad-error-icon" aria-hidden="true">!</div><div><h2>无法显示该网页</h2><p>您正在查找的网页当前无法访问。该网站可能遇到技术问题，或者您需要调整浏览器设置。</p><p>请尝试：检查网络连接，或稍后再试。</p><hr><small>无法找到服务器或 DNS 错误<br>Internet Explorer</small></div></div>'; content.appendChild(forumAdError);
   forumCornerAd.querySelector(".forum-corner-ad-close").addEventListener("click", () => { forumAdClosed = true; forumCornerAd.hidden = true; clearTimeout(forumAdReopenTimer); forumAdReopenTimer = setTimeout(() => { forumAdClosed = false; if (!forumPage.hidden && forumAdError.hidden && forumView !== "search") forumCornerAd.hidden = false; }, 60000); });
   forumCornerAd.querySelector(".forum-corner-ad-fake-close").addEventListener("click", () => { status.textContent = "请点击广告蓝色标题栏右侧的 × 关闭"; });
-  forumCornerAd.querySelector(".forum-corner-ad-image img").addEventListener("click", () => { forumPage.hidden = true; forumCornerAd.hidden = true; forumAdError.hidden = false; address.textContent = "http://game.fuguang.cn/"; status.textContent = "无法显示该网页"; });
+  forumCornerAd.querySelector(".forum-corner-ad-image img").addEventListener("click", () => showAdError());
   const forumSearchInput = forumPage.querySelector(".forum-search input");
   forumSearchInput.name = `forum-search-${Date.now()}`; forumSearchInput.autocomplete = "off";
   const updateForumSearch = () => { const query = forumSearchInput.value.trim(); const taoyuanSearch = forumAuthed && (query === "桃源市" || query === "桃原市"); const fortuneSearch = forumAuthed && query === "福报"; const gameSearch = forumAuthed && query === "像素空战"; const caseSearch = forumAuthed && query === "双子悬案"; const yunyangSearch = forumAuthed && query === "云阳"; const searching = query.length > 0; forumView = searching ? "search" : "home"; forumInThread = false; forumFromSearch = false; let found = 0; forumPage.querySelectorAll(".forum-thread-list button").forEach(button => { const key = button.dataset.forumOpen; const group = key.startsWith("taoyuan-") ? "taoyuan" : key.startsWith("fortune-") ? "fortune" : key.startsWith("game-") ? "game" : key.startsWith("case-") ? "case" : key.startsWith("yunyang-") ? "yunyang" : "home"; button.hidden = searching ? !((taoyuanSearch && group === "taoyuan") || (fortuneSearch && group === "fortune") || (gameSearch && group === "game") || (caseSearch && group === "case") || (yunyangSearch && group === "yunyang")) : group !== "home"; if (!button.hidden) found++; }); forumPage.querySelector(".forum-search-reserved").hidden = !taoyuanSearch; forumPage.querySelector(".forum-search-empty").hidden = !searching || found > 0; forumBoardTitle.textContent = searching ? "搜索结果" : "近期热帖"; forumPage.querySelector(".forum-board-heading span").textContent = `共 ${found} 条主题`; syncForumView(); forumPage.scrollTop = 0; };
@@ -1178,6 +1188,23 @@ function setupBrowserWindow(win) {
   forumPage.querySelector(".forum-crumb-section").addEventListener("click", () => { if (forumFromSearch) { forumView = "search"; forumInThread = false; updateForumSearch(); } else { showForumSection("reading"); } forumPage.scrollTop = 0; });
   renderForumThread();
   let currentTitle = "星网网址导航";
+  const browserHistory = [];
+  let browserHistoryIndex = -1;
+  const toolbarButtons = win.querySelectorAll(".toolbar button");
+  applyRetroNavigationButton(toolbarButtons[0], "back");
+  applyRetroNavigationButton(toolbarButtons[1], "forward");
+  const updateHistoryButtons = () => {
+    if (toolbarButtons[0]) toolbarButtons[0].disabled = browserHistoryIndex <= 0;
+    if (toolbarButtons[1]) toolbarButtons[1].disabled = browserHistoryIndex >= browserHistory.length - 1;
+  };
+  const recordHistory = entry => {
+    const current = browserHistory[browserHistoryIndex];
+    if (current && current.type === entry.type && current.url === entry.url) { updateHistoryButtons(); return; }
+    browserHistory.splice(browserHistoryIndex + 1);
+    browserHistory.push(entry);
+    browserHistoryIndex = browserHistory.length - 1;
+    updateHistoryButtons();
+  };
   let browserFavorites = browserFavoritesThisDesktopSession.map(item => ({ ...item }));
   if (!browserFavorites.some(item => item.url === yunyangUrl)) browserFavorites.unshift({ title:"云阳新闻网", url:yunyangUrl });
   const saveBrowserFavorites=()=>{ browserFavoritesThisDesktopSession = browserFavorites.map(item => ({ ...item })); };
@@ -1186,21 +1213,39 @@ function setupBrowserWindow(win) {
   win.querySelector(".toolbar").after(favoritesBar);
   const renderFavorites=()=>{
     const links=favoritesBar.querySelector(".browser-favorite-links"); links.replaceChildren();
-    browserFavorites.forEach(item=>{const button=document.createElement("button");button.type="button";button.className="browser-favorite-link";button.textContent=item.title;button.title=item.url;button.addEventListener("click",()=>{favoriteDialog.hidden=true;if(item.url===yunyangUrl){showYunyang();}else if(item.url===forumUrl){showForum();}else if(item.url===weiboUrl){showWeibo();}else if(item.url===apps.browser.path){resetDirectory();}else{resetDirectory();address.textContent=item.url;currentTitle=item.title;notice.innerHTML=`<b>无法访问：</b>${item.title}　<span>临时用户配置文件未载入网络访问凭据。</span>`;status.textContent=`无法访问：${item.title}`;}});links.appendChild(button);});
+    browserFavorites.forEach(item=>{const button=document.createElement("button");button.type="button";button.className="browser-favorite-link";button.textContent=item.title;button.title=item.url;button.addEventListener("click",()=>{favoriteDialog.hidden=true;navigateAddress(item.url,item.title);});links.appendChild(button);});
   };
   const favoriteDialog=favoritesBar.querySelector(".browser-favorite-dialog");
-  favoritesBar.querySelector(".add-browser-favorite").addEventListener("click",()=>{favoriteDialog.querySelector(".browser-favorite-dialog-title").textContent=currentTitle||address.textContent.trim();favoriteDialog.hidden=!favoriteDialog.hidden;});
-  favoriteDialog.querySelectorAll("[data-favorite-choice]").forEach(button=>button.addEventListener("click",()=>{const choice=button.dataset.favoriteChoice,url=address.textContent.trim(),title=currentTitle||url;favoriteDialog.hidden=true;if(choice==="cancel")return;if(choice==="add"){if(!browserFavorites.some(item=>item.url===url))browserFavorites.push({title,url});if(url===forumUrl)forumFavoriteThisDesktopSession=true;status.textContent=`已加入收藏栏：${title}`;}else if(url===yunyangUrl){status.textContent="云阳新闻网为固定收藏，无法移除";}else{browserFavorites=browserFavorites.filter(item=>item.url!==url);if(url===forumUrl)forumFavoriteThisDesktopSession=false;status.textContent=`已从收藏栏移除：${title}`;}saveBrowserFavorites();renderFavorites();}));
+  favoritesBar.querySelector(".add-browser-favorite").addEventListener("click",()=>{favoriteDialog.querySelector(".browser-favorite-dialog-title").textContent=currentTitle||address.value.trim();favoriteDialog.hidden=!favoriteDialog.hidden;});
+  favoriteDialog.querySelectorAll("[data-favorite-choice]").forEach(button=>button.addEventListener("click",()=>{const choice=button.dataset.favoriteChoice,url=address.value.trim(),title=currentTitle||url;favoriteDialog.hidden=true;if(choice==="cancel")return;if(choice==="add"){if(!browserFavorites.some(item=>item.url===url))browserFavorites.push({title,url});if(url===forumUrl)forumFavoriteThisDesktopSession=true;status.textContent=`已加入收藏栏：${title}`;}else if(url===yunyangUrl){status.textContent="云阳新闻网为固定收藏，无法移除";}else{browserFavorites=browserFavorites.filter(item=>item.url!==url);if(url===forumUrl)forumFavoriteThisDesktopSession=false;status.textContent=`已从收藏栏移除：${title}`;}saveBrowserFavorites();renderFavorites();}));
   renderFavorites();
+  if (!browserFavoriteTipShownThisPage) {
+    browserFavoriteTipShownThisPage = true;
+    const tip = document.createElement("aside");
+    tip.className = "browser-favorite-tip";
+    tip.setAttribute("role", "status");
+    tip.innerHTML = '<button type="button" aria-label="关闭收藏提示">×</button><strong>收藏常用网址</strong><p>点击“加入收藏栏”，下次就能从收藏栏快速打开这个网页。</p>';
+    favoritesBar.appendChild(tip);
+    tip.querySelector("button").addEventListener("click", () => tip.remove());
+  }
   content.querySelector("#navDate").textContent = "2001年7月18日　星期三";
-  const resetDirectory = () => { currentTitle = "星网网址导航"; navPage.hidden = false; weiboPage.hidden = true; yunyangPage.hidden = true; forumPage.hidden = true; forumCornerAd.hidden = true; forumAdError.hidden = true; content.querySelectorAll(".nav-link").forEach(link => link.hidden = false); directory.hidden = false; warning.hidden = false; footer.hidden = false; input.value = ""; notice.textContent = "欢迎使用星网导航！提示：单击网址可在地址栏查看历史网址。"; address.textContent = apps.browser.path; status.textContent = "就绪"; };
-  const showWeibo = () => { currentTitle = "新浪微博"; navPage.hidden = true; yunyangPage.hidden = true; forumPage.hidden = true; forumCornerAd.hidden = true; forumAdError.hidden = true; weiboPage.hidden = false; address.textContent = weiboUrl; status.textContent = "完成"; };
-  const showYunyang = () => { currentTitle = "云阳新闻网"; navPage.hidden = true; weiboPage.hidden = true; forumPage.hidden = true; forumCornerAd.hidden = true; forumAdError.hidden = true; yunyangPage.hidden = false; showNewsFront(); address.textContent = yunyangUrl; status.textContent = "完成"; };
-  const showForum = () => { currentTitle = "浮光论坛"; navPage.hidden = true; weiboPage.hidden = true; yunyangPage.hidden = true; forumPage.hidden = false; forumAdError.hidden = true; forumCornerAd.hidden = forumAdClosed || forumView === "search"; address.textContent = forumUrl; status.textContent = "完成"; };
-  content.querySelector("#navSearchForm").addEventListener("submit", event => { event.preventDefault(); const keyword = input.value.trim(); const normalizedKeyword = keyword.toLowerCase().replace(/\s+/g, ""); if (["云阳","云阳新闻网","yunyang"].includes(normalizedKeyword) || normalizedKeyword === yunyangUrl) { showYunyang(); return; } if (normalizedKeyword === forumUrl) { showForum(); return; } if (["微博","新浪微博","sina微博"].includes(normalizedKeyword)) { showWeibo(); return; } directory.hidden = true; warning.hidden = true; footer.hidden = false; notice.textContent = keyword ? `搜索“${keyword}”：没有找到相关内容。` : "请输入有效的搜索内容。"; status.textContent = "搜索失败：0 项"; });
+  const hideBrowserPages = () => { navPage.hidden = true; weiboPage.hidden = true; yunyangPage.hidden = true; forumPage.hidden = true; forumCornerAd.hidden = true; forumAdError.hidden = true; };
+  const resetDirectory = (record = true) => { currentTitle = "星网网址导航"; hideBrowserPages(); navPage.hidden = false; content.querySelectorAll(".nav-link").forEach(link => link.hidden = false); directory.hidden = false; warning.hidden = false; footer.hidden = false; input.value = ""; notice.textContent = "欢迎使用星网导航！提示：单击网址可在地址栏查看历史网址。"; address.value = apps.browser.path; status.textContent = "就绪"; if(record)recordHistory({type:"home",url:apps.browser.path,title:currentTitle}); };
+  const showWeibo = (record = true) => { currentTitle = "新浪微博"; hideBrowserPages(); weiboPage.hidden = false; address.value = weiboUrl; status.textContent = "完成"; if(record)recordHistory({type:"weibo",url:weiboUrl,title:currentTitle}); };
+  const showYunyang = (record = true) => { currentTitle = "云阳新闻网"; hideBrowserPages(); yunyangPage.hidden = false; showNewsFront(); address.value = yunyangUrl; status.textContent = "完成"; if(record)recordHistory({type:"yunyang",url:yunyangUrl,title:currentTitle}); };
+  const showForum = (record = true) => { currentTitle = "浮光论坛"; hideBrowserPages(); forumPage.hidden = false; forumAdError.hidden = true; forumCornerAd.hidden = forumAdClosed || forumView === "search"; address.value = forumUrl; status.textContent = "完成"; if(record)recordHistory({type:"forum",url:forumUrl,title:currentTitle}); };
+  const showUnavailable = (url, title = url, record = true) => { resetDirectory(false); currentTitle = title; address.value = url; directory.hidden = true; warning.hidden = true; footer.hidden = false; notice.innerHTML = `<b>无法访问：</b>${title}　<span>临时用户配置文件未载入网络访问凭据。</span>`; status.textContent = `无法访问：${title}`; if(record)recordHistory({type:"unavailable",url,title}); };
+  const showAdError = (record = true) => { currentTitle = "无法显示该网页"; hideBrowserPages(); forumAdError.hidden = false; address.value = "http://game.fuguang.cn/"; status.textContent = "无法显示该网页"; if(record)recordHistory({type:"adError",url:address.value,title:currentTitle}); };
+  const normalizeAddress = value => { const trimmed = value.trim(); if (!trimmed) return ""; if (/^[a-z][a-z0-9+.-]*:\/\//i.test(trimmed)) return trimmed; if (/^[\w.-]+\.[a-z]{2,}(?:[/:?#]|$)/i.test(trimmed)) return `http://${trimmed}`; return trimmed; };
+  const navigateAddress = (rawValue, preferredTitle = "") => { const value = normalizeAddress(rawValue); const normalized = value.toLowerCase().replace(/\s+/g, ""); if (!value) { resetDirectory(false); directory.hidden = true; warning.hidden = true; notice.textContent = "请输入有效的搜索网址。"; status.textContent = "地址无效"; address.focus(); return; } if (normalized === apps.browser.path.toLowerCase() || ["星网","星网导航"].includes(normalized)) { resetDirectory(); return; } if (normalized.startsWith(`${yunyangUrl}#`)) { const key = normalized.slice(yunyangUrl.length + 1); if (newsStories[key]) { showYunyang(false); showNewsArticle(key); return; } } if (["云阳","云阳新闻网","yunyang",yunyangUrl].includes(normalized)) { showYunyang(); return; } if (normalized === forumUrl) { showForum(); return; } if (["微博","新浪微博","sina微博",weiboUrl].includes(normalized)) { showWeibo(); return; } showUnavailable(value, preferredTitle || value); };
+  const restoreHistory = entry => { if (!entry) return; if (entry.type === "home") resetDirectory(false); else if (entry.type === "weibo") showWeibo(false); else if (entry.type === "yunyang") showYunyang(false); else if (entry.type === "newsArticle") { showYunyang(false); showNewsArticle(entry.key, false); } else if (entry.type === "forum") showForum(false); else if (entry.type === "adError") showAdError(false); else showUnavailable(entry.url, entry.title, false); updateHistoryButtons(); };
+  recordHistory({type:"home",url:apps.browser.path,title:currentTitle});
+  content.querySelector("#navSearchForm").addEventListener("submit", event => { event.preventDefault(); const keyword = input.value.trim(); if (!keyword) { directory.hidden = true; warning.hidden = true; footer.hidden = false; notice.textContent = "请输入有效的搜索网址。"; status.textContent = "搜索失败：0 项"; return; } navigateAddress(keyword); });
   content.querySelector("#navReset").addEventListener("click", resetDirectory);
-  content.querySelectorAll(".nav-link").forEach(link => link.addEventListener("click", event => { event.preventDefault(); if (link.dataset.site === "云阳新闻网") { showYunyang(); return; } if (link.dataset.site === "新浪微博") { showWeibo(); return; } currentTitle = link.dataset.site; address.textContent = link.dataset.url; notice.innerHTML = `<b>无法访问：</b>${link.dataset.site}　<span>临时用户配置文件未载入网络访问凭据。</span>`; status.textContent = `无法访问：${link.dataset.site}`; }));
-  const toolbarButtons = win.querySelectorAll(".toolbar button"); applyRetroNavigationButton(toolbarButtons[0], "back"); applyRetroNavigationButton(toolbarButtons[1], "forward"); toolbarButtons[0]?.addEventListener("click", resetDirectory); toolbarButtons[1]?.addEventListener("click", () => { status.textContent = "没有可以前进的页面"; });
+  content.querySelectorAll(".nav-link").forEach(link => link.addEventListener("click", event => { event.preventDefault(); navigateAddress(link.dataset.url, link.dataset.site); }));
+  address.addEventListener("keydown", event => { if (event.key !== "Enter") return; event.preventDefault(); navigateAddress(address.value); });
+  toolbarButtons[0]?.addEventListener("click", () => { if (browserHistoryIndex <= 0) return; browserHistoryIndex--; restoreHistory(browserHistory[browserHistoryIndex]); });
+  toolbarButtons[1]?.addEventListener("click", () => { if (browserHistoryIndex >= browserHistory.length - 1) return; browserHistoryIndex++; restoreHistory(browserHistory[browserHistoryIndex]); });
   const weiboInput=weiboPage.querySelector("#weiboInput"), remain=weiboPage.querySelector("#weiboRemain"), feed=weiboPage.querySelector("#weiboFeed"), postCount=weiboPage.querySelector("#weiboPostCount");
   weiboInput.addEventListener("input",()=>{remain.textContent=String(140-weiboInput.value.length);});
   weiboPage.querySelector("#weiboPublish").addEventListener("click",()=>{const text=weiboInput.value.trim();if(!text){status.textContent="请输入微博内容";weiboInput.focus();return;}const article=document.createElement("article");article.innerHTML='<img src="assets/avatars/xiaohang-user.png" alt="小航"><div><p><b>小航</b>：<span></span></p><small>刚刚　来自网页</small><footer><button>收藏</button> | <button>转发</button> | <button>评论</button></footer></div>';article.querySelector("p span").textContent=text;feed.prepend(article);weiboInput.value="";remain.textContent="140";postCount.textContent=String(Number(postCount.textContent)+1);status.textContent="微博发布成功";});
