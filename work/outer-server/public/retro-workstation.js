@@ -17,8 +17,8 @@
   const desktopFrame=app.cssScene.children[0]?.element?.querySelector('iframe');
   if(desktopFrame){
    const desktopUrl=new URL(desktopFrame.src);
-   if(desktopUrl.searchParams.get('contentVersion')!=='20260918-1'){
-    desktopUrl.searchParams.set('contentVersion','20260918-1');
+   if(desktopUrl.searchParams.get('contentVersion')!=='20260925-2'){
+    desktopUrl.searchParams.set('contentVersion','20260925-2');
     desktopFrame.src=desktopUrl.toString();
    }
   }
