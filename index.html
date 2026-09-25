@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>我的复古电脑</title>
-  <link rel="stylesheet" href="styles.css?v=20260925-42" />
+  <link rel="stylesheet" href="styles.css?v=20260925-43" />
   <link rel="stylesheet" href="archive-overrides.css?v=20260917-1" />
 </head>
 <body>
@@ -154,7 +154,7 @@
         <label><span>QQ号码：</span><input id="qqAccount" name="account" inputmode="numeric" maxlength="12" autofocus /></label>
         <label><span>QQ密码：</span><input id="qqPassword" name="password" type="password" maxlength="24" /></label>
         <label><span>登录状态：</span><select id="qqStatus"><option value="online">在线</option><option value="invisible">隐身</option><option value="away">离开</option></select></label>
-        <div class="qq-login-options"><span>刷新页面后需重新登录</span><a href="#" tabindex="-1">申请号码</a></div>
+        <div class="qq-login-options"><a href="#" tabindex="-1">申请号码</a></div>
         <p class="qq-login-error" id="qqLoginError" role="alert"></p>
         <div class="qq-login-actions"><button type="button" data-login-action="settings">网络设置…</button><span></span><button type="submit" class="primary">登录</button><button type="button" data-login-action="cancel">取消</button></div>
       </section>
@@ -196,13 +196,12 @@
     <section class="qq-chat">
       <div class="chat-head"><span class="avatar gold" id="chatAvatar">谭</span><div><strong id="chatTitle">聊天记录</strong><small id="chatStatus">在线</small></div><span class="qq-number" id="chatIdentity"></span></div>
       <div class="message-list" id="messageList"></div>
-      <div class="chat-tools"><button>📎 发送文件(F)</button><button class="history">▤ 消息记录</button></div>
       <textarea id="messageInput" maxlength="512" placeholder="请输入消息内容（最多512字）…"></textarea>
       <div class="chat-bottom"><span id="charCount">字数：0/512</span><button data-chat-action="close">关闭</button><button class="send-button" id="sendMessage">➤ 发送 (Alt+S)</button></div>
     </section>
   </template>
   <script src="sky-game.js?v=20260916-11"></script>
-  <script src="script.js?v=20260925-1"></script>
+  <script src="script.js?v=20260925-3"></script>
   <script src="assets/embed-pointer.js?v=20260910-7"></script>
 </body>
 </html>

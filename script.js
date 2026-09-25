@@ -167,7 +167,7 @@ const qqConversations = {
       { sender: "我", mine: true, text: "你去鼠吧" },
       { date: "2022.12.14 22:03" },
       { sender: "谭某人（谭思远）", text: "给你看个东西" },
-      { sender: "谭某人（谭思远）", image: "assets/photos/number-pattern.png", text: "数字规律" },
+      { sender: "谭某人（谭思远）", image: "assets/photos/number-pattern-v2.png", text: "数字规律" },
       { sender: "我", mine: true, text: "什么玩意" },
       { sender: "谭某人（谭思远）", text: "数字规律啊" },
       { sender: "我", mine: true, text: "你大晚上给我发这个干嘛" },
@@ -571,7 +571,9 @@ function openApp(appId) {
   const app = apps[appId]; if (!app) return; const win = template.content.firstElementChild.cloneNode(true); const id = `window-${appId}`;
   win.id = id; win.dataset.app = appId; win.setAttribute("aria-label", app.title); win.querySelector("h2").textContent = app.title; win.querySelector(".address-field").textContent = app.path; win.querySelector(".window-mini-icon").classList.add(appId);
   win.style.left = `${Math.min(110 + windowOffset, Math.max(82, innerWidth - 360))}px`; win.style.top = `${55 + windowOffset}px`; windowOffset = (windowOffset + 28) % 140;
-  if (appId === "computer" || appId === "folder") setupFileExplorerWindow(win, appId); if (appId === "notes") setupNotepadWindow(win); if (appId === "excel") setupExcelWindow(win); if (appId === "word") setupWordReadOnlyWindow(win); if (appId === "recycle") setupRecycleBinWindow(win); if (appId === "browser") setupBrowserWindow(win); if (appId === "sky-game") setupSkyGameWindow(win); if (appId === "case-archive") setupCaseArchiveWindow(win); if (appId === "case-pdf") setupCasePdfWindow(win); if (appId === "qq") { if (qqAuthenticatedThisPage) setupQQContactsWindow(win); else setupQQLoginWindow(win); } layer.appendChild(win);
+  if (appId === "computer" || appId === "folder") setupFileExplorerWindow(win, appId); if (appId === "notes") setupNotepadWindow(win); if (appId === "excel") setupExcelWindow(win); if (appId === "word") setupWordReadOnlyWindow(win); if (appId === "recycle") setupRecycleBinWindow(win); if (appId === "browser") setupBrowserWindow(win); if (appId === "sky-game") setupSkyGameWindow(win); if (appId === "case-archive") setupCaseArchiveWindow(win); if (appId === "case-pdf") setupCasePdfWindow(win); if (appId === "qq") { if (qqAuthenticatedThisPage) setupQQContactsWindow(win); else setupQQLoginWindow(win); }
+  if (appId === "browser") { win.dataset.restore = JSON.stringify({ left:win.style.left,top:win.style.top,width:win.style.width,height:win.style.height }); win.classList.add("maximized"); }
+  layer.appendChild(win);
   const task = document.createElement("button"); task.className = "task-item"; task.dataset.windowId = id; task.innerHTML = `<span class="task-app-icon ${appId}" aria-hidden="true"></span><span class="task-title"></span>`; task.querySelector(".task-title").textContent = appId === "qq" ? (qqAuthenticatedThisPage ? "QQ 2001 - 好友列表" : "QQ 2001 - 用户登录") : app.title;
   task.addEventListener("click", () => { if (win.classList.contains("minimized")) focusWindow(win); else if (task.classList.contains("active")) minimizeWindow(win); else focusWindow(win); }); taskItems.appendChild(task);
   bindWindow(win); focusWindow(win); win.classList.add("opening"); win.addEventListener("animationend", () => win.classList.remove("opening"), { once: true });
