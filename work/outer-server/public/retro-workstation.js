@@ -14,6 +14,22 @@
   window.originalSceneRestored={computer:model,screen:app.world.monitorScreen};
   // The nested desktop is a separate origin. Give its document a content version so
   // an already-cached iframe cannot keep showing outdated news/template text.
+  const camera=app.camera;
+  const cameraEase=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+  function overDeskTop(x,y){
+   const points=[[-3500,-430,-1450],[3200,-430,-1450],[3200,-430,1600],[-3500,-430,1600]].map(([a,b,c])=>{
+    const p=new window.RetroThree.Vector(a,b,c).project(camera.instance);
+    return[(p.x+1)*innerWidth/2,(1-p.y)*innerHeight/2];
+   });
+   let sign=0;
+   for(let i=0;i<4;i++){
+    const a=points[i],b=points[(i+1)%4],cross=(b[0]-a[0])*(y-a[1])-(b[1]-a[1])*(x-a[0]);
+    if(Math.abs(cross)<.01)continue;
+    if(sign&&Math.sign(cross)!==sign)return false;
+    sign=Math.sign(cross);
+   }
+   return true;
+  }
   const desktopFrame=app.cssScene.children[0]?.element?.querySelector('iframe');
   if(desktopFrame){
    const desktopUrl=new URL(desktopFrame.src);
@@ -32,8 +48,8 @@
     e.stopPropagation();
     if(app.camera.freeCam)return;
     const state=app.camera.targetKeyframe||app.camera.currentKeyframe;
-    if(state==='idle')app.camera.transition('desk',800);
-    else if(state==='desk')app.camera.transition('monitor',650);
+    if(state==='idle')camera.transition('desk',1250,cameraEase);
+    else if(state==='desk')camera.transition('monitor',1050,cameraEase);
    });
    const syncScreenActivator=()=>{
     const state=app.camera.targetKeyframe||app.camera.currentKeyframe;
@@ -41,7 +57,6 @@
     requestAnimationFrame(syncScreenActivator);
    };syncScreenActivator();
   }
-  const camera=app.camera;
   const originalTrigger=camera.trigger.bind(camera);
   camera.trigger=(name,...args)=>{
    if(name==='enterMonitor'||name==='leftMonitor')return;
@@ -72,9 +87,9 @@
    document.addEventListener('mousedown',e=>{
     if(e.button!==0||e.target.closest?.('#custom-fixed-controls,button,input')||document.body.classList.contains('pixel-loading')||camera.freeCam)return;
     const state=camera.targetKeyframe||camera.currentKeyframe;
-    if(state==='idle'){e.stopImmediatePropagation();camera.transition('desk',800);}
-    else if(state==='desk'&&inside(e.clientX,e.clientY)){e.stopImmediatePropagation();camera.transition('monitor',650);}
-    else if(state==='monitor'){e.stopImmediatePropagation();camera.transition('desk',650);}
+    if(state==='idle'){e.stopImmediatePropagation();if(overDeskTop(e.clientX,e.clientY))camera.transition('desk',1250,cameraEase);}
+    else if(state==='desk'&&inside(e.clientX,e.clientY)){e.stopImmediatePropagation();camera.transition('monitor',1050,cameraEase);}
+    else if(state==='monitor'){e.stopImmediatePropagation();camera.transition('desk',1050,cameraEase);}
    },true);
   }
  },50);
@@ -489,6 +504,8 @@
   Object.assign(frame.style,{width:(w-40)+'px',height:(h-40)+'px',margin:'20px',padding:'0',boxSizing:'border-box'});
   frame.classList.remove('jitter');
   const camera=app.camera,near=camera.keyframes.desk,monitor=camera.keyframes.monitor;
+  const cameraEase=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+  function overDeskTop(x,y){const points=[[-3500,-430,-1450],[3200,-430,-1450],[3200,-430,1600],[-3500,-430,1600]].map(([a,b,c])=>{const p=new T.Vector(a,b,c).project(camera.instance);return[(p.x+1)*innerWidth/2,(1-p.y)*innerHeight/2];});let sign=0;for(let i=0;i<4;i++){const a=points[i],b=points[(i+1)%4],cross=(b[0]-a[0])*(y-a[1])-(b[1]-a[1])*(x-a[0]);if(Math.abs(cross)<.01)continue;if(sign&&Math.sign(cross)!==sign)return false;sign=Math.sign(cross);}return true;}
   function fit(height,width,margin){const tan=Math.tan(camera.instance.fov*Math.PI/360);return Math.max(height/(2*tan*margin),width/(2*tan*camera.instance.aspect*margin));}
   near.update=()=>{near.position.set(0,1500,330+fit(2900,3000,.88));near.focalPoint.set(0,450,330);};
   monitor.update=()=>{monitor.position.set(0,950,430+fit(h,w,.86));monitor.focalPoint.set(0,950,430);};
@@ -500,9 +517,9 @@
   document.addEventListener('mousedown',e=>{
    if(e.target.closest?.('#custom-fixed-controls,button,input')||document.body.classList.contains('pixel-loading')||camera.freeCam)return;
    const state=camera.targetKeyframe||camera.currentKeyframe;
-   if(state==='idle'){e.stopImmediatePropagation();camera.transition('desk',800);}
-   else if(state==='desk'&&overScreen(e.clientX,e.clientY)){e.stopImmediatePropagation();camera.transition('monitor',650);}
-   else if(state==='monitor'){e.stopImmediatePropagation();camera.transition('desk',650);}
+   if(state==='idle'){e.stopImmediatePropagation();if(overDeskTop(e.clientX,e.clientY))camera.transition('desk',1250,cameraEase);}
+   else if(state==='desk'&&overScreen(e.clientX,e.clientY)){e.stopImmediatePropagation();camera.transition('monitor',1050,cameraEase);}
+   else if(state==='monitor'){e.stopImmediatePropagation();camera.transition('desk',1050,cameraEase);}
   },true);
   window.whiteComputer.interaction={overScreen};
   const clearPrompt=document.createElement('style');clearPrompt.textContent='body:not(.pixel-loading) #ui-app{visibility:hidden}';document.head.appendChild(clearPrompt);
