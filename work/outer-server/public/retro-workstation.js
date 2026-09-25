@@ -21,12 +21,36 @@
     desktopUrl.searchParams.set('contentVersion','20260926-5');
     desktopFrame.src=desktopUrl.toString();
    }
+   // At wide and desk distance the first screen click advances the camera only;
+   // the embedded desktop becomes interactive after the monitor view is reached.
+   const screenActivator=document.createElement('button');
+   screenActivator.type='button';screenActivator.setAttribute('aria-label','靠近电脑屏幕');
+   Object.assign(screenActivator.style,{position:'absolute',inset:'0',zIndex:'5',border:'0',padding:'0',background:'transparent',cursor:'zoom-in'});
+   desktopFrame.parentElement.appendChild(screenActivator);
+   for(const type of ['pointerdown','mousedown'])screenActivator.addEventListener(type,e=>e.stopPropagation());
+   screenActivator.addEventListener('click',e=>{
+    e.stopPropagation();
+    if(app.camera.freeCam)return;
+    const state=app.camera.targetKeyframe||app.camera.currentKeyframe;
+    if(state==='idle')app.camera.transition('desk',800);
+    else if(state==='desk')app.camera.transition('monitor',650);
+   });
+   const syncScreenActivator=()=>{
+    const state=app.camera.targetKeyframe||app.camera.currentKeyframe;
+    screenActivator.style.pointerEvents=state==='monitor'||document.body.classList.contains('pixel-loading')?'none':'auto';
+    requestAnimationFrame(syncScreenActivator);
+   };syncScreenActivator();
   }
+  const camera=app.camera;
+  const originalTrigger=camera.trigger.bind(camera);
+  camera.trigger=(name,...args)=>{
+   if(name==='enterMonitor'||name==='leftMonitor')return;
+   return originalTrigger(name,...args);
+  };
   if(!window.whiteComputerEnabled){
-   const screen=app.world.monitorScreen,camera=app.camera;
-   let pointer=null;
-   // Keep the close view while the pointer remains on the full monitor face, including
-   // the broad white surround shown in the reference. The actual viewport stays unchanged.
+   const screen=app.world.monitorScreen;
+   // The full monitor face remains clickable, but pointer proximity no longer
+   // changes the camera.
    function inside(x,y){
     const sideMargin=275,topMargin=90,bottomMargin=50;
     const left=-screen.screenSize.x/2-sideMargin,right=screen.screenSize.x/2+sideMargin;
@@ -45,31 +69,13 @@
     }
     return true;
    }
-   const originalTrigger=camera.trigger.bind(camera);
-   camera.trigger=(name,...args)=>{
-    if(name==='leftMonitor'&&pointer&&inside(pointer.x,pointer.y))return;
-    return originalTrigger(name,...args);
-   };
-   document.addEventListener('mousemove',e=>{
-    if(window.deskNoteOpen)return;
-    if(!Number.isFinite(e.clientX)||!Number.isFinite(e.clientY))return;
-    pointer={x:e.clientX,y:e.clientY};
-    e.inComputer=inside(pointer.x,pointer.y);
+   document.addEventListener('mousedown',e=>{
+    if(e.button!==0||e.target.closest?.('#custom-fixed-controls,button,input')||document.body.classList.contains('pixel-loading')||camera.freeCam)return;
+    const state=camera.targetKeyframe||camera.currentKeyframe;
+    if(state==='idle'){e.stopImmediatePropagation();camera.transition('desk',800);}
+    else if(state==='desk'&&inside(e.clientX,e.clientY)){e.stopImmediatePropagation();camera.transition('monitor',650);}
+    else if(state==='monitor'){e.stopImmediatePropagation();camera.transition('desk',650);}
    },true);
-   // Camera motion can expose the screen beneath a stationary cursor.
-   setInterval(()=>{
-    if(window.deskNoteOpen||!pointer||camera.freeCam)return;
-    const hit=inside(pointer.x,pointer.y);
-    if(hit!==!!screen.prevInComputer){
-     document.dispatchEvent(new MouseEvent('mousemove',{clientX:pointer.x,clientY:pointer.y,bubbles:true}));
-    }else if(hit&&['desk','idle'].includes(camera.currentKeyframe)){
-     camera.trigger('enterMonitor');
-    }
-   },120);
-   document.documentElement.addEventListener('mouseleave',()=>{
-    pointer=null;
-    if(screen.prevInComputer){screen.prevInComputer=false;camera.trigger('leftMonitor');}
-   });
   }
  },50);
 })();
@@ -489,27 +495,16 @@
   near.update();monitor.update();
   const transition=camera.transition.bind(camera);
   camera.transition=(name,...args)=>{if(name==='monitor'&&!['desk','monitor'].includes(camera.currentKeyframe)&&!['desk','monitor'].includes(camera.targetKeyframe))return;return transition(name,...args);};
-  let inside=false,leaveTimer=null,lastPointer=null;
-  function enter(){inside=true;clearTimeout(leaveTimer);if(camera.currentKeyframe==='desk'&&!camera.freeCam)camera.transition('monitor',650);}
-  function leave(){inside=false;clearTimeout(leaveTimer);leaveTimer=setTimeout(()=>{if(lastPointer&&withinHoldArea(lastPointer.x,lastPointer.y)){enter();return;}if(!inside && (camera.currentKeyframe==='monitor'||camera.targetKeyframe==='monitor'))camera.transition('desk',650);},250);}
-  const desktopOrigin=new URL(frame.src).origin;
-  // An iframe exit only means the pointer left the glass; it may still be over the white housing.
-  window.addEventListener('message',e=>{if(e.source!==frame.contentWindow||e.origin!==desktopOrigin||e.data?.type!=='retro-screen-pointer')return;if(e.data.inside)enter();});
-  frame.addEventListener('pointerenter',enter);
-  // The hover region follows the whole front face shown by the red outline, not just the CRT aperture.
-  // Keep the actual screen plane and embedded desktop at their original dimensions.
+  // The clickable region follows the whole monitor face, not only the iframe.
   function overScreen(x,y){const sideMargin=320,topMargin=120,bottomMargin=164;const left=-w/2-sideMargin,right=w/2+sideMargin,top=h/2+topMargin,bottom=-h/2-bottomMargin;const p=[[left,top],[right,top],[right,bottom],[left,bottom]].map(([a,b])=>{const v=cssScreen.localToWorld(new T.Vector(a,b,0)).project(camera.instance);return[(v.x+1)*innerWidth/2,(1-v.y)*innerHeight/2];});let sign=0;for(let i=0;i<4;i++){const a=p[i],b=p[(i+1)%4],cross=(b[0]-a[0])*(y-a[1])-(b[1]-a[1])*(x-a[0]);if(Math.abs(cross)<1)continue;const s=Math.sign(cross);if(sign&&s!==sign)return false;sign=s;}return true;}
-  // At close range, the red outline covers the full monitor face (about 6%–95% of viewport width).
-  function withinHoldArea(x,y){if(camera.currentKeyframe==='monitor'||camera.targetKeyframe==='monitor')return x>=innerWidth*.06&&x<=innerWidth*.95&&y>=0&&y<=innerHeight;return overScreen(x,y);}
-  document.addEventListener('pointermove',e=>{if(camera.freeCam)return;lastPointer={x:e.clientX,y:e.clientY};withinHoldArea(e.clientX,e.clientY)?enter():leave();},{passive:true});
-  document.documentElement.addEventListener('mouseleave',()=>{lastPointer=null;leave();});
   document.addEventListener('mousedown',e=>{
    if(e.target.closest?.('#custom-fixed-controls,button,input')||document.body.classList.contains('pixel-loading')||camera.freeCam)return;
    const state=camera.targetKeyframe||camera.currentKeyframe;
    if(state==='idle'){e.stopImmediatePropagation();camera.transition('desk',800);}
-   else if(state==='desk'){e.stopImmediatePropagation();if(overScreen(e.clientX,e.clientY))enter();}
+   else if(state==='desk'&&overScreen(e.clientX,e.clientY)){e.stopImmediatePropagation();camera.transition('monitor',650);}
+   else if(state==='monitor'){e.stopImmediatePropagation();camera.transition('desk',650);}
   },true);
-  window.whiteComputer.interaction={overScreen,get inside(){return inside;}};
+  window.whiteComputer.interaction={overScreen};
   const clearPrompt=document.createElement('style');clearPrompt.textContent='body:not(.pixel-loading) #ui-app{visibility:hidden}';document.head.appendChild(clearPrompt);
  },50);
 })();
