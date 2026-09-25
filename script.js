@@ -7,16 +7,11 @@
   };
 
   const preloadImages = async () => {
-    let paths = [];
-    try {
-      const response = await fetch("assets/image-preload-manifest.json", { cache: "force-cache" });
-      if (!response.ok) throw new Error(`manifest ${response.status}`);
-      paths = await response.json();
-    } catch (error) {
-      console.warn("Desktop image preload manifest unavailable", error);
-      notify("desktop-preload-ready", { loaded: 0, total: 0, failed: 1 });
-      return;
-    }
+    // Only assets visible before the desktop is usable may block startup.
+    // The old manifest contained 118 images (~116 MB), so remote first-time
+    // visitors had to download and decode the entire experience before START.
+    // Images inside templates are inert and load naturally when their app opens.
+    const paths = ["assets/boot-key-reference.png"];
 
     let cursor = 0;
     let loaded = 0;
