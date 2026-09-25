@@ -9,7 +9,7 @@ function setupSkyGameWindow(win) {
   const canvas = content.querySelector("canvas"), ctx = canvas.getContext("2d"), overlay = content.querySelector(".sky-game-overlay");
   ctx.imageSmoothingEnabled = false;
   const W=360,H=600, keys=new Set();
-  const assetNames={player:"我方飞机.png",normal:"飞机2.png",sway:"飞机3.png",elite:"飞机4.png",charger:"飞机1.png",boss:"boss.png",shot:"弹幕4.png",enemy1:"弹幕1.png",enemy2:"弹幕2.png",enemy3:"弹幕3.png",enemy5:"弹幕5.png",boom:"击杀.png",map1:"第一关地图.png",map2:"第二关沙漠地图.png",map3:"第三段雪山地图.png"};
+  const assetNames={player:"我方飞机.webp",normal:"飞机2.webp",sway:"飞机3.webp",elite:"飞机4.webp",charger:"飞机1.webp",boss:"boss.webp",shot:"弹幕4.webp",enemy1:"弹幕1.webp",enemy2:"弹幕2.webp",enemy3:"弹幕3.webp",enemy5:"弹幕5.webp",boom:"击杀.webp",map1:"第一关地图.webp",map2:"第二关沙漠地图.webp",map3:"第三段雪山地图.webp"};
   const art={}; for(const [key,name] of Object.entries(assetNames)){const img=new Image();img.src=`assets/sky-game/${name}`;art[key]=img;}
   let running=false,last=0,raf=0,score=0,lives=3,stage=1,stageTime=0,spawnClock=0,shotClock=0,scroll=0,invincible=0,banner=0,mapBanner=0,bossSpawned=false,finished=false,mapKey="map1",previousMapKey=null,mapFade=0;
   let player={},bullets=[],enemyBullets=[],enemies=[],explosions=[],stars=[];
