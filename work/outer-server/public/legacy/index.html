@@ -66,7 +66,7 @@
     <link rel="shortcut icon" href="ffbcd8e4fac59356.ico" type="image/x-icon" />
     <script defer src="retro-workstation.js?v=20260925-3"></script>
     <script defer src="bundle.retro-workstation.js?v=20260920-1"></script>
-    <link href="main.css" rel="stylesheet" />
+    <link href="main.css?v=20260925-2" rel="stylesheet" />
   
   </head>
   <body class="pixel-loading">
@@ -83,6 +83,7 @@
             <div id="pixel-progress-fill"></div>
           </div>
         </div>
+        <div id="pixel-progress-status">INITIALIZING SCENE · 0%</div>
         <button id="pixel-start-button" type="button">START</button>
       </div>
     </div>
@@ -124,6 +125,7 @@
 
         const loader = document.querySelector("#custom-pixel-loader");
         const fill = document.querySelector("#pixel-progress-fill");
+        const progressStatus = document.querySelector("#pixel-progress-status");
         const start = document.querySelector("#pixel-start-button");
         const controls = document.querySelector("#custom-fixed-controls");
         const audioControl = document.querySelector("#custom-audio-control");
@@ -137,6 +139,9 @@
         let sceneReady = false;
         let desktopPreloadReady = false;
         let desktopPreloadProgress = 0;
+        let desktopLoaded = 0;
+        let desktopTotal = 0;
+        let displayedProgress = 0;
 
         const controlAssets = {
           audio: ["fa9623e40006eda6", "8bbd53f7e797a91c"],
@@ -184,7 +189,9 @@
           const finishStartedAt = performance.now();
           const complete = (now) => {
             const progress = Math.min(1, (now - finishStartedAt) / 760);
-            fill.style.width = `${99 + progress}%`;
+            displayedProgress = 99 + progress;
+            fill.style.width = `${displayedProgress}%`;
+            progressStatus.textContent = progress < 1 ? "FINALIZING · 99%" : "READY · 100%";
             if (progress < 1) {
               requestAnimationFrame(complete);
               return;
@@ -203,9 +210,13 @@
           if (event.source === window || !event.data) return;
           if (event.data.type === "desktop-preload-progress") {
             desktopPreloadProgress = Math.max(0, Math.min(1, Number(event.data.progress) || 0));
+            desktopLoaded = Math.max(0, Number(event.data.loaded) || 0);
+            desktopTotal = Math.max(0, Number(event.data.total) || 0);
           }
           if (event.data.type === "desktop-preload-ready") {
             desktopPreloadProgress = 1;
+            desktopLoaded = Math.max(0, Number(event.data.loaded) || desktopLoaded);
+            desktopTotal = Math.max(0, Number(event.data.total) || desktopTotal);
             desktopPreloadReady = true;
             finishWhenEverythingIsReady();
           }
@@ -279,14 +290,31 @@
         const update = (now) => {
           if (finishing) return;
           const elapsed = now - startedAt;
-          const sceneProgress = Math.min(88, 6 + elapsed / 72);
-          const progress = sceneReady ? 88 + desktopPreloadProgress * 11 : sceneProgress;
-          fill.style.width = `${progress}%`;
           const startButton = findVisibleStart();
           if (startButton && elapsed > 1200) {
             sceneReady = true;
             originalStart = startButton;
             finishWhenEverythingIsReady();
+          }
+          // Scene setup and desktop assets advance independently. Keeping both
+          // visible prevents a long, unexplained pause at the end of the bar.
+          const timedSceneProgress = 58 * (1 - Math.exp(-elapsed / 2600));
+          const sceneProgress = sceneReady ? 58 : Math.min(57.5, timedSceneProgress);
+          const assetProgress = desktopPreloadProgress * 40;
+          const targetProgress = Math.min(98, sceneProgress + assetProgress);
+          displayedProgress += (targetProgress - displayedProgress) * .075;
+          if (targetProgress - displayedProgress < .03) displayedProgress = targetProgress;
+          fill.style.width = `${Math.max(1, displayedProgress)}%`;
+          const percent = Math.floor(Math.max(1, displayedProgress));
+          if (!sceneReady) {
+            progressStatus.textContent = desktopPreloadProgress > 0
+              ? `LOADING SCENE & ASSETS · ${percent}%`
+              : `INITIALIZING SCENE · ${percent}%`;
+          } else if (!desktopPreloadReady) {
+            const count = desktopTotal ? ` ${desktopLoaded}/${desktopTotal}` : "";
+            progressStatus.textContent = `LOADING DESKTOP ASSETS${count} · ${percent}%`;
+          } else {
+            progressStatus.textContent = `PREPARING DESKTOP · ${percent}%`;
           }
           requestAnimationFrame(update);
         };

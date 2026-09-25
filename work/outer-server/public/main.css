@@ -217,11 +217,23 @@ body.pixel-loading #ui-interactive {
 }
 
 #pixel-progress-fill {
-    width: 6%;
+    width: 1%;
     height: 100%;
     background: #fff;
     image-rendering: pixelated;
     will-change: width;
+}
+
+#pixel-progress-status {
+    min-height: 10px;
+    margin-top: 7px;
+    color: #a9a9a9;
+    font-family: "Courier New", monospace;
+    font-size: 8px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
 }
 
 #pixel-start-button {
