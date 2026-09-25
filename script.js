@@ -18,19 +18,54 @@
       return;
     }
 
+    const items = paths.map(item => typeof item === "string"
+      ? { path: item, bytes: 1 }
+      : item
+    );
     let cursor = 0;
     let loaded = 0;
     let failed = 0;
-    const total = paths.length;
+    let loadedBytes = 0;
+    let lastProgressSentAt = 0;
+    const total = items.length;
+    const totalBytes = items.reduce((sum, item) => sum + Math.max(1, Number(item.bytes) || 1), 0);
     const decodedImages = [];
     window.__preloadedDesktopImages = decodedImages;
+    const reportProgress = (force = false) => {
+      const now = performance.now();
+      if (!force && now - lastProgressSentAt < 90) return;
+      lastProgressSentAt = now;
+      notify("desktop-preload-progress", {
+        loaded, total, failed, loadedBytes, totalBytes,
+        progress: totalBytes ? Math.min(1, loadedBytes / totalBytes) : 1
+      });
+    };
     const worker = async () => {
       while (cursor < total) {
         const index = cursor++;
+        const item = items[index];
+        const expectedBytes = Math.max(1, Number(item.bytes) || 1);
+        let receivedBytes = 0;
         try {
+          const response = await fetch(item.path, { cache: "force-cache" });
+          if (!response.ok) throw new Error(`${item.path} ${response.status}`);
+          if (response.body?.getReader) {
+            const reader = response.body.getReader();
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              receivedBytes += value.byteLength;
+              loadedBytes += value.byteLength;
+              reportProgress();
+            }
+          } else {
+            await response.arrayBuffer();
+            receivedBytes = expectedBytes;
+            loadedBytes += expectedBytes;
+          }
           const image = new Image();
           image.decoding = "async";
-          image.src = paths[index];
+          image.src = item.path;
           decodedImages.push(image);
           if (typeof image.decode === "function") await image.decode();
           else await new Promise((resolve, reject) => {
@@ -39,10 +74,11 @@
           });
         } catch (error) {
           failed++;
-          console.warn("Desktop image preload failed", paths[index], error);
+          console.warn("Desktop image preload failed", item.path, error);
         } finally {
+          loadedBytes += Math.max(0, expectedBytes - receivedBytes);
           loaded++;
-          notify("desktop-preload-progress", { loaded, total, failed, progress: total ? loaded / total : 1 });
+          reportProgress(true);
         }
       }
     };

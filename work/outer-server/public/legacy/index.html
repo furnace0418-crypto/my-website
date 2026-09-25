@@ -64,7 +64,7 @@
       content="I'm Henry, a Software Engineer based in NY. Rensselaer Polytechnic Institute Graduate with my B.S. in Computer Science, currently looking for a full time role."
     />
     <link rel="shortcut icon" href="ffbcd8e4fac59356.ico" type="image/x-icon" />
-    <script defer src="retro-workstation.js?v=20260926-3"></script>
+    <script defer src="retro-workstation.js?v=20260926-4"></script>
     <script defer src="bundle.retro-workstation.js?v=20260920-1"></script>
     <link href="main.css?v=20260925-2" rel="stylesheet" />
   
@@ -143,6 +143,8 @@
         let desktopPreloadProgress = 0;
         let desktopLoaded = 0;
         let desktopTotal = 0;
+        let desktopLoadedBytes = 0;
+        let desktopTotalBytes = 0;
         let displayedProgress = 0;
 
         const controlAssets = {
@@ -214,11 +216,15 @@
             desktopPreloadProgress = Math.max(0, Math.min(1, Number(event.data.progress) || 0));
             desktopLoaded = Math.max(0, Number(event.data.loaded) || 0);
             desktopTotal = Math.max(0, Number(event.data.total) || 0);
+            desktopLoadedBytes = Math.max(0, Number(event.data.loadedBytes) || 0);
+            desktopTotalBytes = Math.max(0, Number(event.data.totalBytes) || 0);
           }
           if (event.data.type === "desktop-preload-ready") {
             desktopPreloadProgress = 1;
             desktopLoaded = Math.max(0, Number(event.data.loaded) || desktopLoaded);
             desktopTotal = Math.max(0, Number(event.data.total) || desktopTotal);
+            desktopLoadedBytes = Math.max(0, Number(event.data.loadedBytes) || desktopLoadedBytes);
+            desktopTotalBytes = Math.max(0, Number(event.data.totalBytes) || desktopTotalBytes);
             desktopPreloadReady = true;
             finishWhenEverythingIsReady();
           }
@@ -313,8 +319,10 @@
               ? `LOADING SCENE & ASSETS · ${percent}%`
               : `INITIALIZING SCENE · ${percent}%`;
           } else if (!desktopPreloadReady) {
-            const count = desktopTotal ? ` ${desktopLoaded}/${desktopTotal}` : "";
-            progressStatus.textContent = `LOADING DESKTOP ASSETS${count} · ${percent}%`;
+            const bytes = desktopTotalBytes
+              ? ` ${(desktopLoadedBytes / 1048576).toFixed(1)}/${(desktopTotalBytes / 1048576).toFixed(1)} MB`
+              : desktopTotal ? ` ${desktopLoaded}/${desktopTotal}` : "";
+            progressStatus.textContent = `LOADING DESKTOP ASSETS${bytes} · ${percent}%`;
           } else {
             progressStatus.textContent = `PREPARING DESKTOP · ${percent}%`;
           }

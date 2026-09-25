@@ -1,121 +1,378 @@
 [
-  "assets/avatars/chenyuan-retro.png",
-  "assets/avatars/chenyuan-user.png",
-  "assets/avatars/class-7-group-retro.png",
-  "assets/avatars/forum-default-avatar.png",
-  "assets/avatars/forum-wl.png",
-  "assets/avatars/shiqian-bear.png",
-  "assets/avatars/shiqian-dolphin-retro.png",
-  "assets/avatars/taoyuan-forum-avatar-v2.png",
-  "assets/avatars/taoyuan-forum-avatar.png",
-  "assets/avatars/twostroke-retro.png",
-  "assets/avatars/twostroke-user.png",
-  "assets/avatars/xiaohang-user.png",
-  "assets/avatars/xiaoqiao-retro.png",
-  "assets/avatars/xiaoqiao-user.png",
-  "assets/avatars/zhanglei-retro.png",
-  "assets/avatars/zhenzhen-gray-v2.png",
-  "assets/avatars/zhenzhen-retro.png",
-  "assets/boot-key-reference.png",
-  "assets/documents/case-archive-page.png",
-  "assets/forum-corner-ad-blue.png",
-  "assets/forum-corner-ad-sheep.png",
-  "assets/forum-corner-ad.png",
-  "assets/forum-noise.svg",
-  "assets/forum-orange-sky-ad-v2.png",
-  "assets/forum-orange-sky-ad.png",
-  "assets/forum-play-button-v2.png",
-  "assets/forum-play-button.png",
-  "assets/forum-sky-fighters-ad-wide.png",
-  "assets/forum-sky-fighters-ad.png",
-  "assets/game/npc-chenbo.png",
-  "assets/game/player-amu.png",
-  "assets/game/sham-shui-po-map.png",
-  "assets/icons/browser-16.png",
-  "assets/icons/browser-globe-gray.svg",
-  "assets/icons/case-archive-transparent.png",
-  "assets/icons/case-archive.png",
-  "assets/icons/computer-16.png",
-  "assets/icons/computer-32.png",
-  "assets/icons/excel-16.svg",
-  "assets/icons/file-jpeg-32.svg",
-  "assets/icons/file-jpg-32.svg",
-  "assets/icons/file-pdf-32.svg",
-  "assets/icons/file-txt-32.svg",
-  "assets/icons/folder-16.png",
-  "assets/icons/folder-32.png",
-  "assets/icons/hard-drive-32.svg",
-  "assets/icons/network-16.png",
-  "assets/icons/notepad-16.png",
-  "assets/icons/notepad-32.png",
-  "assets/icons/pixel-air-combat.png",
-  "assets/icons/qq-16.svg",
-  "assets/icons/qq-32.svg",
-  "assets/icons/qq-channel-sidebar.png",
-  "assets/icons/qq-favorites-sidebar.png",
-  "assets/icons/qq-friend-list.svg",
-  "assets/icons/qq-reference-penguin.png",
-  "assets/icons/qq-silhouette.svg",
-  "assets/icons/qq-space-sidebar.png",
-  "assets/icons/recycle-16.png",
-  "assets/icons/recycle-32.png",
-  "assets/icons/security-16.svg",
-  "assets/icons/shutdown-32.png",
-  "assets/icons/sky-game.svg",
-  "assets/icons/user-16.png",
-  "assets/icons/volume-16.png",
-  "assets/icons/volume-muted-16.png",
-  "assets/icons/word-16.svg",
-  "assets/photos/cha-dian-bei-fa-xian.png",
-  "assets/photos/drawer-password-note.png",
-  "assets/photos/favorite-birthday-cake.png",
-  "assets/photos/favorite-cat.png",
-  "assets/photos/maomao.png",
-  "assets/photos/math-q18.png",
-  "assets/photos/mei-cai-lei.png",
-  "assets/photos/memorial-candle.png",
-  "assets/photos/number-pattern-v2.png",
-  "assets/photos/old-photo.png",
-  "assets/photos/qzone-banner-cat.png",
-  "assets/photos/qzone-owner-background-wide.png",
-  "assets/photos/qzone-owner-background.png",
-  "assets/photos/scholarship-new.png",
-  "assets/photos/scholarship.jpg",
-  "assets/photos/school-test-image.png",
-  "assets/photos/si-zhuang.png",
-  "assets/photos/student-id-new.png",
-  "assets/photos/student-id.png",
-  "assets/photos/tansiyuan-2023-01-21.png",
-  "assets/photos/tansiyuan-2023-08-22.png",
-  "assets/photos/twin-case-news-v2.png",
-  "assets/photos/twin-case-news.png",
-  "assets/photos/yunyang-city-map.png",
-  "assets/photos/zhenzhen-desk.png",
-  "assets/photos/zhenzhen-night.png",
-  "assets/photos/zhenzhen-outfit.png",
-  "assets/photos/zhenzhen-perfume.png",
-  "assets/sky-game/弹幕1.webp",
-  "assets/sky-game/弹幕2.webp",
-  "assets/sky-game/弹幕3.webp",
-  "assets/sky-game/弹幕4.webp",
-  "assets/sky-game/弹幕5.webp",
-  "assets/sky-game/第二关地图.webp",
-  "assets/sky-game/第二关沙漠地图.webp",
-  "assets/sky-game/第三段雪山地图.webp",
-  "assets/sky-game/第一关地图.webp",
-  "assets/sky-game/飞机1.webp",
-  "assets/sky-game/飞机2.webp",
-  "assets/sky-game/飞机3.webp",
-  "assets/sky-game/飞机4.webp",
-  "assets/sky-game/击杀.webp",
-  "assets/sky-game/我方飞机.webp",
-  "assets/sky-game/boss.webp",
-  "assets/yunyang-anti-fraud-campus.webp",
-  "assets/yunyang-autumn-pastry.webp",
-  "assets/yunyang-autumn-promo.webp",
-  "assets/yunyang-banner-energy.webp",
-  "assets/yunyang-banner-voice.webp",
-  "assets/yunyang-news-logo.webp",
-  "assets/yunyang-old-town-after-rain.webp"
+  {
+    "path": "assets/icons/computer-16.png",
+    "bytes": 212
+  },
+  {
+    "path": "assets/icons/notepad-16.png",
+    "bytes": 220
+  },
+  {
+    "path": "assets/icons/network-16.png",
+    "bytes": 257
+  },
+  {
+    "path": "assets/icons/user-16.png",
+    "bytes": 273
+  },
+  {
+    "path": "assets/icons/volume-16.png",
+    "bytes": 290
+  },
+  {
+    "path": "assets/icons/browser-globe-gray.svg",
+    "bytes": 293
+  },
+  {
+    "path": "assets/icons/folder-16.png",
+    "bytes": 309
+  },
+  {
+    "path": "assets/icons/recycle-16.png",
+    "bytes": 321
+  },
+  {
+    "path": "assets/icons/shutdown-32.png",
+    "bytes": 337
+  },
+  {
+    "path": "assets/icons/volume-muted-16.png",
+    "bytes": 337
+  },
+  {
+    "path": "assets/icons/security-16.svg",
+    "bytes": 347
+  },
+  {
+    "path": "assets/icons/file-txt-32.svg",
+    "bytes": 351
+  },
+  {
+    "path": "assets/icons/computer-32.png",
+    "bytes": 380
+  },
+  {
+    "path": "assets/forum-noise.svg",
+    "bytes": 394
+  },
+  {
+    "path": "assets/icons/qq-friend-list.svg",
+    "bytes": 413
+  },
+  {
+    "path": "assets/icons/word-16.svg",
+    "bytes": 416
+  },
+  {
+    "path": "assets/icons/hard-drive-32.svg",
+    "bytes": 421
+  },
+  {
+    "path": "assets/icons/excel-16.svg",
+    "bytes": 445
+  },
+  {
+    "path": "assets/icons/browser-16.png",
+    "bytes": 463
+  },
+  {
+    "path": "assets/icons/file-jpg-32.svg",
+    "bytes": 488
+  },
+  {
+    "path": "assets/icons/qq-16.svg",
+    "bytes": 490
+  },
+  {
+    "path": "assets/icons/file-pdf-32.svg",
+    "bytes": 516
+  },
+  {
+    "path": "assets/icons/recycle-32.png",
+    "bytes": 640
+  },
+  {
+    "path": "assets/icons/qq-32.svg",
+    "bytes": 701
+  },
+  {
+    "path": "assets/icons/notepad-32.png",
+    "bytes": 810
+  },
+  {
+    "path": "assets/icons/folder-32.png",
+    "bytes": 982
+  },
+  {
+    "path": "assets/icons/qq-favorites-sidebar.png",
+    "bytes": 4296
+  },
+  {
+    "path": "assets/icons/qq-channel-sidebar.png",
+    "bytes": 12728
+  },
+  {
+    "path": "assets/icons/qq-space-sidebar.png",
+    "bytes": 13336
+  },
+  {
+    "path": "assets/sky-game/弹幕2.webp",
+    "bytes": 15460
+  },
+  {
+    "path": "assets/sky-game/弹幕4.webp",
+    "bytes": 19056
+  },
+  {
+    "path": "assets/sky-game/弹幕5.webp",
+    "bytes": 24132
+  },
+  {
+    "path": "assets/forum-play-button-v2.png",
+    "bytes": 31983
+  },
+  {
+    "path": "assets/sky-game/弹幕3.webp",
+    "bytes": 32536
+  },
+  {
+    "path": "assets/yunyang-banner-energy.webp",
+    "bytes": 35960
+  },
+  {
+    "path": "assets/yunyang-banner-voice.webp",
+    "bytes": 36946
+  },
+  {
+    "path": "assets/avatars/forum-default-avatar.png",
+    "bytes": 37813
+  },
+  {
+    "path": "assets/sky-game/飞机3.webp",
+    "bytes": 48422
+  },
+  {
+    "path": "assets/yunyang-news-logo.webp",
+    "bytes": 49684
+  },
+  {
+    "path": "assets/sky-game/弹幕1.webp",
+    "bytes": 61202
+  },
+  {
+    "path": "assets/sky-game/飞机1.webp",
+    "bytes": 77050
+  },
+  {
+    "path": "assets/sky-game/飞机4.webp",
+    "bytes": 77380
+  },
+  {
+    "path": "assets/boot-key-reference.png",
+    "bytes": 81091
+  },
+  {
+    "path": "assets/sky-game/飞机2.webp",
+    "bytes": 81552
+  },
+  {
+    "path": "assets/avatars/chenyuan-user.png",
+    "bytes": 101545
+  },
+  {
+    "path": "assets/avatars/shiqian-bear.png",
+    "bytes": 106612
+  },
+  {
+    "path": "assets/avatars/twostroke-user.png",
+    "bytes": 122373
+  },
+  {
+    "path": "assets/avatars/xiaoqiao-user.png",
+    "bytes": 124882
+  },
+  {
+    "path": "assets/yunyang-anti-fraud-campus.webp",
+    "bytes": 151992
+  },
+  {
+    "path": "assets/sky-game/击杀.webp",
+    "bytes": 191812
+  },
+  {
+    "path": "assets/sky-game/我方飞机.webp",
+    "bytes": 207138
+  },
+  {
+    "path": "assets/yunyang-autumn-pastry.webp",
+    "bytes": 235450
+  },
+  {
+    "path": "assets/yunyang-old-town-after-rain.webp",
+    "bytes": 266712
+  },
+  {
+    "path": "assets/avatars/xiaohang-user.png",
+    "bytes": 268073
+  },
+  {
+    "path": "assets/yunyang-autumn-promo.webp",
+    "bytes": 290040
+  },
+  {
+    "path": "assets/sky-game/boss.webp",
+    "bytes": 523600
+  },
+  {
+    "path": "assets/avatars/forum-wl.png",
+    "bytes": 529773
+  },
+  {
+    "path": "assets/avatars/taoyuan-forum-avatar-v2.png",
+    "bytes": 529773
+  },
+  {
+    "path": "assets/icons/qq-reference-penguin.png",
+    "bytes": 563447
+  },
+  {
+    "path": "assets/documents/case-archive-page.png",
+    "bytes": 622139
+  },
+  {
+    "path": "assets/forum-orange-sky-ad-v2.png",
+    "bytes": 933847
+  },
+  {
+    "path": "assets/icons/case-archive-transparent.png",
+    "bytes": 1000628
+  },
+  {
+    "path": "assets/avatars/zhenzhen-retro.png",
+    "bytes": 1167024
+  },
+  {
+    "path": "assets/avatars/zhenzhen-gray-v2.png",
+    "bytes": 1280164
+  },
+  {
+    "path": "assets/avatars/zhanglei-retro.png",
+    "bytes": 1293652
+  },
+  {
+    "path": "assets/avatars/class-7-group-retro.png",
+    "bytes": 1383627
+  },
+  {
+    "path": "assets/photos/memorial-candle.png",
+    "bytes": 1444845
+  },
+  {
+    "path": "assets/icons/pixel-air-combat.png",
+    "bytes": 1476595
+  },
+  {
+    "path": "assets/photos/favorite-cat.png",
+    "bytes": 1639823
+  },
+  {
+    "path": "assets/photos/tansiyuan-2023-01-21.png",
+    "bytes": 1640475
+  },
+  {
+    "path": "assets/photos/zhenzhen-night.png",
+    "bytes": 1719958
+  },
+  {
+    "path": "assets/photos/yunyang-city-map.png",
+    "bytes": 1787518
+  },
+  {
+    "path": "assets/photos/favorite-birthday-cake.png",
+    "bytes": 1801069
+  },
+  {
+    "path": "assets/photos/twin-case-news-v2.png",
+    "bytes": 1836627
+  },
+  {
+    "path": "assets/photos/number-pattern-v2.png",
+    "bytes": 1865104
+  },
+  {
+    "path": "assets/photos/zhenzhen-perfume.png",
+    "bytes": 1886183
+  },
+  {
+    "path": "assets/photos/cha-dian-bei-fa-xian.png",
+    "bytes": 1954227
+  },
+  {
+    "path": "assets/photos/qzone-banner-cat.png",
+    "bytes": 1969688
+  },
+  {
+    "path": "assets/photos/scholarship-new.png",
+    "bytes": 1972528
+  },
+  {
+    "path": "assets/photos/school-test-image.png",
+    "bytes": 1997689
+  },
+  {
+    "path": "assets/photos/zhenzhen-outfit.png",
+    "bytes": 2000317
+  },
+  {
+    "path": "assets/sky-game/第三段雪山地图.webp",
+    "bytes": 2047470
+  },
+  {
+    "path": "assets/photos/math-q18.png",
+    "bytes": 2062021
+  },
+  {
+    "path": "assets/photos/si-zhuang.png",
+    "bytes": 2080698
+  },
+  {
+    "path": "assets/forum-corner-ad-sheep.png",
+    "bytes": 2084097
+  },
+  {
+    "path": "assets/photos/old-photo.png",
+    "bytes": 2086457
+  },
+  {
+    "path": "assets/photos/zhenzhen-desk.png",
+    "bytes": 2094599
+  },
+  {
+    "path": "assets/sky-game/第二关沙漠地图.webp",
+    "bytes": 2109502
+  },
+  {
+    "path": "assets/photos/tansiyuan-2023-08-22.png",
+    "bytes": 2152060
+  },
+  {
+    "path": "assets/photos/maomao.png",
+    "bytes": 2222681
+  },
+  {
+    "path": "assets/sky-game/第一关地图.webp",
+    "bytes": 2234594
+  },
+  {
+    "path": "assets/photos/mei-cai-lei.png",
+    "bytes": 2499879
+  },
+  {
+    "path": "assets/photos/student-id-new.png",
+    "bytes": 2739913
+  },
+  {
+    "path": "assets/photos/qzone-owner-background-wide.png",
+    "bytes": 4602583
+  }
 ]
-
