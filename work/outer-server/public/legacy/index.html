@@ -64,7 +64,7 @@
       content="I'm Henry, a Software Engineer based in NY. Rensselaer Polytechnic Institute Graduate with my B.S. in Computer Science, currently looking for a full time role."
     />
     <link rel="shortcut icon" href="ffbcd8e4fac59356.ico" type="image/x-icon" />
-    <script defer src="retro-workstation.js?v=20260926-2"></script>
+    <script defer src="retro-workstation.js?v=20260926-3"></script>
     <script defer src="bundle.retro-workstation.js?v=20260920-1"></script>
     <link href="main.css?v=20260925-2" rel="stylesheet" />
   
@@ -96,7 +96,8 @@
         id="video-1"
         muted
         loop
-        preload="none"
+        autoplay
+        preload="auto"
         width="0"
         height="0"
         src="c28874fa5b347023.mp4"
@@ -106,7 +107,8 @@
         id="video-2"
         muted
         loop
-        preload="none"
+        autoplay
+        preload="auto"
         width="0"
         height="0"
         src="78d1c080b40532e6.mp4"
@@ -248,12 +250,6 @@
 
           // Keep this click synchronous with the user's gesture so browsers may start audio.
           originalStart.click();
-          document.querySelector("#computer-screen")?.contentWindow?.postMessage(
-            { type: "desktop-background-preload" }, "*"
-          );
-          document.querySelectorAll("#monitor-videos video").forEach((video) => {
-            video.play().catch(() => {});
-          });
           revealWhenStable();
         });
 

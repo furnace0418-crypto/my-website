@@ -7,11 +7,16 @@
   };
 
   const preloadImages = async () => {
-    // Only assets visible before the desktop is usable may block startup.
-    // The old manifest contained 118 images (~116 MB), so remote first-time
-    // visitors had to download and decode the entire experience before START.
-    // Images inside templates are inert and load naturally when their app opens.
-    const paths = ["assets/boot-key-reference.png"];
+    let paths = [];
+    try {
+      const response = await fetch("assets/image-preload-manifest.json", { cache: "force-cache" });
+      if (!response.ok) throw new Error(`manifest ${response.status}`);
+      paths = await response.json();
+    } catch (error) {
+      console.warn("Desktop image preload manifest unavailable", error);
+      notify("desktop-preload-ready", { loaded: 0, total: 0, failed: 1 });
+      return;
+    }
 
     let cursor = 0;
     let loaded = 0;
@@ -47,40 +52,6 @@
   };
 
   preloadImages();
-
-  let backgroundPreloadStarted = false;
-  const preloadRemainingImages = async () => {
-    if (backgroundPreloadStarted) return;
-    backgroundPreloadStarted = true;
-    let paths = [];
-    try {
-      const response = await fetch("assets/image-preload-manifest.json", { cache: "force-cache" });
-      if (!response.ok) return;
-      paths = (await response.json()).filter(path => path !== "assets/boot-key-reference.png");
-    } catch (_) { return; }
-
-    // Two quiet workers warm the HTTP cache after the desktop becomes usable.
-    // Responses are not retained as decoded Image objects, keeping memory stable.
-    let cursor = 0;
-    const idle = () => new Promise(resolve => {
-      if ("requestIdleCallback" in window) requestIdleCallback(resolve, { timeout: 1200 });
-      else setTimeout(resolve, 80);
-    });
-    const worker = async () => {
-      while (cursor < paths.length) {
-        const path = paths[cursor++];
-        await idle();
-        try { await fetch(path, { cache: "force-cache", priority: "low" }); }
-        catch (_) {}
-      }
-    };
-    await Promise.all([worker(), worker()]);
-  };
-
-  addEventListener("message", event => {
-    if (event.source !== window.parent || event.data?.type !== "desktop-background-preload") return;
-    preloadRemainingImages();
-  });
 })();
 
 const apps = {
