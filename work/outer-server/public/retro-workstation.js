@@ -16,6 +16,14 @@
   // an already-cached iframe cannot keep showing outdated news/template text.
   const camera=app.camera;
   const cameraEase=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+  const baseTransition=camera.transition.bind(camera);
+  let deskTransitionAllowed=false;
+  camera.transition=(name,...args)=>{
+   const state=camera.targetKeyframe||camera.currentKeyframe;
+   if(name==='desk'&&state==='idle'&&!deskTransitionAllowed)return;
+   return baseTransition(name,...args);
+  };
+  const moveToDesk=duration=>{deskTransitionAllowed=true;camera.transition('desk',duration,cameraEase);deskTransitionAllowed=false;};
   function overDeskTop(x,y){
    const points=[[-3500,-430,-1450],[3200,-430,-1450],[3200,-430,1600],[-3500,-430,1600]].map(([a,b,c])=>{
     const p=new window.RetroThree.Vector(a,b,c).project(camera.instance);
@@ -48,8 +56,8 @@
     e.stopPropagation();
     if(app.camera.freeCam)return;
     const state=app.camera.targetKeyframe||app.camera.currentKeyframe;
-    if(state==='idle')camera.transition('desk',1250,cameraEase);
-    else if(state==='desk')camera.transition('monitor',1050,cameraEase);
+    if(state==='idle')moveToDesk(1050);
+    else if(state==='desk')camera.transition('monitor',900,cameraEase);
    });
    const syncScreenActivator=()=>{
     const state=app.camera.targetKeyframe||app.camera.currentKeyframe;
@@ -87,9 +95,9 @@
    document.addEventListener('mousedown',e=>{
     if(e.button!==0||e.target.closest?.('#custom-fixed-controls,button,input')||document.body.classList.contains('pixel-loading')||camera.freeCam)return;
     const state=camera.targetKeyframe||camera.currentKeyframe;
-    if(state==='idle'){e.stopImmediatePropagation();if(overDeskTop(e.clientX,e.clientY))camera.transition('desk',1250,cameraEase);}
-    else if(state==='desk'&&inside(e.clientX,e.clientY)){e.stopImmediatePropagation();camera.transition('monitor',1050,cameraEase);}
-    else if(state==='monitor'){e.stopImmediatePropagation();camera.transition('desk',1050,cameraEase);}
+    if(state==='idle'&&overDeskTop(e.clientX,e.clientY)){e.stopImmediatePropagation();moveToDesk(1050);}
+    else if(state==='desk'&&inside(e.clientX,e.clientY)){e.stopImmediatePropagation();camera.transition('monitor',900,cameraEase);}
+    else if(state==='monitor'){e.stopImmediatePropagation();moveToDesk(900);}
    },true);
   }
  },50);
@@ -511,15 +519,17 @@
   monitor.update=()=>{monitor.position.set(0,950,430+fit(h,w,.86));monitor.focalPoint.set(0,950,430);};
   near.update();monitor.update();
   const transition=camera.transition.bind(camera);
-  camera.transition=(name,...args)=>{if(name==='monitor'&&!['desk','monitor'].includes(camera.currentKeyframe)&&!['desk','monitor'].includes(camera.targetKeyframe))return;return transition(name,...args);};
+  let deskTransitionAllowed=false;
+  camera.transition=(name,...args)=>{const state=camera.targetKeyframe||camera.currentKeyframe;if(name==='desk'&&state==='idle'&&!deskTransitionAllowed)return;if(name==='monitor'&&!['desk','monitor'].includes(camera.currentKeyframe)&&!['desk','monitor'].includes(camera.targetKeyframe))return;return transition(name,...args);};
+  const moveToDesk=duration=>{deskTransitionAllowed=true;camera.transition('desk',duration,cameraEase);deskTransitionAllowed=false;};
   // The clickable region follows the whole monitor face, not only the iframe.
   function overScreen(x,y){const sideMargin=320,topMargin=120,bottomMargin=164;const left=-w/2-sideMargin,right=w/2+sideMargin,top=h/2+topMargin,bottom=-h/2-bottomMargin;const p=[[left,top],[right,top],[right,bottom],[left,bottom]].map(([a,b])=>{const v=cssScreen.localToWorld(new T.Vector(a,b,0)).project(camera.instance);return[(v.x+1)*innerWidth/2,(1-v.y)*innerHeight/2];});let sign=0;for(let i=0;i<4;i++){const a=p[i],b=p[(i+1)%4],cross=(b[0]-a[0])*(y-a[1])-(b[1]-a[1])*(x-a[0]);if(Math.abs(cross)<1)continue;const s=Math.sign(cross);if(sign&&s!==sign)return false;sign=s;}return true;}
   document.addEventListener('mousedown',e=>{
    if(e.target.closest?.('#custom-fixed-controls,button,input')||document.body.classList.contains('pixel-loading')||camera.freeCam)return;
    const state=camera.targetKeyframe||camera.currentKeyframe;
-   if(state==='idle'){e.stopImmediatePropagation();if(overDeskTop(e.clientX,e.clientY))camera.transition('desk',1250,cameraEase);}
-   else if(state==='desk'&&overScreen(e.clientX,e.clientY)){e.stopImmediatePropagation();camera.transition('monitor',1050,cameraEase);}
-   else if(state==='monitor'){e.stopImmediatePropagation();camera.transition('desk',1050,cameraEase);}
+   if(state==='idle'&&overDeskTop(e.clientX,e.clientY)){e.stopImmediatePropagation();moveToDesk(1050);}
+   else if(state==='desk'&&overScreen(e.clientX,e.clientY)){e.stopImmediatePropagation();camera.transition('monitor',900,cameraEase);}
+   else if(state==='monitor'){e.stopImmediatePropagation();moveToDesk(900);}
   },true);
   window.whiteComputer.interaction={overScreen};
   const clearPrompt=document.createElement('style');clearPrompt.textContent='body:not(.pixel-loading) #ui-app{visibility:hidden}';document.head.appendChild(clearPrompt);
