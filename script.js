@@ -47,6 +47,40 @@
   };
 
   preloadImages();
+
+  let backgroundPreloadStarted = false;
+  const preloadRemainingImages = async () => {
+    if (backgroundPreloadStarted) return;
+    backgroundPreloadStarted = true;
+    let paths = [];
+    try {
+      const response = await fetch("assets/image-preload-manifest.json", { cache: "force-cache" });
+      if (!response.ok) return;
+      paths = (await response.json()).filter(path => path !== "assets/boot-key-reference.png");
+    } catch (_) { return; }
+
+    // Two quiet workers warm the HTTP cache after the desktop becomes usable.
+    // Responses are not retained as decoded Image objects, keeping memory stable.
+    let cursor = 0;
+    const idle = () => new Promise(resolve => {
+      if ("requestIdleCallback" in window) requestIdleCallback(resolve, { timeout: 1200 });
+      else setTimeout(resolve, 80);
+    });
+    const worker = async () => {
+      while (cursor < paths.length) {
+        const path = paths[cursor++];
+        await idle();
+        try { await fetch(path, { cache: "force-cache", priority: "low" }); }
+        catch (_) {}
+      }
+    };
+    await Promise.all([worker(), worker()]);
+  };
+
+  addEventListener("message", event => {
+    if (event.source !== window.parent || event.data?.type !== "desktop-background-preload") return;
+    preloadRemainingImages();
+  });
 })();
 
 const apps = {

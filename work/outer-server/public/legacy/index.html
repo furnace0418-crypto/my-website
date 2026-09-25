@@ -248,6 +248,9 @@
 
           // Keep this click synchronous with the user's gesture so browsers may start audio.
           originalStart.click();
+          document.querySelector("#computer-screen")?.contentWindow?.postMessage(
+            { type: "desktop-background-preload" }, "*"
+          );
           document.querySelectorAll("#monitor-videos video").forEach((video) => {
             video.play().catch(() => {});
           });
