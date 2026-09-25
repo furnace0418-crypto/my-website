@@ -93,7 +93,7 @@
     return true;
    }
    document.addEventListener('mousedown',e=>{
-    if(e.button!==0||e.target.closest?.('#custom-fixed-controls,button,input')||document.body.classList.contains('pixel-loading')||camera.freeCam)return;
+    if(e.button!==0||e.target.closest?.('#custom-fixed-controls,.icon-control-container,button,input')||document.body.classList.contains('pixel-loading')||camera.freeCam)return;
     const state=camera.targetKeyframe||camera.currentKeyframe;
     if(state==='idle'&&overDeskTop(e.clientX,e.clientY)){e.stopImmediatePropagation();moveToDesk(1050);}
     else if(state==='desk'&&inside(e.clientX,e.clientY)){e.stopImmediatePropagation();camera.transition('monitor',900,cameraEase);}
@@ -525,7 +525,7 @@
   // The clickable region follows the whole monitor face, not only the iframe.
   function overScreen(x,y){const sideMargin=320,topMargin=120,bottomMargin=164;const left=-w/2-sideMargin,right=w/2+sideMargin,top=h/2+topMargin,bottom=-h/2-bottomMargin;const p=[[left,top],[right,top],[right,bottom],[left,bottom]].map(([a,b])=>{const v=cssScreen.localToWorld(new T.Vector(a,b,0)).project(camera.instance);return[(v.x+1)*innerWidth/2,(1-v.y)*innerHeight/2];});let sign=0;for(let i=0;i<4;i++){const a=p[i],b=p[(i+1)%4],cross=(b[0]-a[0])*(y-a[1])-(b[1]-a[1])*(x-a[0]);if(Math.abs(cross)<1)continue;const s=Math.sign(cross);if(sign&&s!==sign)return false;sign=s;}return true;}
   document.addEventListener('mousedown',e=>{
-   if(e.target.closest?.('#custom-fixed-controls,button,input')||document.body.classList.contains('pixel-loading')||camera.freeCam)return;
+   if(e.target.closest?.('#custom-fixed-controls,.icon-control-container,button,input')||document.body.classList.contains('pixel-loading')||camera.freeCam)return;
    const state=camera.targetKeyframe||camera.currentKeyframe;
    if(state==='idle'&&overDeskTop(e.clientX,e.clientY)){e.stopImmediatePropagation();moveToDesk(1050);}
    else if(state==='desk'&&overScreen(e.clientX,e.clientY)){e.stopImmediatePropagation();camera.transition('monitor',900,cameraEase);}
