@@ -209,8 +209,8 @@ const qqConversations = {
       { sender: "我", mine: true, text: "你大晚上给我发这个干嘛" },
       { sender: "谭某人（谭思远）", text: "测测你的脑子还在不在" },
       { sender: "我", mine: true, text: "……" },
-      { sender: "我", mine: true, text: "这几个问号分别是什么" },
-      { sender: "谭某人（谭思远）", text: "你自己算啊" },
+      { sender: "我", mine: true, text: "这几个问号分别是什么，我怎么算不明白" },
+      { sender: "谭某人（谭思远）", text: "谁让你真算了，我才刚说完这是数字规律" },
       { sender: "我", mine: true, text: "我看半天了" },
       { sender: "谭某人（谭思远）", text: "那你再看半天" },
       { sender: "我", mine: true, text: "你直接说不行吗" },
@@ -219,7 +219,7 @@ const qqConversations = {
       { sender: "谭某人（谭思远）", text: "我三分钟就看出来了，不会有人连数数都不会吧" },
       { sender: "我", mine: true, text: "滚" },
       { sender: "谭某人（谭思远）", text: "数学69分的人果然对数字过敏" },
-      { sender: "我", mine: true, text: "你再提69我真拉黑你" },
+      { sender: "我", mine: true, text: "你再提69分我真拉黑你" },
       { sender: "谭某人（谭思远）", text: "急了" },
       { sender: "我", mine: true, text: "我急你个头" },
       { sender: "谭某人（谭思远）", text: "你不会真没看出来吧" },
@@ -330,7 +330,7 @@ const qqProfiles = {
 const qqFavoriteNotes = [
   { title: "生日蛋糕", content: "今年生日终于16了，珍珍姐还说我看着像初中生", date: "2022.08.23", source: "愿珍惜你的每一天", kind: "图片与视频", image: "assets/photos/favorite-birthday-cake.png" },
   { title: "猫猫", content: "", date: "2023.6.9", source: "愿珍惜你的每一天", kind: "图片与视频", image: "assets/photos/favorite-cat.png" },
-  { title: "谭某人（谭思远）的聊天记录", content: "我：你再提69我真拉黑你", date: "2022.12.14", source: "谭某人（谭思远）", kind: "聊天记录", chatName: "谭某人（谭思远）", messageText: "你再提69我真拉黑你" }
+  { title: "谭某人（谭思远）的聊天记录", content: "我：你再提69分我真拉黑你", date: "2022.12.14", source: "谭某人（谭思远）", kind: "聊天记录", chatName: "谭某人（谭思远）", messageText: "你再提69分我真拉黑你" }
 ];
 const SHIQIAN_MODEL_ID = "Qwen2.5-0.5B-Instruct-q4f16_1-MLC";
 const SHIQIAN_SYSTEM_PROMPT = `你是2001年QQ上的联系人“时迁”，和玩家“小航”认识。
@@ -591,7 +591,7 @@ function requestMyFilesPassword(win, onSuccess) {
   const slot = win.querySelector(".explorer-lock-slot");
   const existing = slot.querySelector(".my-files-lock-panel"); if (existing) { existing.querySelector("input")?.focus(); return; }
   const panel = document.createElement("section"); panel.className = "my-files-lock-panel";
-  panel.innerHTML = '<button type="button" class="my-files-lock-close" data-lock-action="close" aria-label="关闭">×</button><div class="my-files-lock-body"><p>此文件夹已加密。输入口令后才能查看其中的文件。</p><div class="my-files-lock-row"><label for="myFilesPasscode">口令：</label><input id="myFilesPasscode" type="password" maxlength="6" inputmode="numeric" autocomplete="off" aria-describedby="myFilesLockError" /><button type="button" data-lock-action="ok">确定</button><button type="button" data-lock-action="hint" aria-expanded="false">提示</button></div><p class="my-files-lock-hint" hidden>某人再提69我真拉黑</p><small id="myFilesLockError" role="alert" aria-live="polite"></small></div>';
+  panel.innerHTML = '<button type="button" class="my-files-lock-close" data-lock-action="close" aria-label="关闭">×</button><div class="my-files-lock-body"><p>此文件夹已加密。输入口令后才能查看其中的文件。</p><div class="my-files-lock-row"><label for="myFilesPasscode">口令：</label><input id="myFilesPasscode" type="password" maxlength="6" inputmode="numeric" autocomplete="off" aria-describedby="myFilesLockError" /><button type="button" data-lock-action="ok">确定</button><button type="button" data-lock-action="hint" aria-expanded="false">提示</button></div><p class="my-files-lock-hint" hidden>某人的弱智谜题（再提69分直接拉黑）</p><small id="myFilesLockError" role="alert" aria-live="polite"></small></div>';
   const input = panel.querySelector("input"), error = panel.querySelector("small");
   const close = () => { panel.remove(); focusWindow(win); };
   const submit = () => { if (input.value === "426573") { myFilesUnlocked = true; panel.remove(); onSuccess?.(); return; } error.textContent = "口令不正确，请重试。"; input.value = ""; input.focus(); playFaultAlert(); };
