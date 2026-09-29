@@ -1064,6 +1064,20 @@ button { font: inherit; }
 .photo-viewer-window .window-content,.photo-viewer{background:#626468}
 .photo-stage{background:repeating-linear-gradient(45deg,#626468 0 2px,#606266 2px 4px)}
 .photo-stage{display:block;padding:0;cursor:grab;user-select:none;touch-action:none}.photo-stage.dragging{cursor:grabbing}.photo-pan-surface{display:grid;place-items:center;min-width:100%;min-height:100%}
+.photo-viewer.show-properties{grid-template-columns:minmax(0,1fr) 270px}
+.photo-viewer.show-properties .photo-stage{grid-column:1;grid-row:1}
+.photo-properties{grid-column:2;grid-row:1;min-width:0;overflow:auto;box-sizing:border-box;padding:12px 13px;background:#f5f5f1;border-left:2px solid #8b9397;color:#263d56;font:15px/1.45 SimSun,"Microsoft YaHei",sans-serif}
+.photo-properties[hidden]{display:none}
+.photo-properties h3{margin:0 0 12px;padding:0 0 7px;border-bottom:1px solid #9daabb;color:#153a87;font-size:17px}
+.photo-property{margin:0 0 10px;overflow-wrap:anywhere}
+.photo-property>span,.photo-property>strong,.photo-property>small{display:block}
+.photo-property>strong{font-weight:400}
+.photo-property-note{padding-top:9px;border-top:1px solid #aeb8c1}
+.photo-property-note small{margin-top:6px;color:#888;font-size:13px}
+.photo-property-view{margin-top:12px;padding-top:9px;border-top:1px solid #aeb8c1;color:#596a7d;font-size:13px}
+.photo-property-view span{display:inline}
+.photo-viewer.show-properties>footer{grid-column:1/-1}
+@media(max-width:650px){.photo-viewer.show-properties{grid-template-columns:minmax(0,1fr) 190px}.photo-properties{padding:8px;font-size:13px}}
 .qz-photo-grid.is-single{display:block;width:min(330px,100%)}
 .qq-space-page .qz-photo-grid.is-single button{height:auto;line-height:0}
 .qz-photo-grid.is-single img{height:auto;object-fit:contain}
