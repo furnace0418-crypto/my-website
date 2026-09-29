@@ -73,7 +73,7 @@
     </script>
     <script defer src="retro-workstation.js?v=20260926-8"></script>
     <script defer src="bundle.retro-workstation.js?v=20260920-1"></script>
-    <link href="main.css?v=20260925-2" rel="stylesheet" />
+    <link href="main.css?v=20260930-1" rel="stylesheet" />
   
   </head>
   <body class="pixel-loading">
@@ -237,6 +237,20 @@
           }
         });
 
+        const revealControlsWhenReady = () => {
+          const check = () => {
+            if (!findOriginalControl(controlAssets.audio) ||
+                !findOriginalControl(controlAssets.view) ||
+                !document.querySelector("#retro-day-night")) return;
+            window.clearInterval(timer);
+            syncControlStates();
+            document.body.classList.add("scene-controls-ready");
+            controls.classList.add("is-visible");
+          };
+          const timer = window.setInterval(check, 100);
+          check();
+        };
+
         const revealWhenStable = () => {
           const revealStartedAt = performance.now();
           const check = (now) => {
@@ -245,7 +259,7 @@
             const stableWidth = Math.max(24, window.innerWidth * 0.016);
             if (screenWidth >= stableWidth || now - revealStartedAt > 900) {
               document.body.classList.remove("pixel-loading");
-              controls.classList.add("is-visible");
+              revealControlsWhenReady();
               loader.classList.add("is-finished");
               window.setTimeout(() => loader.remove(), 420);
               return;

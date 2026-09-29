@@ -64,15 +64,34 @@ body {
     visibility: hidden;
     transform: translateY(-6px);
     transition:
-        opacity 180ms ease,
+        opacity 420ms ease,
         transform 180ms ease,
-        visibility 180ms;
+        visibility 420ms;
 }
 
 #custom-fixed-controls.is-visible {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
+}
+
+body:not(.pixel-loading) .bios-start-button {
+    display: none !important;
+}
+
+#retro-day-night {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 420ms ease;
+}
+
+body:not(.scene-controls-ready) #retro-day-night {
+    visibility: hidden !important;
+}
+
+body.scene-controls-ready #retro-day-night {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .custom-control {
