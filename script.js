@@ -203,7 +203,7 @@ const qqConversations = {
       { sender: "我", mine: true, text: "你去鼠吧" },
       { date: "2022.12.14 22:03" },
       { sender: "谭某人（谭思远）", text: "给你看个东西" },
-      { sender: "谭某人（谭思远）", image: "assets/photos/number-pattern-v2.png", text: "数字规律" },
+      { sender: "谭某人（谭思远）", image: "assets/photos/number-pattern-v3.png", text: "数字规律" },
       { sender: "我", mine: true, text: "什么玩意" },
       { sender: "谭某人（谭思远）", text: "数字规律啊" },
       { sender: "我", mine: true, text: "你大晚上给我发这个干嘛" },
