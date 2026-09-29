@@ -901,11 +901,12 @@ function openPhotoViewer(photo) {
     bindWindow(win); win.classList.add("opening"); win.addEventListener("animationend", () => win.classList.remove("opening"), { once:true });
   }
   const isYunyangMap = safePhoto.src.includes("yunyang-city-map.png");
-  const properties = win.querySelector(".photo-properties"); properties.hidden = !isYunyangMap; win.querySelector(".photo-viewer").classList.toggle("show-properties", isYunyangMap);
+  const properties = win.querySelector(".photo-properties"); properties.hidden = true; win.querySelector(".photo-viewer").classList.remove("show-properties");
   win.querySelector('[data-photo-property="name"]').textContent = safePhoto.name;
-  win.querySelector('[data-photo-property="path"]').textContent = isYunyangMap ? `D:\\备份资料\\${safePhoto.name}` : safePhoto.source;
+  win.querySelector('[data-photo-property="path"]').textContent = isYunyangMap ? `D:\\备份资料\\${safePhoto.name}` : "未记录";
   win.querySelector('[data-photo-property="dimensions"]').textContent = "读取中…";
-  win.querySelector('[data-photo-property="note"]').textContent = isYunyangMap ? "来源：浮光论坛" : `来源：${safePhoto.source}`;
+  win.querySelector(".photo-property-note").hidden = !isYunyangMap;
+  win.querySelector('[data-photo-property="note"]').textContent = isYunyangMap ? "来源：浮光论坛" : "";
   win.querySelector('[data-photo-property="description"]').textContent = isYunyangMap ? "分享一个记云阳城区位置的小办法" : "";
   const hash = [...safePhoto.name].reduce((sum, char) => sum + char.charCodeAt(0), 0);
   const art = win.querySelector(".photo-placeholder-art"); win.querySelector("h2").textContent = `${safePhoto.name} - 映象`; art.dataset.variant = String(hash % 4); art.classList.toggle("has-photo", Boolean(safePhoto.src)); art.style.aspectRatio="4 / 3"; art.style.width=""; art.style.backgroundImage = safePhoto.src ? `url("${safePhoto.src}")` : ""; win.querySelector(".photo-placeholder-art strong").textContent = safePhoto.name; win.querySelector(".photo-placeholder-art small").textContent = `照片占位符 · ${safePhoto.source}`;
