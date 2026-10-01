@@ -144,7 +144,9 @@
         let ready = false;
         let started = false;
         let originalStart = null;
-        let pendingAudioToggle = false;
+        let muted = false;
+        let freeView = false;
+        let viewTransitioning = false;
         let sceneReady = false;
         let desktopPreloadReady = false;
         let desktopPreloadProgress = 0;
@@ -154,36 +156,13 @@
         let desktopTotalBytes = 0;
         let displayedProgress = 0;
 
-        const controlAssets = {
-          audio: ["fa9623e40006eda6", "8bbd53f7e797a91c"],
-          view: ["0a262c7c9669cd40", "e2b639cbd11be706"]
-        };
-
-        const findOriginalControl = (assets) => {
-          for (const asset of assets) {
-            const control = document.querySelector(`.icon-control-container:has(img[src*="${asset}"])`);
-            if (control) return control;
-          }
-          return null;
-        };
-
         const syncControlStates = () => {
-          const muted = Boolean(document.querySelector('.icon-control-container img[src*="8bbd53f7e797a91c"]'));
-          const freeView = Boolean(document.querySelector('.icon-control-container img[src*="e2b639cbd11be706"]'));
           audioControl.classList.toggle("is-active", muted);
           viewControl.classList.toggle("is-active", freeView);
           audioControl.setAttribute("aria-pressed", String(muted));
           viewControl.setAttribute("aria-pressed", String(freeView));
           audioControl.setAttribute("aria-label", muted ? "Restore office ambience" : "Mute office ambience");
           viewControl.setAttribute("aria-label", freeView ? "Disable free view" : "Enable free view");
-        };
-
-        const pressOriginalControl = (control) => {
-          const eventOptions = { bubbles: true, cancelable: true, view: window };
-          control.dispatchEvent(new MouseEvent("mousedown", eventOptions));
-          control.dispatchEvent(new MouseEvent("mouseup", eventOptions));
-          requestAnimationFrame(syncControlStates);
-          window.setTimeout(syncControlStates, 80);
         };
 
         const findVisibleStart = () => {
@@ -239,7 +218,10 @@
 
         const revealControlsWhenReady = () => {
           const check = () => {
-            if (!document.querySelector("#retro-day-night")) return;
+            const app = window.retroApplication;
+            if (!document.querySelector("#retro-day-night") ||
+                !app?.world?.audioManager?.listener ||
+                !app?.camera?.orbitControls) return;
             window.clearInterval(timer);
             syncControlStates();
             document.body.classList.add("scene-controls-ready");
@@ -283,35 +265,50 @@
 
         audioControl.addEventListener("click", (event) => {
           event.stopPropagation();
-          const original = findOriginalControl(controlAssets.audio);
-          if (original) pressOriginalControl(original);
-          else pendingAudioToggle = !pendingAudioToggle;
+          const audio = window.retroApplication?.world?.audioManager;
+          if (!audio?.listener) return;
+          muted = !muted;
+          audio.listener.setMasterVolume(muted ? 0 : 1);
+          audio.context?.resume();
+          syncControlStates();
         });
 
         viewControl.addEventListener("click", (event) => {
           event.stopPropagation();
-          const original = findOriginalControl(controlAssets.view);
-          if (original) {
-            pressOriginalControl(original);
-          } else if (!document.body.classList.contains("pixel-loading")) {
-            document.dispatchEvent(new MouseEvent("mousedown", {
-              bubbles: true,
-              clientX: window.innerWidth / 2,
-              clientY: window.innerHeight / 2
-            }));
+          const camera = window.retroApplication?.camera;
+          if (!camera?.orbitControls || viewTransitioning) return;
+          freeView = !freeView;
+          viewTransitioning = true;
+          if (freeView) {
+            camera.transition("orbitControlsStart", 750, undefined, () => {
+              camera.instance.position.copy(camera.keyframes.orbitControlsStart.position);
+              camera.orbitControls.update();
+              camera.freeCam = true;
+              viewTransitioning = false;
+            });
+            document.getElementById("webgl").style.pointerEvents = "auto";
+          } else {
+            camera.freeCam = false;
+            camera.transition("idle", 1000, undefined, () => { viewTransitioning = false; });
+            document.getElementById("webgl").style.pointerEvents = "none";
           }
+          syncControlStates();
         });
 
         window.setInterval(() => {
-          if (!pendingAudioToggle) return;
-          if (pendingAudioToggle) {
-            const original = findOriginalControl(controlAssets.audio);
-            if (original) {
-              pendingAudioToggle = false;
-              pressOriginalControl(original);
-            }
+          // The hidden legacy UI can mount later and reset these settings once.
+          const app = window.retroApplication;
+          if (muted) app?.world?.audioManager?.listener?.setMasterVolume(0);
+          if (freeView && !viewTransitioning && app?.camera && !app.camera.freeCam) {
+            viewTransitioning = true;
+            app.camera.transition("orbitControlsStart", 750, undefined, () => {
+              app.camera.instance.position.copy(app.camera.keyframes.orbitControlsStart.position);
+              app.camera.orbitControls.update();
+              app.camera.freeCam = true;
+              viewTransitioning = false;
+            });
+            document.getElementById("webgl").style.pointerEvents = "auto";
           }
-          syncControlStates();
         }, 200);
 
         const update = (now) => {
