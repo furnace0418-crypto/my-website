@@ -1079,6 +1079,8 @@ button { font: inherit; }
 .photo-property-view span{display:inline}
 .photo-viewer.show-properties>footer{grid-column:1/-1}
 @media(max-width:650px){.photo-viewer.show-properties{grid-template-columns:minmax(0,1fr) 190px}.photo-properties{padding:8px;font-size:13px}}
+.forum-reply-image{display:block;width:min(240px,100%);margin:8px 0;padding:4px;border:2px solid;border-color:#fff #777 #777 #fff;background:#e0e4e3;cursor:zoom-in}
+.forum-reply-image img{display:block;width:100%;height:auto}
 .qz-photo-grid.is-single{display:block;width:min(330px,100%)}
 .qq-space-page .qz-photo-grid.is-single button{height:auto;line-height:0}
 .qz-photo-grid.is-single img{height:auto;object-fit:contain}
