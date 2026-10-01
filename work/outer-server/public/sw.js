@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "taoyuan-desktop-";
-const CACHE_NAME = `${CACHE_PREFIX}20260926-1`;
+const CACHE_NAME = `${CACHE_PREFIX}20261001-1`;
 
 self.addEventListener("install", () => self.skipWaiting());
 
@@ -21,7 +21,7 @@ const canStore = (request, response) => (
 );
 
 async function updateCache(request) {
-  const response = await fetch(request);
+  const response = await fetch(request, { cache: "no-cache" });
   if (canStore(request, response)) {
     const cache = await caches.open(CACHE_NAME);
     await cache.put(request, response.clone()).catch(() => {});
@@ -57,7 +57,7 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  if (request.mode === "navigate") {
+  if (request.mode === "navigate" || /\.(?:css|js)$/i.test(url.pathname)) {
     event.respondWith(networkFirst(request));
     return;
   }
