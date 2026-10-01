@@ -1,3 +1,20 @@
+// A fresh passcode is generated for each full page load and shared with the archive.
+window.skyGameArchivePasscode = (() => {
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let previous = "";
+  try { previous = sessionStorage.getItem("skyGameArchivePasscodeLast") || ""; } catch (_) {}
+  let passcode;
+  do {
+    const bytes = new Uint8Array(8);
+    if (window.crypto?.getRandomValues) window.crypto.getRandomValues(bytes);
+    else bytes.forEach((_, index) => { bytes[index] = Math.floor(Math.random() * 256); });
+    const characters = [...bytes].map(byte => alphabet[byte % alphabet.length]).join("");
+    passcode = `${characters.slice(0, 4)}-${characters.slice(4)}`;
+  } while (passcode === previous);
+  try { sessionStorage.setItem("skyGameArchivePasscodeLast", passcode); } catch (_) {}
+  return passcode;
+})();
+
 function setupSkyGameWindow(win) {
   win.classList.add("sky-game-window");
   win.querySelector('[data-action="maximize"]')?.remove();
@@ -31,7 +48,7 @@ function setupSkyGameWindow(win) {
   function hit(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y}
   function boom(x,y,big=false){explosions.push({x,y,t:big?.72:.42,big});}
   function damage(){if(invincible>0||!running)return;lives--;invincible=1.5;boom(player.x+10,player.y+14,true);sound("hurt");if(lives<=0)end(false);}
-  function end(completed){if(finished)return;finished=true;running=false;stopMusic();sound(completed?"win":"fail");setHigh();const qualify=completed&&score>=5000;if(qualify){let flashes=0;const flash=setInterval(()=>{if(!win.isConnected){clearInterval(flash);return;}canvas.style.filter=flashes%2?"brightness(1)":"brightness(3)";if(++flashes>=8){clearInterval(flash);canvas.style.filter="";overlay.hidden=false;overlay.innerHTML=`<h1 class="access">ACCESS GRANTED</h1><div class="invite">Passcode: FG7A-2001</div><p class="sky-game-score">FINAL SCORE ${String(score).padStart(6,"0")}</p><button type="button">再玩一次</button>`;overlay.querySelector("button").onclick=start;}},140);}else{overlay.hidden=false;overlay.innerHTML=`<h1>${completed?"MISSION COMPLETE":"GAME OVER"}<small>${completed?"SCORE BELOW 5000":"TRY AGAIN"}</small></h1><p class="sky-game-score">SCORE ${String(score).padStart(6,"0")}<br>HIGH SCORE ${String(high()).padStart(6,"0")}</p><button type="button">重新开始</button>`;overlay.querySelector("button").onclick=start;}}
+function end(completed){if(finished)return;finished=true;running=false;stopMusic();sound(completed?"win":"fail");setHigh();const qualify=completed&&score>=5000;if(qualify){let flashes=0;const flash=setInterval(()=>{if(!win.isConnected){clearInterval(flash);return;}canvas.style.filter=flashes%2?"brightness(1)":"brightness(3)";if(++flashes>=8){clearInterval(flash);canvas.style.filter="";overlay.hidden=false;overlay.innerHTML=`<h1 class="access">ACCESS GRANTED</h1><div class="invite">Passcode: ${window.skyGameArchivePasscode}</div><p class="sky-game-score">FINAL SCORE ${String(score).padStart(6,"0")}</p><button type="button">再玩一次</button>`;overlay.querySelector("button").onclick=start;}},140);}else{overlay.hidden=false;overlay.innerHTML=`<h1>${completed?"MISSION COMPLETE":"GAME OVER"}<small>${completed?"SCORE BELOW 5000":"TRY AGAIN"}</small></h1><p class="sky-game-score">SCORE ${String(score).padStart(6,"0")}<br>HIGH SCORE ${String(high()).padStart(6,"0")}</p><button type="button">重新开始</button>`;overlay.querySelector("button").onclick=start;}}
   function update(dt){
     scroll=(scroll+70*dt)%2000;stageTime+=dt;spawnClock-=dt;shotClock-=dt;invincible=Math.max(0,invincible-dt);banner=Math.max(0,banner-dt);mapBanner=Math.max(0,mapBanner-dt);mapFade=Math.max(0,mapFade-dt);
     const dirX=(keys.has("left")?-1:0)+(keys.has("right")?1:0),dirY=(keys.has("up")?-1:0)+(keys.has("down")?1:0);player.x=Math.max(7,Math.min(W-player.w-7,player.x+dirX*player.speed*dt));player.y=Math.max(38,Math.min(H-player.h-8,player.y+dirY*player.speed*dt));
