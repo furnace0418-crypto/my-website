@@ -73,7 +73,7 @@
     </script>
     <script defer src="retro-workstation.js?v=20260926-8"></script>
     <script defer src="bundle.retro-workstation.js?v=20260920-1"></script>
-    <link href="main.css?v=20260930-1" rel="stylesheet" />
+    <link href="main.css?v=20261001-1" rel="stylesheet" />
   
   </head>
   <body class="pixel-loading">
@@ -239,9 +239,7 @@
 
         const revealControlsWhenReady = () => {
           const check = () => {
-            if (!findOriginalControl(controlAssets.audio) ||
-                !findOriginalControl(controlAssets.view) ||
-                !document.querySelector("#retro-day-night")) return;
+            if (!document.querySelector("#retro-day-night")) return;
             window.clearInterval(timer);
             syncControlStates();
             document.body.classList.add("scene-controls-ready");

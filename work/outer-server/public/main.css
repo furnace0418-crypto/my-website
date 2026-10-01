@@ -53,6 +53,11 @@ body {
     display: none !important;
 }
 
+/* The first screen click can be intercepted before the legacy hint's listener runs. */
+body:not(.pixel-loading) #ui-app div:has(> p + div > .blinking-cursor) {
+    display: none !important;
+}
+
 #custom-fixed-controls {
     position: fixed;
     z-index: 10001;
