@@ -6,13 +6,57 @@
     window.parent.postMessage({ type, ...detail }, "*");
   };
 
+  let networkController = null;
+  let runId = 0;
+  let downloadResultHandled = false;
+  const stopNetworkPreload = () => {
+    runId++;
+    networkController?.abort();
+    networkController = null;
+  };
+
+  const preloadLocalPack = async () => {
+    const saved = await window.DesktopAssetPack.storedFile();
+    if (!saved || saved.version !== window.DesktopAssetPack.VERSION) throw new Error("No current local pack");
+    const { items, entries } = await window.DesktopAssetPack.readFile(saved.handle);
+    const totalBytes = items.reduce((sum, item) => sum + item.bytes, 0);
+    const cache = await caches.open("taoyuan-desktop-20261001-1");
+    const decodedImages = [];
+    const byPath = new Map();
+    let loadedBytes = 0, loaded = 0;
+    window.__preloadedDesktopImages = decodedImages;
+    window.__preloadedDesktopImagesByPath = byPath;
+    notify("desktop-preload-progress", { loaded, total: items.length, failed: 0, loadedBytes, totalBytes, progress: 0 });
+    for (const item of items) {
+      const bytes = entries.get(item.path);
+      const extension = item.path.split(".").pop().toLowerCase();
+      const mime = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp", svg: "image/svg+xml", gif: "image/gif" }[extension] || "application/octet-stream";
+      const blob = new Blob([bytes], { type: mime });
+      await cache.put(new Request(new URL(item.path, location.href)), new Response(blob, { headers: { "Content-Type": mime } }));
+      const image = new Image();
+      image.decoding = "async";
+      image.src = URL.createObjectURL(blob);
+      await image.decode();
+      decodedImages.push(image);
+      byPath.set(item.path, image);
+      loadedBytes += bytes.byteLength;
+      loaded++;
+      notify("desktop-preload-progress", { loaded, total: items.length, failed: 0, loadedBytes, totalBytes, progress: Math.min(1, loadedBytes / totalBytes) });
+    }
+    notify("desktop-preload-ready", { loaded, total: items.length, failed: 0, loadedBytes, totalBytes, source: "local-pack" });
+  };
+
   const preloadImages = async () => {
+    const thisRun = ++runId;
+    const controller = new AbortController();
+    networkController = controller;
     let paths = [];
     try {
-      const response = await fetch("assets/image-preload-manifest.json?v=20261004-4", { cache: "force-cache" });
+      const response = await fetch("assets/image-preload-manifest.json?v=20261004-4", { cache: "force-cache", signal: controller.signal });
       if (!response.ok) throw new Error(`manifest ${response.status}`);
       paths = await response.json();
     } catch (error) {
+      if (controller.signal.aborted) return;
       console.warn("Desktop image preload manifest unavailable", error);
       notify("desktop-preload-ready", { loaded: 0, total: 0, failed: 1 });
       return;
@@ -42,13 +86,13 @@
       });
     };
     const worker = async () => {
-      while (cursor < total) {
+      while (cursor < total && !controller.signal.aborted) {
         const index = cursor++;
         const item = items[index];
         const expectedBytes = Math.max(1, Number(item.bytes) || 1);
         let receivedBytes = 0;
         try {
-          const response = await fetch(item.path, { cache: "force-cache" });
+          const response = await fetch(item.path, { cache: "force-cache", signal: controller.signal });
           if (!response.ok) throw new Error(`${item.path} ${response.status}`);
           if (response.body?.getReader) {
             const reader = response.body.getReader();
@@ -75,9 +119,11 @@
           });
           window.__preloadedDesktopImagesByPath.set(item.path, image);
         } catch (error) {
+          if (controller.signal.aborted) return;
           failed++;
           console.warn("Desktop image preload failed", item.path, error);
         } finally {
+          if (controller.signal.aborted) continue;
           loadedBytes += Math.max(0, expectedBytes - receivedBytes);
           loaded++;
           reportProgress(true);
@@ -86,10 +132,55 @@
     };
 
     await Promise.all(Array.from({ length: Math.min(6, total || 1) }, worker));
-    notify("desktop-preload-ready", { loaded, total, failed });
+    if (!controller.signal.aborted && thisRun === runId) notify("desktop-preload-ready", { loaded, total, failed });
   };
 
-  preloadImages();
+  const tryLocalPack = async () => {
+    try {
+      const saved = await window.DesktopAssetPack?.storedFile();
+      if (saved?.version === window.DesktopAssetPack.VERSION) {
+        const permission = await saved.handle.queryPermission({ mode: "read" });
+        if (permission === "granted") {
+          await preloadLocalPack();
+          return;
+        }
+        notify("desktop-pack-needs-permission");
+        return;
+      }
+    } catch (error) {
+      console.warn("Local asset pack unavailable", error);
+      notify("desktop-pack-error");
+    }
+    if (sessionStorage.getItem("desktop-pack-downloading") === "1") {
+      const waitForDownload = setInterval(() => {
+        if (sessionStorage.getItem("desktop-pack-downloading") === "1") return;
+        clearInterval(waitForDownload);
+        if (!downloadResultHandled) tryLocalPack();
+      }, 400);
+    } else {
+      preloadImages();
+    }
+  };
+
+  window.addEventListener("message", event => {
+    if (event.source !== window.parent || event.origin !== location.origin) return;
+    if (event.data?.type === "desktop-pack-download-start") {
+      downloadResultHandled = false;
+      stopNetworkPreload();
+    }
+    if (event.data?.type === "desktop-pack-ready") {
+      downloadResultHandled = true;
+      stopNetworkPreload();
+      preloadLocalPack().catch(error => { console.warn("Could not use saved pack", error); notify("desktop-pack-error"); preloadImages(); });
+    }
+    if (event.data?.type === "desktop-pack-online") {
+      downloadResultHandled = true;
+      stopNetworkPreload();
+      preloadImages();
+    }
+  });
+
+  tryLocalPack();
 })();
 
 const apps = {

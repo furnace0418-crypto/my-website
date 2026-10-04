@@ -65,6 +65,12 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
+  // The user-selected ZIP is the durable copy; do not duplicate it in Cache Storage.
+  if (/desktop-assets-[^/]+\.zip$/i.test(url.pathname)) {
+    event.respondWith(fetch(request));
+    return;
+  }
+
   if (request.mode === "navigate" || /\.(?:css|js)$/i.test(url.pathname)) {
     event.respondWith(networkFirst(request));
     return;

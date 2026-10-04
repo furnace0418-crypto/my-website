@@ -67,13 +67,14 @@
     <script>
       if ("serviceWorker" in navigator && location.protocol === "https:") {
         window.persistentCacheReady = navigator.serviceWorker
-          .register("./sw.js?v=20261004-5", { scope: "./", updateViaCache: "none" })
+          .register("./sw.js?v=20261004-6", { scope: "./", updateViaCache: "none" })
           .catch((error) => console.warn("Persistent asset cache unavailable", error));
       }
     </script>
-    <script defer src="retro-workstation.js?v=20261004-4"></script>
+    <script defer src="retro-workstation.js?v=20261004-6"></script>
     <script defer src="bundle.retro-workstation.js?v=20260920-1"></script>
-    <link href="main.css?v=20261001-1" rel="stylesheet" />
+    <link href="main.css?v=20261004-6" rel="stylesheet" />
+    <script src="desktop/asset-pack.js?v=20261004-1"></script>
   
   </head>
   <body class="pixel-loading">
@@ -92,6 +93,11 @@
         </div>
         <div id="pixel-progress-status">INITIALIZING SCENE · 0%</div>
         <button id="pixel-start-button" type="button">START</button>
+      </div>
+      <div class="pixel-pack-controls">
+        <button id="pixel-pack-download" type="button">DOWNLOAD</button>
+        <button id="pixel-pack-online" type="button" hidden>LOAD ONLINE</button>
+        <div id="pixel-pack-status" aria-live="polite">SAVE DESKTOP ASSETS FOR NEXT VISIT</div>
       </div>
     </div>
     <div id="custom-fixed-controls" aria-label="Scene controls">
@@ -136,6 +142,9 @@
         const fill = document.querySelector("#pixel-progress-fill");
         const progressStatus = document.querySelector("#pixel-progress-status");
         const start = document.querySelector("#pixel-start-button");
+        const packButton = document.querySelector("#pixel-pack-download");
+        const onlineButton = document.querySelector("#pixel-pack-online");
+        const packStatus = document.querySelector("#pixel-pack-status");
         const controls = document.querySelector("#custom-fixed-controls");
         const audioControl = document.querySelector("#custom-audio-control");
         const viewControl = document.querySelector("#custom-view-control");
@@ -155,6 +164,103 @@
         let desktopLoadedBytes = 0;
         let desktopTotalBytes = 0;
         let displayedProgress = 0;
+        let packNeedsPermission = false;
+
+        const tellDesktop = (type) => {
+          const frame = window.retroApplication?.cssScene?.children?.[0]?.element?.querySelector("iframe");
+          frame?.contentWindow?.postMessage({ type }, location.origin);
+        };
+
+        const useStoredPack = async () => {
+          try {
+            const saved = await window.DesktopAssetPack.storedFile();
+            if (!saved?.handle) throw new Error("Saved file not found");
+            const permission = await saved.handle.requestPermission({ mode: "read" });
+            if (permission !== "granted") throw new Error("File access was not granted");
+            packNeedsPermission = false;
+            onlineButton.hidden = true;
+            packButton.textContent = "LOCAL PACK READY";
+            packButton.disabled = true;
+            packStatus.textContent = "READING SAVED FILE";
+            tellDesktop("desktop-pack-ready");
+          } catch (error) {
+            packStatus.textContent = "LOCAL FILE UNAVAILABLE · LOADING ONLINE";
+            packNeedsPermission = false;
+            onlineButton.hidden = true;
+            packButton.textContent = "DOWNLOAD";
+            tellDesktop("desktop-pack-online");
+          }
+        };
+
+        const downloadPack = async () => {
+          if (!window.showSaveFilePicker) {
+            packStatus.textContent = "SAVE LOCATION NOT SUPPORTED IN THIS BROWSER";
+            return;
+          }
+          let handle;
+          try {
+            // The picker must run directly from the click gesture.
+            handle = await window.showSaveFilePicker({
+              suggestedName: window.DesktopAssetPack.FILE_NAME,
+              types: [{ description: "Desktop asset archive", accept: { "application/zip": [".zip"] } }]
+            });
+          } catch (error) {
+            if (error.name !== "AbortError") packStatus.textContent = "COULD NOT CHOOSE SAVE LOCATION";
+            return;
+          }
+          sessionStorage.setItem("desktop-pack-downloading", "1");
+          tellDesktop("desktop-pack-download-start");
+          packButton.disabled = true;
+          packStatus.textContent = "DOWNLOADING ASSET PACK · 0%";
+          let writer;
+          try {
+            const url = new URL(`desktop/${window.DesktopAssetPack.URL_PATH}`, location.href);
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`Archive HTTP ${response.status}`);
+            writer = await handle.createWritable();
+            const total = Number(response.headers.get("content-length")) || 65633719;
+            let received = 0;
+            if (response.body?.getReader) {
+              const reader = response.body.getReader();
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                await writer.write(value);
+                received += value.byteLength;
+                packStatus.textContent = `DOWNLOADING ASSET PACK · ${Math.min(99, Math.floor(received / total * 100))}%`;
+              }
+            } else {
+              const bytes = await response.arrayBuffer();
+              await writer.write(bytes);
+            }
+            await writer.close();
+            writer = null;
+            await window.DesktopAssetPack.rememberFile(handle);
+            packStatus.textContent = "SAVED · PREPARING LOCAL ASSETS";
+            packButton.textContent = "LOCAL PACK SAVED";
+            tellDesktop("desktop-pack-ready");
+          } catch (error) {
+            console.warn("Asset pack download failed", error);
+            await writer?.abort().catch(() => {});
+            packStatus.textContent = "DOWNLOAD FAILED · LOADING ONLINE";
+            packButton.disabled = false;
+            tellDesktop("desktop-pack-online");
+          } finally {
+            sessionStorage.removeItem("desktop-pack-downloading");
+          }
+        };
+
+        packButton.addEventListener("click", () => {
+          if (packNeedsPermission) useStoredPack();
+          else downloadPack();
+        });
+        onlineButton.addEventListener("click", () => {
+          onlineButton.hidden = true;
+          packNeedsPermission = false;
+          packButton.textContent = "DOWNLOAD";
+          packStatus.textContent = "LOADING ASSETS ONLINE";
+          tellDesktop("desktop-pack-online");
+        });
 
         const syncControlStates = () => {
           audioControl.classList.toggle("is-active", muted);
@@ -212,7 +318,24 @@
             desktopLoadedBytes = Math.max(0, Number(event.data.loadedBytes) || desktopLoadedBytes);
             desktopTotalBytes = Math.max(0, Number(event.data.totalBytes) || desktopTotalBytes);
             desktopPreloadReady = true;
+            if (event.data.source === "local-pack") {
+              packButton.textContent = "LOCAL PACK READY";
+              packButton.disabled = true;
+              packStatus.textContent = "ASSETS READ FROM SAVED FILE";
+            }
             finishWhenEverythingIsReady();
+          }
+          if (event.data.type === "desktop-pack-needs-permission") {
+            packNeedsPermission = true;
+            onlineButton.hidden = false;
+            packButton.textContent = "GRANT FILE ACCESS";
+            packStatus.textContent = "BROWSER NEEDS PERMISSION TO READ SAVED PACK";
+          }
+          if (event.data.type === "desktop-pack-error") {
+            onlineButton.hidden = true;
+            packStatus.textContent = "LOCAL PACK UNAVAILABLE · LOADING ONLINE";
+            packButton.disabled = false;
+            packButton.textContent = "DOWNLOAD";
           }
         });
 

@@ -30,7 +30,7 @@ jobs:
           mkdir -p _site/desktop
           cp -R work/outer-server/public/. _site/
           cp work/outer-server/public/legacy/index.html _site/index.html
-          cp index.html script.js styles.css sky-game.js archive-overrides.css _site/desktop/
+          cp index.html script.js styles.css sky-game.js asset-pack.js archive-overrides.css _site/desktop/
           cp -R assets _site/desktop/assets
           touch _site/.nojekyll
 

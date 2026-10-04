@@ -199,6 +199,8 @@ body.pixel-loading #ui-interactive {
     opacity: 0;
 }
 
+#custom-pixel-loader.is-starting .pixel-pack-controls { opacity: 0; }
+
 .pixel-loader-title {
     color: #fff;
     font-family: "Courier New", monospace;
@@ -286,6 +288,55 @@ body.pixel-loading #ui-interactive {
     color: #000;
     background: #fff;
     outline: none;
+}
+
+.pixel-pack-controls {
+    position: absolute;
+    left: 50%;
+    bottom: 7%;
+    width: min(360px, calc(100vw - 40px));
+    transform: translateX(-50%);
+    text-align: center;
+    font-family: "Courier New", monospace;
+}
+
+#pixel-pack-download {
+    min-width: 164px;
+    padding: 9px 18px;
+    border: 2px solid #fff;
+    color: #fff;
+    background: #000;
+    font: 700 12px/1 "Courier New", monospace;
+    letter-spacing: .12em;
+    cursor: pointer;
+}
+
+#pixel-pack-download:hover:not(:disabled),
+#pixel-pack-download:focus-visible:not(:disabled) {
+    color: #000;
+    background: #fff;
+}
+
+#pixel-pack-download:disabled { opacity: .6; cursor: default; }
+
+#pixel-pack-online {
+    margin-left: 8px;
+    padding: 9px 10px;
+    border: 1px solid #999;
+    color: #bbb;
+    background: #000;
+    font: 700 10px/1 "Courier New", monospace;
+    cursor: pointer;
+}
+
+#pixel-pack-online[hidden] { display: none; }
+
+#pixel-pack-status {
+    min-height: 14px;
+    margin-top: 11px;
+    color: #a9a9a9;
+    font: 700 10px/1.4 "Courier New", monospace;
+    letter-spacing: .03em;
 }
 
 @media only screen and (max-width: 768px) {

@@ -28,6 +28,7 @@ work/outer-server/*
 
 # Archives and temporary exports
 *.zip
+!assets/desktop-assets-20261004-1.zip
 *.7z
 *.rar
 *.tmp
