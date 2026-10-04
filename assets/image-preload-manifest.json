@@ -1,119 +1,119 @@
 [
   {
-    "path": "assets/icons/computer-16.png",
-    "bytes": 212
+    "path": "assets/icons/computer-16.webp",
+    "bytes": 140
   },
   {
-    "path": "assets/icons/notepad-16.png",
-    "bytes": 220
+    "path": "assets/icons/notepad-16.webp",
+    "bytes": 144
   },
   {
-    "path": "assets/icons/network-16.png",
-    "bytes": 257
+    "path": "assets/icons/network-16.webp",
+    "bytes": 154
   },
   {
-    "path": "assets/icons/user-16.png",
-    "bytes": 273
+    "path": "assets/icons/user-16.webp",
+    "bytes": 148
   },
   {
-    "path": "assets/icons/volume-16.png",
-    "bytes": 290
+    "path": "assets/icons/volume-16.webp",
+    "bytes": 146
   },
   {
     "path": "assets/icons/browser-globe-gray.svg",
-    "bytes": 293
+    "bytes": 297
   },
   {
-    "path": "assets/icons/folder-16.png",
-    "bytes": 309
+    "path": "assets/icons/folder-16.webp",
+    "bytes": 132
   },
   {
-    "path": "assets/icons/recycle-16.png",
-    "bytes": 321
+    "path": "assets/icons/recycle-16.webp",
+    "bytes": 142
   },
   {
-    "path": "assets/icons/shutdown-32.png",
-    "bytes": 337
+    "path": "assets/icons/shutdown-32.webp",
+    "bytes": 188
   },
   {
-    "path": "assets/icons/volume-muted-16.png",
-    "bytes": 337
+    "path": "assets/icons/volume-muted-16.webp",
+    "bytes": 160
   },
   {
     "path": "assets/icons/security-16.svg",
-    "bytes": 347
+    "bytes": 353
   },
   {
     "path": "assets/icons/file-txt-32.svg",
-    "bytes": 351
+    "bytes": 358
   },
   {
-    "path": "assets/icons/computer-32.png",
-    "bytes": 380
+    "path": "assets/icons/computer-32.webp",
+    "bytes": 206
   },
   {
     "path": "assets/forum-noise.svg",
-    "bytes": 394
+    "bytes": 401
   },
   {
     "path": "assets/icons/qq-friend-list.svg",
-    "bytes": 413
+    "bytes": 418
   },
   {
     "path": "assets/icons/word-16.svg",
-    "bytes": 416
+    "bytes": 423
   },
   {
     "path": "assets/icons/hard-drive-32.svg",
-    "bytes": 421
+    "bytes": 429
   },
   {
     "path": "assets/icons/excel-16.svg",
-    "bytes": 445
+    "bytes": 452
   },
   {
-    "path": "assets/icons/browser-16.png",
-    "bytes": 463
+    "path": "assets/icons/browser-16.webp",
+    "bytes": 248
   },
   {
     "path": "assets/icons/file-jpg-32.svg",
-    "bytes": 488
+    "bytes": 497
   },
   {
     "path": "assets/icons/qq-16.svg",
-    "bytes": 490
+    "bytes": 497
   },
   {
     "path": "assets/icons/file-pdf-32.svg",
-    "bytes": 516
+    "bytes": 526
   },
   {
-    "path": "assets/icons/recycle-32.png",
-    "bytes": 640
+    "path": "assets/icons/recycle-32.webp",
+    "bytes": 216
   },
   {
     "path": "assets/icons/qq-32.svg",
-    "bytes": 701
+    "bytes": 713
   },
   {
-    "path": "assets/icons/notepad-32.png",
-    "bytes": 810
+    "path": "assets/icons/notepad-32.webp",
+    "bytes": 212
   },
   {
-    "path": "assets/icons/folder-32.png",
-    "bytes": 982
+    "path": "assets/icons/folder-32.webp",
+    "bytes": 196
   },
   {
-    "path": "assets/icons/qq-favorites-sidebar.png",
-    "bytes": 4296
+    "path": "assets/icons/qq-favorites-sidebar.webp",
+    "bytes": 426
   },
   {
-    "path": "assets/icons/qq-channel-sidebar.png",
-    "bytes": 12728
+    "path": "assets/icons/qq-channel-sidebar.webp",
+    "bytes": 2980
   },
   {
-    "path": "assets/icons/qq-space-sidebar.png",
-    "bytes": 13336
+    "path": "assets/icons/qq-space-sidebar.webp",
+    "bytes": 3356
   },
   {
     "path": "assets/sky-game/弹幕2.webp",
@@ -128,8 +128,8 @@
     "bytes": 24132
   },
   {
-    "path": "assets/forum-play-button-v2.png",
-    "bytes": 31983
+    "path": "assets/forum-play-button-v2.webp",
+    "bytes": 22078
   },
   {
     "path": "assets/sky-game/弹幕3.webp",
@@ -144,8 +144,8 @@
     "bytes": 36946
   },
   {
-    "path": "assets/avatars/forum-default-avatar.png",
-    "bytes": 37813
+    "path": "assets/avatars/forum-default-avatar.webp",
+    "bytes": 10870
   },
   {
     "path": "assets/sky-game/飞机3.webp",
@@ -168,28 +168,28 @@
     "bytes": 77380
   },
   {
-    "path": "assets/boot-key-reference.png",
-    "bytes": 81091
+    "path": "assets/boot-key-reference.webp",
+    "bytes": 7024
   },
   {
     "path": "assets/sky-game/飞机2.webp",
     "bytes": 81552
   },
   {
-    "path": "assets/avatars/chenyuan-user.png",
-    "bytes": 101545
+    "path": "assets/avatars/chenyuan-user.webp",
+    "bytes": 8682
   },
   {
-    "path": "assets/avatars/shiqian-bear.png",
-    "bytes": 106612
+    "path": "assets/avatars/shiqian-bear.webp",
+    "bytes": 8844
   },
   {
-    "path": "assets/avatars/twostroke-user.png",
-    "bytes": 122373
+    "path": "assets/avatars/twostroke-user.webp",
+    "bytes": 11648
   },
   {
-    "path": "assets/avatars/xiaoqiao-user.png",
-    "bytes": 124882
+    "path": "assets/avatars/xiaoqiao-user.webp",
+    "bytes": 10032
   },
   {
     "path": "assets/yunyang-anti-fraud-campus.webp",
@@ -212,8 +212,8 @@
     "bytes": 266712
   },
   {
-    "path": "assets/avatars/xiaohang-user.png",
-    "bytes": 268073
+    "path": "assets/avatars/xiaohang-user.webp",
+    "bytes": 28508
   },
   {
     "path": "assets/yunyang-autumn-promo.webp",
@@ -224,152 +224,152 @@
     "bytes": 523600
   },
   {
-    "path": "assets/avatars/forum-wl.png",
-    "bytes": 529773
+    "path": "assets/avatars/forum-wl.webp",
+    "bytes": 103166
   },
   {
-    "path": "assets/avatars/taoyuan-forum-avatar-v2.png",
-    "bytes": 529773
+    "path": "assets/avatars/taoyuan-forum-avatar-v2.webp",
+    "bytes": 103166
   },
   {
-    "path": "assets/icons/qq-reference-penguin.png",
-    "bytes": 563447
+    "path": "assets/icons/qq-reference-penguin.webp",
+    "bytes": 377698
   },
   {
-    "path": "assets/documents/case-archive-page.png",
-    "bytes": 622139
+    "path": "assets/documents/case-archive-page.webp",
+    "bytes": 548952
   },
   {
-    "path": "assets/forum-orange-sky-ad-v2.png",
-    "bytes": 933847
+    "path": "assets/forum-orange-sky-ad-v2.webp",
+    "bytes": 164080
   },
   {
-    "path": "assets/icons/case-archive-transparent.png",
-    "bytes": 1000628
+    "path": "assets/icons/case-archive-transparent.webp",
+    "bytes": 672574
   },
   {
-    "path": "assets/avatars/zhenzhen-retro.png",
-    "bytes": 1167024
+    "path": "assets/avatars/zhenzhen-retro.webp",
+    "bytes": 78490
   },
   {
-    "path": "assets/avatars/zhenzhen-gray-v2.png",
-    "bytes": 1280164
+    "path": "assets/avatars/zhenzhen-gray-v2.webp",
+    "bytes": 82708
   },
   {
-    "path": "assets/avatars/zhanglei-retro.png",
-    "bytes": 1293652
+    "path": "assets/avatars/zhanglei-retro.webp",
+    "bytes": 71162
   },
   {
-    "path": "assets/avatars/class-7-group-retro.png",
-    "bytes": 1383627
+    "path": "assets/avatars/class-7-group-retro.webp",
+    "bytes": 137854
   },
   {
-    "path": "assets/photos/memorial-candle.png",
-    "bytes": 1444845
+    "path": "assets/photos/memorial-candle.webp",
+    "bytes": 49578
   },
   {
-    "path": "assets/icons/pixel-air-combat.png",
-    "bytes": 1476595
+    "path": "assets/icons/pixel-air-combat.webp",
+    "bytes": 658462
   },
   {
-    "path": "assets/photos/favorite-cat.png",
-    "bytes": 1639823
+    "path": "assets/photos/favorite-cat.webp",
+    "bytes": 96746
   },
   {
-    "path": "assets/photos/tansiyuan-2023-01-21.png",
-    "bytes": 1640475
+    "path": "assets/photos/tansiyuan-2023-01-21.webp",
+    "bytes": 90932
   },
   {
-    "path": "assets/photos/zhenzhen-night.png",
-    "bytes": 1719958
+    "path": "assets/photos/zhenzhen-night.webp",
+    "bytes": 89024
   },
   {
-    "path": "assets/photos/yunyang-city-map.png",
-    "bytes": 1787518
+    "path": "assets/photos/yunyang-city-map.webp",
+    "bytes": 1339164
   },
   {
-    "path": "assets/photos/favorite-birthday-cake.png",
-    "bytes": 1801069
+    "path": "assets/photos/favorite-birthday-cake.webp",
+    "bytes": 118346
   },
   {
-    "path": "assets/photos/twin-case-news-v2.png",
-    "bytes": 1836627
+    "path": "assets/photos/twin-case-news-v2.webp",
+    "bytes": 1155664
   },
   {
-    "path": "assets/photos/number-pattern-v2.png",
-    "bytes": 1865104
+    "path": "assets/photos/number-pattern-v2.webp",
+    "bytes": 1417198
   },
   {
-    "path": "assets/photos/zhenzhen-perfume.png",
-    "bytes": 1886183
+    "path": "assets/photos/zhenzhen-perfume.webp",
+    "bytes": 137006
   },
   {
-    "path": "assets/photos/cha-dian-bei-fa-xian.png",
-    "bytes": 1954227
+    "path": "assets/photos/cha-dian-bei-fa-xian.webp",
+    "bytes": 146628
   },
   {
-    "path": "assets/photos/qzone-banner-cat.png",
-    "bytes": 1969688
+    "path": "assets/photos/qzone-banner-cat.webp",
+    "bytes": 145940
   },
   {
-    "path": "assets/photos/scholarship-new.png",
-    "bytes": 1972528
+    "path": "assets/photos/scholarship-new.webp",
+    "bytes": 1515700
   },
   {
-    "path": "assets/photos/school-test-image.png",
-    "bytes": 1997689
+    "path": "assets/photos/school-test-image.webp",
+    "bytes": 1315444
   },
   {
-    "path": "assets/photos/zhenzhen-outfit.png",
-    "bytes": 2000317
+    "path": "assets/photos/zhenzhen-outfit.webp",
+    "bytes": 139846
   },
   {
     "path": "assets/sky-game/第三段雪山地图.webp",
-    "bytes": 2047470
+    "bytes": 432700
   },
   {
-    "path": "assets/photos/math-q18.png",
-    "bytes": 2062021
+    "path": "assets/photos/math-q18.webp",
+    "bytes": 1443486
   },
   {
-    "path": "assets/photos/si-zhuang.png",
-    "bytes": 2080698
+    "path": "assets/photos/si-zhuang.webp",
+    "bytes": 90932
   },
   {
     "path": "assets/forum-corner-ad-sheep.webp",
     "bytes": 328992
   },
   {
-    "path": "assets/photos/old-photo.png",
-    "bytes": 2086457
+    "path": "assets/photos/old-photo.webp",
+    "bytes": 180742
   },
   {
-    "path": "assets/photos/zhenzhen-desk.png",
-    "bytes": 2094599
+    "path": "assets/photos/zhenzhen-desk.webp",
+    "bytes": 210692
   },
   {
     "path": "assets/sky-game/第二关沙漠地图.webp",
-    "bytes": 2109502
+    "bytes": 447312
   },
   {
-    "path": "assets/photos/tansiyuan-2023-08-22.png",
-    "bytes": 2152060
+    "path": "assets/photos/tansiyuan-2023-08-22.webp",
+    "bytes": 111394
   },
   {
-    "path": "assets/photos/maomao.png",
-    "bytes": 2222681
+    "path": "assets/photos/maomao.webp",
+    "bytes": 147490
   },
   {
     "path": "assets/sky-game/第一关地图.webp",
-    "bytes": 2234594
+    "bytes": 480868
   },
   {
-    "path": "assets/photos/mei-cai-lei.png",
-    "bytes": 2499879
+    "path": "assets/photos/mei-cai-lei.webp",
+    "bytes": 287874
   },
   {
-    "path": "assets/photos/student-id-new.png",
-    "bytes": 2739913
+    "path": "assets/photos/student-id-new.webp",
+    "bytes": 2646618
   },
   {
     "path": "assets/photos/qzone-owner-background-wide.webp",

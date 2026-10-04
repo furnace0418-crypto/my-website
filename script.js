@@ -20,7 +20,7 @@
     if (!saved || saved.version !== window.DesktopAssetPack.VERSION) throw new Error("No current local pack");
     const { items, entries } = await window.DesktopAssetPack.readFile(saved.handle);
     const totalBytes = items.reduce((sum, item) => sum + item.bytes, 0);
-    const cache = await caches.open("taoyuan-desktop-20261001-1");
+    const cache = await caches.open("taoyuan-desktop-20261005-1");
     const decodedImages = [];
     const byPath = new Map();
     let loadedBytes = 0, loaded = 0;
@@ -52,7 +52,7 @@
     networkController = controller;
     let paths = [];
     try {
-      const response = await fetch("assets/image-preload-manifest.json?v=20261004-4", { cache: "force-cache", signal: controller.signal });
+      const response = await fetch("assets/image-preload-manifest.json?v=20261005-1", { cache: "force-cache", signal: controller.signal });
       if (!response.ok) throw new Error(`manifest ${response.status}`);
       paths = await response.json();
     } catch (error) {
@@ -236,10 +236,10 @@ const explorerNodes = {
   },
   "program-files": { title: "Program Files", path: "C:\\Program Files", parent: "drive-c", items: [{ name: "Internet Explorer", detail: "文件夹", type: "folder", target: "internet-explorer" }, { name: "Tencent", detail: "文件夹", type: "folder", target: "tencent-folder" }] },
   "windows-folder": { title: "WINDOWS", path: "C:\\WINDOWS", parent: "drive-c", items: [{ name: "SYSTEM", detail: "文件夹", type: "folder", target: "system-folder" }, { name: "桌面", detail: "文件夹", type: "folder", target: "desktop-folder" }, { name: "win.ini", detail: "1 KB　配置设置", type: "txt", content: "[windows]\nload=\nrun=" }] },
-  "d-photos": { title: "照片", path: "D:\\照片", parent: "drive-d", items: [{ name: "死装.jpg", detail: "86 KB　JPEG 图像", type: "jpeg", src: "assets/photos/si-zhuang.png" }, { name: "没踩雷！.jpg", detail: "124 KB　JPEG 图像", type: "jpeg", src: "assets/photos/mei-cai-lei.png" }, { name: "差点被发现.jpg", detail: "72 KB　JPEG 图像", type: "jpeg", src: "assets/photos/cha-dian-bei-fa-xian.png" }] },
-  "d-backup": { title: "备份资料", path: "D:\\备份资料", parent: "drive-d", items: [{ name: "云阳市城区示意图.png", detail: "PNG 图像", type: "jpeg", src: "assets/photos/yunyang-city-map.png" }] },
-  "d-school": { title: "test", path: "D:\\test", parent: "drive-d", items: [{ name: "未标题-1.png", detail: "1.9 MB　PNG 图像", type: "jpeg", src: "assets/photos/school-test-image.png" }] },
-  "my-pictures": { title: "重要", path: "D:\\我的文件\\重要", parent: "my-files", items: [{ name: "奖学金.jpg", detail: "JPEG 图像", type: "jpeg", src: "assets/photos/scholarship-new.png" }, { name: "学生证.png", detail: "PNG 图像", type: "jpeg", src: "assets/photos/student-id-zhengyuan.png" }] },
+  "d-photos": { title: "照片", path: "D:\\照片", parent: "drive-d", items: [{ name: "死装.jpg", detail: "86 KB　JPEG 图像", type: "jpeg", src: "assets/photos/si-zhuang.webp" }, { name: "没踩雷！.jpg", detail: "124 KB　JPEG 图像", type: "jpeg", src: "assets/photos/mei-cai-lei.webp" }, { name: "差点被发现.jpg", detail: "72 KB　JPEG 图像", type: "jpeg", src: "assets/photos/cha-dian-bei-fa-xian.webp" }] },
+  "d-backup": { title: "备份资料", path: "D:\\备份资料", parent: "drive-d", items: [{ name: "云阳市城区示意图.png", detail: "PNG 图像", type: "jpeg", src: "assets/photos/yunyang-city-map.webp" }] },
+  "d-school": { title: "test", path: "D:\\test", parent: "drive-d", items: [{ name: "未标题-1.png", detail: "1.9 MB　PNG 图像", type: "jpeg", src: "assets/photos/school-test-image.webp" }] },
+  "my-pictures": { title: "重要", path: "D:\\我的文件\\重要", parent: "my-files", items: [{ name: "奖学金.jpg", detail: "JPEG 图像", type: "jpeg", src: "assets/photos/scholarship-new.webp" }, { name: "学生证.png", detail: "PNG 图像", type: "jpeg", src: "assets/photos/student-id-zhengyuan.webp" }] },
   "study-files": { title: "学习资料", path: "D:\\我的文件\\学习资料", parent: "my-files", items: [{ name: "2022学年", detail: "文件夹", type: "folder", target: "study-2022" }, { name: "地理错题整理.docx", detail: "只读　Microsoft Word 文档", type: "word", src: "assets/documents/地理错题整理.docx" }, { name: "英语单词.txt", detail: "1 KB　文本文档", type: "txt", content: "diplomacy 外交(n.)\npalette 调色盘(n.)\nsupervision 监管.监督(n.)\nconfine 限制.局限(v.)\nconventional 传统的.常规的(adj.)" }] },
   "study-2022": { title: "2022学年", path: "D:\\我的文件\\学习资料\\2022学年", parent: "study-files", items: [{ name: "期末成绩单.xlsx", detail: "10 KB　Microsoft Excel 工作表", type: "excel" }] },
   "game-saves": { title: "游戏存档", path: "D:\\我的文件\\游戏存档", parent: "my-files", items: [{ name: "README.txt", detail: "1 KB　文本文档", type: "txt", content: "请勿修改或删除游戏存档。" }] },
@@ -261,12 +261,12 @@ for (const [name, content] of Object.entries(readSavedNotepadFiles())) {
   else explorerNodes["my-files"].items.push({ name, detail: "文本文档", type: "txt", content });
 }
 let recycleBinItems = [
-  { name: "旧照片.jpg", original: "D:\\我的文件\\重要", deleted: "2001-07-16 18:42", type: "jpeg", size: "94 KB", src: "assets/photos/old-photo.png" },
+  { name: "旧照片.jpg", original: "D:\\我的文件\\重要", deleted: "2001-07-16 18:42", type: "jpeg", size: "94 KB", src: "assets/photos/old-photo.webp" },
   { name: "常用网站.txt", original: "D:\\我的文件", deleted: "2001-07-17 21:08", type: "txt", size: "2 KB", content: "浮光论坛：http://bbs.fuguang.cn/\n云阳新闻网：http://news.yunyang.cn/\n咳咳：http://88Av.Gv.cn/" }
 ];
 const qqConversations = {
   "gzx（郭梓轩）": {
-    type: "direct", avatarSrc: "assets/avatars/twostroke-user.png", status: "离线", identity: "QQ：6620401",
+    type: "direct", avatarSrc: "assets/avatars/twostroke-user.webp", status: "离线", identity: "QQ：6620401",
     messages: [
       { date: "2022.9.1 19:26" },
       { sender: "郭子轩", text: "刚刚班群里加的" },
@@ -276,7 +276,7 @@ const qqConversations = {
     ]
   },
   "谭某人（谭思远）": {
-    type: "direct", avatarSrc: "assets/avatars/chenyuan-user.png", status: "离线", identity: "QQ：7312046",
+    type: "direct", avatarSrc: "assets/avatars/chenyuan-user.webp", status: "离线", identity: "QQ：7312046",
     messages: [
       { date: "2022.11.18 21:47" },
       { sender: "我", mine: true, text: "你数学卷子还在不" },
@@ -286,7 +286,7 @@ const qqConversations = {
       { sender: "我", mine: true, text: "你能不能不要哪壶不开提哪壶" },
       { sender: "谭某人（谭思远）", text: "69挺吉利的" },
       { sender: "我", mine: true, text: "滚" },
-      { sender: "谭某人（谭思远）", image: "assets/photos/math-q18.png", text: "数学卷子第18题" },
+      { sender: "谭某人（谭思远）", image: "assets/photos/math-q18.webp", text: "数学卷子第18题" },
       { sender: "我", mine: true, text: "你这第三步怎么出来的" },
       { sender: "谭某人（谭思远）", text: "打字说不清" },
       { sender: "谭某人（谭思远）", text: "明早给你讲" },
@@ -296,7 +296,7 @@ const qqConversations = {
       { sender: "我", mine: true, text: "你去鼠吧" },
       { date: "2022.12.14 22:03" },
       { sender: "谭某人（谭思远）", text: "给你看个东西" },
-      { sender: "谭某人（谭思远）", image: "assets/photos/number-pattern-v3.png", text: "数字规律" },
+      { sender: "谭某人（谭思远）", image: "assets/photos/number-pattern-v3.webp", text: "数字规律" },
       { sender: "我", mine: true, text: "什么玩意" },
       { sender: "谭某人（谭思远）", text: "数字规律啊" },
       { sender: "我", mine: true, text: "你大晚上给我发这个干嘛" },
@@ -336,7 +336,7 @@ const qqConversations = {
     ]
   },
   "不吃香菜（程语嫣）": {
-    type: "direct", avatarSrc: "assets/avatars/xiaoqiao-user.png", status: "离线", identity: "QQ：2946018",
+    type: "direct", avatarSrc: "assets/avatars/xiaoqiao-user.webp", status: "离线", identity: "QQ：2946018",
     messages: [
       { date: "2023.3.2 18:56" },
       { sender: "程语嫣", text: "你奖学金那个表交了吗" },
@@ -354,13 +354,13 @@ const qqConversations = {
     ]
   },
   "时迁": {
-    type: "direct", ai: true, avatarSrc: "assets/avatars/shiqian-bear.png", status: "在线　可接收消息", identity: "QQ：4170201",
+    type: "direct", ai: true, avatarSrc: "assets/avatars/shiqian-bear.webp", status: "在线　可接收消息", identity: "QQ：4170201",
     messages: [
       { sender: "时迁", text: "你来啦，刚才干嘛去了？", time: "今天 12:07" }
     ]
   },
   "珍珍姐": {
-    type: "direct", avatarSrc: "assets/avatars/zhenzhen-retro.png", status: "离线", identity: "QQ：5200718",
+    type: "direct", avatarSrc: "assets/avatars/zhenzhen-retro.webp", status: "离线", identity: "QQ：5200718",
     messages: [
       { date: "2022.1.11" },
       { sender: "我", mine: true, text: "妈妈做的菜就是比外面的好吃，你说是吧\n不过我妈也是你妈啦！" },
@@ -396,7 +396,7 @@ const qqConversations = {
     ]
   },
   "七班大家庭": {
-    type: "group", avatarSrc: "assets/avatars/class-7-group-retro.png", status: "你已退出群聊", identity: "群号：170701",
+    type: "group", avatarSrc: "assets/avatars/class-7-group-retro.webp", status: "你已退出群聊", identity: "群号：170701",
     messages: [
       { sender: "班长-周子涵", text: "明天值日：郑愿、赵一鸣、唐雨欣、刘思琪\n别又跑了" },
       { sender: "赵一鸣", text: "为什么又有我" },
@@ -413,16 +413,16 @@ const qqConversations = {
   }
 };
 const qqProfiles = {
-  "珍珍姐": { qq: "5200718", gender: "女", status: "离线", signature: "一切顺遂", avatarSrc: "assets/avatars/zhenzhen-gray-v2.png" },
-  "谭某人（谭思远）": { qq: "7312046", gender: "男", status: "离线", signature: "", avatarSrc: "assets/avatars/chenyuan-user.png" },
-  "不吃香菜（程语嫣）": { qq: "2946018", gender: "女", status: "离线", signature: "今天也要早点睡", avatarSrc: "assets/avatars/xiaoqiao-user.png" },
-  "时迁": { qq: "4170201", gender: "男", status: "在线", signature: "刚回来，晚点再说。", avatarSrc: "assets/avatars/shiqian-bear.png" },
-  "gzx（郭梓轩）": { qq: "6620401", gender: "男", status: "离线", signature: "", avatarSrc: "assets/avatars/twostroke-user.png" },
-  "张磊": { qq: "1208713", gender: "男", status: "离线", signature: "画下一支蓝色铅笔。", avatarSrc: "assets/avatars/zhanglei-retro.png" }
+  "珍珍姐": { qq: "5200718", gender: "女", status: "离线", signature: "一切顺遂", avatarSrc: "assets/avatars/zhenzhen-gray-v2.webp" },
+  "谭某人（谭思远）": { qq: "7312046", gender: "男", status: "离线", signature: "", avatarSrc: "assets/avatars/chenyuan-user.webp" },
+  "不吃香菜（程语嫣）": { qq: "2946018", gender: "女", status: "离线", signature: "今天也要早点睡", avatarSrc: "assets/avatars/xiaoqiao-user.webp" },
+  "时迁": { qq: "4170201", gender: "男", status: "在线", signature: "刚回来，晚点再说。", avatarSrc: "assets/avatars/shiqian-bear.webp" },
+  "gzx（郭梓轩）": { qq: "6620401", gender: "男", status: "离线", signature: "", avatarSrc: "assets/avatars/twostroke-user.webp" },
+  "张磊": { qq: "1208713", gender: "男", status: "离线", signature: "画下一支蓝色铅笔。", avatarSrc: "assets/avatars/zhanglei-retro.webp" }
 };
 const qqFavoriteNotes = [
-  { title: "生日蛋糕", content: "今年生日终于16了，珍珍姐还说我看着像初中生", date: "2022.08.23", source: "愿珍惜你的每一天", kind: "图片与视频", image: "assets/photos/favorite-birthday-cake.png" },
-  { title: "猫猫", content: "", date: "2023.6.9", source: "愿珍惜你的每一天", kind: "图片与视频", image: "assets/photos/favorite-cat.png" },
+  { title: "生日蛋糕", content: "今年生日终于16了，珍珍姐还说我看着像初中生", date: "2022.08.23", source: "愿珍惜你的每一天", kind: "图片与视频", image: "assets/photos/favorite-birthday-cake.webp" },
+  { title: "猫猫", content: "", date: "2023.6.9", source: "愿珍惜你的每一天", kind: "图片与视频", image: "assets/photos/favorite-cat.webp" },
   { title: "谭某人（谭思远）的聊天记录", content: "我：你再提69分我真拉黑你", date: "2022.12.14", source: "谭某人（谭思远）", kind: "聊天记录", chatName: "谭某人（谭思远）", messageText: "你再提69分我真拉黑你" }
 ];
 const SHIQIAN_MODEL_ID = "Qwen2.5-0.5B-Instruct-q4f16_1-MLC";
@@ -781,7 +781,7 @@ function startSkyGameDownload() {
   if (skyGameInstalledThisPage) { openApp("sky-game"); return; }
   const existing = document.querySelector(".sky-download-dialog"); if (existing) { existing.style.zIndex = ++highestZ; return; }
   const dialog = document.createElement("section"); dialog.className = "sky-download-dialog"; dialog.setAttribute("role","dialog"); dialog.setAttribute("aria-label","正在下载像素空战"); dialog.style.zIndex = ++highestZ;
-  dialog.innerHTML = '<header><img src="assets/icons/pixel-air-combat.png" alt=""><strong>文件下载</strong><button type="button" aria-label="取消下载" title="取消下载">×</button></header><main><img class="sky-download-logo" src="assets/icons/pixel-air-combat.png" alt="像素空战"><div><h2>正在下载像素空战</h2><p>来自：game.fuguang.cn</p><div class="sky-download-track"><span></span></div><small>准备下载…　0%</small></div></main><footer>下载过程中请不要关闭此窗口。</footer>';
+  dialog.innerHTML = '<header><img src="assets/icons/pixel-air-combat.webp" alt=""><strong>文件下载</strong><button type="button" aria-label="取消下载" title="取消下载">×</button></header><main><img class="sky-download-logo" src="assets/icons/pixel-air-combat.webp" alt="像素空战"><div><h2>正在下载像素空战</h2><p>来自：game.fuguang.cn</p><div class="sky-download-track"><span></span></div><small>准备下载…　0%</small></div></main><footer>下载过程中请不要关闭此窗口。</footer>';
   document.querySelector("#desktop").appendChild(dialog);
   const controller=new AbortController(),bar=dialog.querySelector(".sky-download-track span"),label=dialog.querySelector("main small"),cancel=dialog.querySelector("header button");
   cancel.addEventListener("click",()=>{controller.abort();dialog.remove();});
@@ -800,11 +800,11 @@ function startCaseArchiveDownload() {
   if (caseArchiveDownloadedThisPage) return;
   const existing=document.querySelector(".sky-download-dialog");if(existing){existing.style.zIndex=++highestZ;return;}
   const dialog=document.createElement("section");dialog.className="sky-download-dialog";dialog.setAttribute("role","dialog");dialog.setAttribute("aria-label","正在下载档案整理.zip");dialog.style.zIndex=++highestZ;
-  dialog.innerHTML='<header><img src="assets/icons/case-archive-transparent.png" alt=""><strong>文件下载</strong><button type="button" aria-label="取消下载" title="取消下载">×</button></header><main><img class="sky-download-logo" src="assets/icons/case-archive-transparent.png" alt="压缩包"><div><h2>正在下载档案整理.zip</h2><p>来自：bbs.fuguang.cn</p><div class="sky-download-track"><span></span></div><small>准备下载…　0%</small></div></main><footer>下载过程中请不要关闭此窗口。</footer>';
+  dialog.innerHTML='<header><img src="assets/icons/case-archive-transparent.webp" alt=""><strong>文件下载</strong><button type="button" aria-label="取消下载" title="取消下载">×</button></header><main><img class="sky-download-logo" src="assets/icons/case-archive-transparent.webp" alt="压缩包"><div><h2>正在下载档案整理.zip</h2><p>来自：bbs.fuguang.cn</p><div class="sky-download-track"><span></span></div><small>准备下载…　0%</small></div></main><footer>下载过程中请不要关闭此窗口。</footer>';
   document.querySelector("#desktop").appendChild(dialog);const controller=new AbortController(),bar=dialog.querySelector(".sky-download-track span"),label=dialog.querySelector("main small"),cancel=dialog.querySelector("header button");
   cancel.addEventListener("click",()=>{controller.abort();dialog.remove();});
-  downloadAndDecodeImages([{path:"assets/documents/case-archive-page.png",bytes:1602057}],controller.signal,percent=>{bar.style.width=`${percent}%`;label.textContent=percent<100?`正在接收压缩文件…　${percent}%`:'下载完成　100%';})
-    .then(images=>{if(controller.signal.aborted)return;window.__downloadedCasePage=images.get("assets/documents/case-archive-page.png");dialog.classList.add("complete");dialog.querySelector("h2").textContent="档案整理.zip 下载完成";dialog.querySelector("footer").textContent="压缩文件已保存到桌面。";installCaseArchiveDesktopIcon();setTimeout(()=>dialog.remove(),1100);})
+  downloadAndDecodeImages([{path:"assets/documents/case-archive-page.webp",bytes:1602057}],controller.signal,percent=>{bar.style.width=`${percent}%`;label.textContent=percent<100?`正在接收压缩文件…　${percent}%`:'下载完成　100%';})
+    .then(images=>{if(controller.signal.aborted)return;window.__downloadedCasePage=images.get("assets/documents/case-archive-page.webp");dialog.classList.add("complete");dialog.querySelector("h2").textContent="档案整理.zip 下载完成";dialog.querySelector("footer").textContent="压缩文件已保存到桌面。";installCaseArchiveDesktopIcon();setTimeout(()=>dialog.remove(),1100);})
     .catch(error=>{if(controller.signal.aborted)return;console.warn("Archive download failed",error);label.textContent="下载失败，请重试";dialog.querySelector("footer").textContent="网络或文件读取失败，请关闭窗口后重新下载。";});
 }
 function setupCaseArchiveWindow(win) {
@@ -817,7 +817,7 @@ function setupCaseArchiveWindow(win) {
   win.querySelectorAll(".archive-toolbar button").forEach(button=>button.addEventListener("click",showMissingSoftware));
 const showFolder=()=>{content.innerHTML='<section class="case-archive-folder"><div class="case-folder-note"><button type="button" data-archive-back>↑</button><span>档案整理.zip　&gt;　图片资料</span></div><div class="case-image-grid"><button type="button" class="explorer-item case-pdf-file" aria-label="打开案件整理.pdf"><span class="explorer-item-icon pdf" aria-hidden="true"></span><span class="explorer-item-copy"><strong>案件整理.pdf</strong><small>183 KB　PDF 文档</small></span></button><button type="button" class="explorer-item case-corrupt-file" aria-label="打开云阳市城区示意图"><span class="explorer-item-icon jpeg" aria-hidden="true"></span><span class="explorer-item-copy"><strong>云阳市城区示意图.png</strong><small>PNG 图像</small></span></button></div></section>';content.querySelector("[data-archive-back]").addEventListener("click",showRoot);const pdf=content.querySelector(".case-pdf-file");pdf.addEventListener("click",()=>pdf.classList.add("selected"));pdf.addEventListener("dblclick",()=>openApp("case-pdf"));content.querySelector(".case-corrupt-file").addEventListener("click",showCorruptImage);status.textContent="共 2 个文件";};
 const showPassword=()=>{if(caseArchiveUnlockedThisPage){showFolder();return;}if(content.querySelector(".case-password-dialog"))return;const form=document.createElement("form");form.className="case-password-dialog";form.autocomplete="off";form.innerHTML='<header><strong>请输入密令</strong><button type="button" data-archive-cancel aria-label="关闭">×</button></header><main><h3>文件夹已加密</h3><p>请输入密令以打开“图片资料”。</p><label>passcode：<input type="password" name="archivePassword" autocomplete="off" autofocus></label><small role="alert"></small></main><footer><button type="submit">确定</button><button type="button" data-archive-cancel>取消</button></footer>';content.appendChild(form);const input=form.elements.archivePassword,error=form.querySelector("small"),close=()=>{form.remove();status.textContent="共 2 个文件和 1 个文件夹　压缩率 39.3%";};form.addEventListener("submit",event=>{event.preventDefault();if(input.value.trim().toUpperCase().replace(/[\s-]/g, "") === window.skyGameArchivePasscode.replace(/-/g, "")){caseArchiveUnlockedThisPage=true;form.remove();showFolder();return;}error.textContent="密令不正确，请重新输入。";input.value="";input.focus();playFaultAlert();});form.querySelectorAll("[data-archive-cancel]").forEach(button=>button.addEventListener("click",close));setTimeout(()=>input.focus(),0);status.textContent="请输入加密文件夹密令";};
-  function showRoot(){content.innerHTML='<section class="archive-root"><div class="archive-address"><button type="button" disabled>↑</button><span><img src="assets/icons/case-archive-transparent.png" alt="">档案整理.zip　-　解包大小 8.4 MB</span><label>搜索包内文件 <b>⌕</b></label></div><div class="archive-columns"><b>名称</b><b>压缩前</b><b>压缩后</b><b>类型</b></div><div class="archive-row archive-up"><span>📁 ..（上级目录）</span><span></span><span></span><span>文件夹</span></div><button type="button" class="archive-row archive-protected-folder"><span>📁 图片资料 <em>🔒</em></span><span>8.4 MB</span><span>5.1 MB</span><span>加密文件夹</span></button><div class="archive-row"><span>▤ 说明.txt</span><span>2 KB</span><span>1 KB</span><span>文本文档</span></div></section>';content.querySelector(".archive-protected-folder").addEventListener("click",showPassword);status.textContent="共 2 个文件和 1 个文件夹　压缩率 39.3%";}
+  function showRoot(){content.innerHTML='<section class="archive-root"><div class="archive-address"><button type="button" disabled>↑</button><span><img src="assets/icons/case-archive-transparent.webp" alt="">档案整理.zip　-　解包大小 8.4 MB</span><label>搜索包内文件 <b>⌕</b></label></div><div class="archive-columns"><b>名称</b><b>压缩前</b><b>压缩后</b><b>类型</b></div><div class="archive-row archive-up"><span>📁 ..（上级目录）</span><span></span><span></span><span>文件夹</span></div><button type="button" class="archive-row archive-protected-folder"><span>📁 图片资料 <em>🔒</em></span><span>8.4 MB</span><span>5.1 MB</span><span>加密文件夹</span></button><div class="archive-row"><span>▤ 说明.txt</span><span>2 KB</span><span>1 KB</span><span>文本文档</span></div></section>';content.querySelector(".archive-protected-folder").addEventListener("click",showPassword);status.textContent="共 2 个文件和 1 个文件夹　压缩率 39.3%";}
   showRoot();
 }
 function setupCasePdfWindow(win) {
@@ -827,7 +827,7 @@ function setupCasePdfWindow(win) {
   win.querySelector(".menu-bar").innerHTML='<button type="button">文件(<u>F</u>)</button><button type="button">查看(<u>V</u>)</button><button type="button">帮助(<u>H</u>)</button>';
   win.querySelector(".toolbar").innerHTML='<span class="case-pdf-toolbar-label">案件整理.pdf</span><button type="button" data-pdf-zoom="out" aria-label="缩小">－</button><output>100%</output><button type="button" data-pdf-zoom="in" aria-label="放大">＋</button><button type="button" data-pdf-zoom="fit">适合宽度</button><span class="case-pdf-page-count">第 1 页 / 共 1 页</span>';
   const viewport=document.createElement("div");viewport.className="case-pdf-viewport";
-  const page=document.createElement("img");page.className="case-pdf-page";page.src=window.__downloadedCasePage?.src || "assets/documents/case-archive-page.png?v=20261001-1";page.alt="案件整理 PDF 第 1 页的完整内容";viewport.appendChild(page);
+  const page=document.createElement("img");page.className="case-pdf-page";page.src=window.__downloadedCasePage?.src || "assets/documents/case-archive-page.webp?v=20261001-1";page.alt="案件整理 PDF 第 1 页的完整内容";viewport.appendChild(page);
   win.querySelector(".window-content").replaceChildren(viewport);
   let zoom=1;const output=win.querySelector(".toolbar output");
   const updateZoom=()=>{page.style.width=`${Math.round(760*zoom)}px`;output.textContent=`${Math.round(zoom*100)}%`;};
@@ -1057,7 +1057,7 @@ function openPhotoViewer(photo) {
     win.querySelector('[data-photo-action="print"]').addEventListener("click", () => { win.querySelector(".statusbar span:first-child").textContent = "打印功能暂不可用"; });
     bindWindow(win); win.classList.add("opening"); win.addEventListener("animationend", () => win.classList.remove("opening"), { once:true });
   }
-  const isYunyangMap = safePhoto.src.includes("yunyang-city-map.png");
+  const isYunyangMap = safePhoto.src.includes("yunyang-city-map.webp");
   const properties = win.querySelector(".photo-properties"); properties.hidden = !isYunyangMap; win.querySelector(".photo-viewer").classList.toggle("show-properties", isYunyangMap);
   win.querySelector('[data-photo-property="name"]').textContent = safePhoto.name;
   win.querySelector('[data-photo-property="path"]').textContent = isYunyangMap ? `D:\\备份资料\\${safePhoto.name}` : "未记录";
@@ -1172,7 +1172,7 @@ function setupBrowserWindow(win) {
   const weiboUrl = "http://t.sina.com.cn/";
   const weiboPage = document.createElement("section");
   weiboPage.className = "weibo-page"; weiboPage.hidden = true;
-  weiboPage.innerHTML = `<header class="weibo-site-head"><div class="weibo-logo"><b>新浪</b><strong>微博</strong><em>beta</em></div><nav><button type="button">我的首页</button><button type="button">我的微博</button><button type="button">随便看看</button><button type="button">帮助</button></nav></header><div class="weibo-body"><main><section class="weibo-compose"><div><strong>随便说点什么吧……</strong><span>还可以输入 <b id="weiboRemain">140</b> 字</span></div><textarea id="weiboInput" maxlength="140" aria-label="发布微博内容"></textarea><footer><span>☺ 表情　▧ 图片　♬ 音乐</span><button type="button" id="weiboPublish">发布</button></footer></section><div class="weibo-feed-head"><b>大家正在说</b><span>看看大家此刻的新鲜事</span></div><div class="weibo-feed" id="weiboFeed"><article><img src="assets/avatars/xiaohang-user.png" alt="小航"><div><p><b>小航</b>：今天开始试用新浪微博，第一句话留在这里。</p><small>1分钟前　来自网页</small><footer><button>收藏</button> | <button>转发</button> | <button>评论</button></footer></div></article><article><span class="weibo-avatar orange">远</span><div><p><b>陈远</b>：刚刚下过雨，街上的空气很凉快。</p><small>12分钟前　来自网页</small><footer><button>收藏</button> | <button>转发</button> | <button>评论</button></footer></div></article><article><span class="weibo-avatar blue">倩</span><div><p><b>史倩</b>：整理旧照片的时候，总能发现已经忘记的小事。</p><small>25分钟前　来自网页</small><footer><button>收藏</button> | <button>转发</button> | <button>评论</button></footer></div></article></div></main><aside><section class="weibo-profile"><img src="assets/avatars/xiaohang-user.png" alt="小航"><div><b>小航</b><small>北京</small></div></section><div class="weibo-counts"><span><b>18</b> 关注</span><span><b>6</b> 粉丝</span><span><b id="weiboPostCount">3</b> 微博</span></div><nav class="weibo-side-links"><button>我的首页</button><button>我的收藏</button><button>收到的评论</button><button>我关注的人</button></nav><section class="weibo-invite"><b>邀请朋友加入微博</b><p>把身边的新鲜事告诉大家。</p></section></aside></div><footer class="weibo-site-footer">新浪微博测试版　服务条款　意见反馈　© 2009 SINA</footer>`;
+  weiboPage.innerHTML = `<header class="weibo-site-head"><div class="weibo-logo"><b>新浪</b><strong>微博</strong><em>beta</em></div><nav><button type="button">我的首页</button><button type="button">我的微博</button><button type="button">随便看看</button><button type="button">帮助</button></nav></header><div class="weibo-body"><main><section class="weibo-compose"><div><strong>随便说点什么吧……</strong><span>还可以输入 <b id="weiboRemain">140</b> 字</span></div><textarea id="weiboInput" maxlength="140" aria-label="发布微博内容"></textarea><footer><span>☺ 表情　▧ 图片　♬ 音乐</span><button type="button" id="weiboPublish">发布</button></footer></section><div class="weibo-feed-head"><b>大家正在说</b><span>看看大家此刻的新鲜事</span></div><div class="weibo-feed" id="weiboFeed"><article><img src="assets/avatars/xiaohang-user.webp" alt="小航"><div><p><b>小航</b>：今天开始试用新浪微博，第一句话留在这里。</p><small>1分钟前　来自网页</small><footer><button>收藏</button> | <button>转发</button> | <button>评论</button></footer></div></article><article><span class="weibo-avatar orange">远</span><div><p><b>陈远</b>：刚刚下过雨，街上的空气很凉快。</p><small>12分钟前　来自网页</small><footer><button>收藏</button> | <button>转发</button> | <button>评论</button></footer></div></article><article><span class="weibo-avatar blue">倩</span><div><p><b>史倩</b>：整理旧照片的时候，总能发现已经忘记的小事。</p><small>25分钟前　来自网页</small><footer><button>收藏</button> | <button>转发</button> | <button>评论</button></footer></div></article></div></main><aside><section class="weibo-profile"><img src="assets/avatars/xiaohang-user.webp" alt="小航"><div><b>小航</b><small>北京</small></div></section><div class="weibo-counts"><span><b>18</b> 关注</span><span><b>6</b> 粉丝</span><span><b id="weiboPostCount">3</b> 微博</span></div><nav class="weibo-side-links"><button>我的首页</button><button>我的收藏</button><button>收到的评论</button><button>我关注的人</button></nav><section class="weibo-invite"><b>邀请朋友加入微博</b><p>把身边的新鲜事告诉大家。</p></section></aside></div><footer class="weibo-site-footer">新浪微博测试版　服务条款　意见反馈　© 2009 SINA</footer>`;
   content.appendChild(weiboPage);
   const yunyangUrl = "http://news.yunyang.cn/";
   const yunyangPage = document.createElement("section"); yunyangPage.className = "yunyang-page-shell"; yunyangPage.hidden = true;
@@ -1311,19 +1311,19 @@ function setupBrowserWindow(win) {
     ["41楼｜旧雨伞", "别把网上的‘进入条件’当攻略。"],
     ["42楼｜青柠没有茶", "先码。这个帖看着平静，但感觉信息更多。"]
   ].map(([name, text]) => ({ name, text }));
-  forumThreads["taoyuan-twin-case"] = { title: "双子悬案有人知道吗？", board: "奇闻怪谈", author: "爱写小说的小陈", date: "2023-09-16 00:37", heat: "浏览：3186｜回复：0", teaser: "我前阵子写推理小说，无意间翻到一个词叫‘双子悬案’。", body: ["我前阵子写推理小说，无意间翻到一个词叫‘双子悬案’。", "一开始我以为是双胞胎的案子，后来发现不是。这个系列里的死者都不是双胞胎，但死亡现场都有两具一模一样的尸体，死亡时间一般差七分钟。官方都定的意外死亡，但两具尸体肯定没法解释，所以案子一直挂着。", "我觉得比较戏剧性的是，这些死者有一个共同点，生前都在网上发过关于桃原市的帖子。这完全就是真正的都市传说，太适合写推理了，不过相关资料公布得太少了，我也不知道具体真实情况就是这样，还是媒体搞的噱头。"], image: "assets/photos/twin-case-news-v2.png", imageName: "新闻报道.png", replies: [] };
+  forumThreads["taoyuan-twin-case"] = { title: "双子悬案有人知道吗？", board: "奇闻怪谈", author: "爱写小说的小陈", date: "2023-09-16 00:37", heat: "浏览：3186｜回复：0", teaser: "我前阵子写推理小说，无意间翻到一个词叫‘双子悬案’。", body: ["我前阵子写推理小说，无意间翻到一个词叫‘双子悬案’。", "一开始我以为是双胞胎的案子，后来发现不是。这个系列里的死者都不是双胞胎，但死亡现场都有两具一模一样的尸体，死亡时间一般差七分钟。官方都定的意外死亡，但两具尸体肯定没法解释，所以案子一直挂着。", "我觉得比较戏剧性的是，这些死者有一个共同点，生前都在网上发过关于桃原市的帖子。这完全就是真正的都市传说，太适合写推理了，不过相关资料公布得太少了，我也不知道具体真实情况就是这样，还是媒体搞的噱头。"], image: "assets/photos/twin-case-news-v2.webp", imageName: "新闻报道.png", replies: [] };
   forumThreads["fortune-meaning"] = { title: "佛教说的福报到底是什么", board: "闲聊灌水", author: "小姜不吃姜", date: "2023-09-15 20:11", heat: "浏览：856｜回复：0", teaser: "这词最近被说得越来越玄乎了，我以前一直以为就是‘做好事会有好报’的意思。", body: ["这词最近被说得越来越玄乎了，我以前一直以为就是‘做好事会有好报’的意思，但看了一圈又感觉好像没这么简单。", "我对这些完全不懂，想问一下，福报到底是怎么理解的？平时说的‘积福报’具体又是在积什么？不会真的像积分一样，做一件好事加一点吧……"], replies: [] };
   forumThreads["fortune-daily"] = { title: "怎么积累福报？平时能做哪些事", board: "闲聊灌水", author: "葡萄味软糖", date: "2023-09-14 16:20", teaser: "如果只是想从日常开始，其实能做的事情很多，也不用刻意搞得很隆重。", body: ["如果只是想从日常开始，其实能做的事情很多，也不用刻意搞得很隆重。", "我自己平时会注意这些：", "看到别人需要搭把手的时候顺手帮一下；", "对家里人耐心一点，少因为小事发脾气；", "不用的衣服和东西整理出来捐掉；", "有能力的话偶尔做点公益或者小额捐助；", "不随便在背后说别人坏话；", "答应别人的事情尽量做到；", "看到流浪动物，条件允许的话给点水和吃的。", "我觉得这种事最重要的是长期做，不是某一天突然做很多。"], replies: [] };
   forumThreads["fortune-cause"] = { title: "福报和因果到底是什么关系？", board: "社会杂谈", author: "山外有山", date: "2023-09-13 21:05", teaser: "看了几页讨论，感觉很多人把‘福报’和‘因果’混在一起了。", body: ["看了几页讨论，感觉很多人把‘福报’和‘因果’混在一起了。", "因果不是‘做一件好事，马上得到一件好事’，也不是做错事以后立刻遭报应。更准确一点说，一个人的行为、选择和念头都会产生影响，只是这个结果什么时候出现、以什么方式出现，并不是自己能控制的。", "福报可以理解成善因结出的某种结果，但它不是一个能自己统计的数字。今天帮了三个人，不代表‘福报+3’；明天倒霉了，也不能简单理解成‘以前福报不够’。", "所以那种‘攒够多少福报就能得到某种机会’的说法，我个人不太认同。这样很容易把行善变成一种交易，好像只要做够任务，就一定能换到对应的奖励。", "至于网上流传的‘福报够了就能去某个地方’，至少我没见过正规的说法这么解释。", "做好事当然没问题，但如果一直盯着结果，反而把因果想得太简单了。"], replies: [] };
   forumThreads["fortune-comfort"] = { title: "我觉得福报就是一种心理安慰", board: "闲聊灌水", author: "今天不想上班，明天也是", date: "2023-09-12 18:42", teaser: "我一直觉得‘福报’这个东西，说到底就是让人心里舒服一点。", body: ["我一直觉得‘福报’这个东西，说到底就是让人心里舒服一点。", "人做了好事，会希望以后也有好事发生在自己身上；遇到倒霉事的时候，又会安慰自己‘可能以前福报不够’。这样想当然没什么问题，至少能让人没那么焦虑。", "但要说世界上真有个看不见的账本，专门记录你做过多少好事、以后该给你什么回报，我是不太信的。", "而且现在还有人开始算自己‘积了多少’，甚至觉得做够了什么事以后就会碰到特别的机会，这就有点怪了。做好事本来挺正常的，硬要给它配个奖励，反而像在完成任务。", "不过当成心理安慰我倒能理解。日子已经够累了，人总得给自己找点盼头。"], replies: [] };
-  forumThreads["fortune-wl"] = { title: "试着每天积一点福报", board: "闲聊灌水", author: "wl", avatar: "assets/avatars/forum-wl.png", date: "2018-02-17 22:41", heat: "浏览：2841｜回复：37", teaser: "最近状态比前段时间好一点，也不想整天待在家里。", body: ["最近状态比前段时间好一点，也不想整天待在家里。", "这段时间在试着做一些以前不会特意去做的事情。把家里没怎么穿的衣服整理出来送人，前两天还去帮社区搬了一下午东西。都不是什么大事。", "有人跟我说，这些也算是在给自己积福报。我以前不太信这些，但现在想想，多做一点总比什么都不做好。", "我准备每天记一下，看自己能坚持多久。"], replies: [["1楼｜雨衣忘在家","挺好的，至少人忙起来不会一直乱想。"],["2楼｜wl（楼主）","是啊，我最近反而觉得这样舒服一点。"],["3楼｜红豆面包","积福报是有什么说法吗？还是单纯做好事？"],["4楼｜wl（楼主）","有人教我的。\n大概就是每天做一点，慢慢攒吧。\n他说够了以后，会有好事情发生。"],["5楼｜玻璃杯","听着怎么跟做任务一样……"],["6楼｜wl（楼主）","哈哈，我现在确实每天都会记。"],["27楼｜窗前流浪猫","等等，这个楼主是不是王丽？"],["28楼｜咕咕嘎嘎","哪个王丽？"],["29楼｜咕咕嘎嘎","前两天西郊小区出事的那个。\n我以前住那边，头像看着很像她。"],["30楼｜上午十点","3月9号那个？"],["31楼｜窗前流浪猫","对。"],["32楼｜咕咕嘎嘎","卧槽，我翻了一下她之前的帖子，她这一个月一直在发‘积福报’。"],["33楼｜塑料雨棚","别乱认人，有没有可能只是同名或者长得像。"],["34楼｜窗前流浪猫","不是同名。楼主以前另一篇提过自己叫王丽，还说过住西郊小区附近。"],["35楼｜窗前流浪猫","她3月7号以后就没再上线了。"],["36楼｜塑料友谊","整的也太邪门了......"],["37楼｜雨鞋进水了","别说了，半夜刷到这里有点发毛。"]].map(([name,text])=>({name,text})), initialReplyCount: 6 };
+  forumThreads["fortune-wl"] = { title: "试着每天积一点福报", board: "闲聊灌水", author: "wl", avatar: "assets/avatars/forum-wl.webp", date: "2018-02-17 22:41", heat: "浏览：2841｜回复：37", teaser: "最近状态比前段时间好一点，也不想整天待在家里。", body: ["最近状态比前段时间好一点，也不想整天待在家里。", "这段时间在试着做一些以前不会特意去做的事情。把家里没怎么穿的衣服整理出来送人，前两天还去帮社区搬了一下午东西。都不是什么大事。", "有人跟我说，这些也算是在给自己积福报。我以前不太信这些，但现在想想，多做一点总比什么都不做好。", "我准备每天记一下，看自己能坚持多久。"], replies: [["1楼｜雨衣忘在家","挺好的，至少人忙起来不会一直乱想。"],["2楼｜wl（楼主）","是啊，我最近反而觉得这样舒服一点。"],["3楼｜红豆面包","积福报是有什么说法吗？还是单纯做好事？"],["4楼｜wl（楼主）","有人教我的。\n大概就是每天做一点，慢慢攒吧。\n他说够了以后，会有好事情发生。"],["5楼｜玻璃杯","听着怎么跟做任务一样……"],["6楼｜wl（楼主）","哈哈，我现在确实每天都会记。"],["27楼｜窗前流浪猫","等等，这个楼主是不是王丽？"],["28楼｜咕咕嘎嘎","哪个王丽？"],["29楼｜咕咕嘎嘎","前两天西郊小区出事的那个。\n我以前住那边，头像看着很像她。"],["30楼｜上午十点","3月9号那个？"],["31楼｜窗前流浪猫","对。"],["32楼｜咕咕嘎嘎","卧槽，我翻了一下她之前的帖子，她这一个月一直在发‘积福报’。"],["33楼｜塑料雨棚","别乱认人，有没有可能只是同名或者长得像。"],["34楼｜窗前流浪猫","不是同名。楼主以前另一篇提过自己叫王丽，还说过住西郊小区附近。"],["35楼｜窗前流浪猫","她3月7号以后就没再上线了。"],["36楼｜塑料友谊","整的也太邪门了......"],["37楼｜雨鞋进水了","别说了，半夜刷到这里有点发毛。"]].map(([name,text])=>({name,text})), initialReplyCount: 6 };
   forumThreads["game-pixel-air"] = { title: "论坛那个像素空战真的有人打通过吗？", board: "影视游戏", author: "睡到下午", date: "2023-09-16 01:24", heat: "浏览：4271｜回复：9", teaser: "论坛里面那个飞机游戏到底谁设计的，难度也太夸张了。", body: ["论坛里面那个脑瘫飞机游戏到底谁设计的，难度也太夸张了。", "我今天断断续续打了一个多小时，好不容易见到最后那个 Boss，结果几十秒就没了。感觉第二关后半段完全是在故意劝退。", "有没有人真打通过？通关后有东西吗，还是就普通结算？"], replies: [["1楼｜一碗馄饨","我最高就打到 Boss 半血，后面那个弹幕根本躲不了。"],["2楼｜是时迁呀","轻松拿捏"],["3楼｜橘子海","是不是开发者忘删的 debug 信息。"],["6楼｜我的杯壁","很像，这种小游戏一堆残留代码很正常。"],["7楼｜睡到下午（楼主）","我也是这么想的，但那串东西排版还挺整齐，不太像报错。"],["8楼｜小红薯","有截图吗？"],["9楼｜睡到下午（楼主）","没有，出来太突然了。"],["10楼｜K","下次看见的话，留着。"],["11楼｜momo_77","这什么谜语人发言..." ]].map(([name,text])=>({name,text})) };
   forumThreads["case-twin-collection"] = { title: "双子悬案整理合集", board: "奇闻怪谈", author: "城", date: "2023-09-16 02:03", heat: "浏览：1947｜回复：2", teaser: "前几年陆续存过一些‘双子悬案’的旧新闻和讨论，最近重新翻出来整理了一下。", body: ["前几年陆续存过一些‘双子悬案’的旧新闻和讨论，最近重新翻出来整理了一下。", "目前能比较确定对上的有 6 起，时间跨度从 2008 年到 2024 年。案件本身没有被官方认定为同一系列，‘双子悬案’只是后来网友方便讨论起的名字。", "几起事件有几个很明显的共同点：", "现场都会出现两具身份完全相同的尸体，DNA鉴定结果一致，而且死亡时间通常只差几分钟。", "死者之间没有明显共同身份，死亡方式也不一样，官方最后大多以意外死亡结案，至于为什么会出现两具‘同一个人’，目前没有公开解释。", "另外，我整理的时候还发现一个比较奇怪的地方：部分死者生前都接触过‘福报’相关内容，这部分资料比较乱，我暂时不下结论。", "有早年存过相关资料的可以补充。"], replies: [{name:"1楼｜你也爱吃油炸鸡米花吗",text:"求个资源大佬（拜）（拜）（拜）"},{name:"2楼｜K",text:"",download:"档案整理.zip"}] };
   forumThreads["yunyang-letters"] = { title: "分享一个记云阳城区位置的小办法", board: "闲聊灌水", author: "柚子皮有点苦", date: "2023-09-16 08:26", teaser: "拿出咱们的云阳城区示意图标准版，把城区大概分成26个位置，用英文字母顺着记。", body: ["不知道有没有人跟我一样，住了挺久还是经常分不清云阳一些地方到底算哪边。", "最近和朋友聊到有个挺笨但是蛮好用的记法，就是拿出咱们的云阳城区示意图标准版，可以把城区大概分成26个位置，用英文字母顺着记。不是官方划分，主要就是方便认方向。", "最西南边的马鞍山附近记成A，然后顺着城区往上排，最东北边到凤凰山区域就是Z。", "我现在看地图上一次标很多地点的时候偶尔还会这么记，比一堆路名挤在一起好认一点"], replies: [["1楼｜炸鸡不要酱","云阳才多大啊，还需要搞一套字母分区……"],["2楼｜洗衣机在转","本地人直接说地名不就完了，这个学会不是更麻烦吗。"],["3楼｜柚子皮有点苦（楼主）","所以我都说了是小众记忆方法，又没让全云阳统一考试，哈哈。"],["4楼｜柚子皮有点苦（楼主）","噢对了，长岭山区域算作P哦宝宝们，那边本身还有一片居住区 ，不能把人家孤立了"],["5楼｜薄荷味牙膏","那这不就是硬凑26个字母。"],["7楼｜柚子皮有点苦（楼主）","你非要这么说我也没办法"]].map(([name,text])=>({name,text})) };
   const corruptedForumName = "锟�绱�@�锟�";
   Object.values(forumThreads).forEach(thread => { thread.replies.forEach(reply => { if (/｜K$/.test(reply.name)) reply.name = reply.name.replace(/｜K$/, `｜${corruptedForumName}`); }); });
   Object.keys(forumThreads).forEach(key => { if (!Array.isArray(forumRepliesThisDesktopSession[key])) forumRepliesThisDesktopSession[key] = []; forumThreads[key].replies.push(...forumRepliesThisDesktopSession[key]); });
-  forumThreads["yunyang-letters"].replies.push({ name: `8楼｜${corruptedForumName}`, text: "", image: "assets/photos/yunyang-map-marked.png", imageName: "云阳市城区示意图.png" });
+  forumThreads["yunyang-letters"].replies.push({ name: `8楼｜${corruptedForumName}`, text: "", image: "assets/photos/yunyang-map-marked.webp", imageName: "云阳市城区示意图.png" });
   let forumAuthed = false, forumCurrent = "old-town", forumInThread = false, forumView = "home", forumFromSearch = false;
   const forumExpandedReplies = new Set();
   const forumGate = forumPage.querySelector(".forum-login-gate"), forumTeaser = forumPage.querySelector(".forum-teaser"), forumFull = forumPage.querySelector(".forum-full-content"), forumProfile = forumPage.querySelector(".forum-profile");
@@ -1346,10 +1346,10 @@ function setupBrowserWindow(win) {
     forumFull.querySelector(".forum-thread-head h2").textContent = thread.title;
     forumFull.querySelector(".forum-thread-head span").textContent = `${thread.board}　发表于 ${thread.date}`;
     forumFull.querySelector(".forum-post-author b").textContent = thread.author;
-    forumFull.querySelector(".forum-post-author img").src = thread.avatar || (isTaoyuanThread ? "assets/avatars/taoyuan-forum-avatar-v2.png" : "assets/avatars/forum-default-avatar.png");
+    forumFull.querySelector(".forum-post-author img").src = thread.avatar || (isTaoyuanThread ? "assets/avatars/taoyuan-forum-avatar-v2.webp" : "assets/avatars/forum-default-avatar.webp");
     forumFull.querySelector(".forum-post-heat").textContent = thread.heat || `浏览：${Math.max(120, thread.replies.length * 137)}｜回复：${thread.replies.length}`;
     const body = forumFull.querySelector(".forum-post-body"); body.replaceChildren(...thread.body.map(line => { const p = document.createElement("p"); if (forumCurrent === "fortune-wl" && line.includes("积福报")) { const [before, after] = line.split("积福报"); const emphasis = document.createElement("strong"); emphasis.textContent = "积福报"; p.append(document.createTextNode(before), emphasis, document.createTextNode(after)); } else p.textContent = line; return p; })); if (thread.image) { const imageLink = document.createElement("button"); imageLink.type = "button"; imageLink.className = "forum-attachment-link"; imageLink.textContent = `查看帖子附图：${thread.imageName || "图片"}`; imageLink.addEventListener("click", () => openPhotoViewer({ name: thread.imageName || "帖子附图", source: "浮光论坛", src: thread.image })); body.appendChild(imageLink); }
-const replies = forumFull.querySelector(".forum-replies"); const initialReplyCount = thread.initialReplyCount && !forumExpandedReplies.has(forumCurrent) ? thread.initialReplyCount : thread.replies.length; replies.replaceChildren(...thread.replies.slice(0, initialReplyCount).map((reply, index) => { const article = document.createElement("article"); const head = document.createElement("div"); head.className = "forum-reply-head"; const avatar = document.createElement("img"); avatar.className = "forum-reply-avatar"; avatar.src = thread.avatar && /｜wl（楼主）/.test(reply.name) ? thread.avatar : isTaoyuanThread && /(梦与心|露露|爱生活爱生命|远远|南风吹不到|小北)/.test(reply.name) ? "assets/avatars/taoyuan-forum-avatar-v2.png" : "assets/avatars/forum-default-avatar.png"; avatar.alt = `${reply.name}头像`; const name = document.createElement("strong"); if(reply.name.includes(corruptedForumName)){const [floor] = reply.name.split("｜");name.append(document.createTextNode(`${floor}｜`));const corrupt=document.createElement("span");corrupt.className="forum-corrupt-name";corrupt.textContent=corruptedForumName;name.appendChild(corrupt);}else name.textContent = reply.name; head.append(avatar, name); const p = document.createElement("p"); if(reply.download){const download=document.createElement("button");download.type="button";download.className="forum-download-link";download.innerHTML=`<img src="assets/icons/case-archive-transparent.png" alt=""> <span>${reply.download}</span>`;download.addEventListener("click",startCaseArchiveDownload);p.appendChild(download);}else if(reply.image){const imageButton=document.createElement("button");imageButton.type="button";imageButton.className="forum-attachment-link";imageButton.textContent=`查看帖子附图：${reply.imageName}`;imageButton.addEventListener("click",()=>openPhotoViewer({name:reply.imageName,source:"浮光论坛",src:reply.image}));p.appendChild(imageButton);}else p.textContent = reply.text; article.append(head, p); if (thread.initialReplyCount && index === thread.initialReplyCount && forumExpandedReplies.has(forumCurrent)) { const gap = document.createElement("div"); gap.className = "forum-reply-gap"; gap.textContent = "7—26楼的回复暂未显示"; replies.appendChild(gap); } return article; }));
+const replies = forumFull.querySelector(".forum-replies"); const initialReplyCount = thread.initialReplyCount && !forumExpandedReplies.has(forumCurrent) ? thread.initialReplyCount : thread.replies.length; replies.replaceChildren(...thread.replies.slice(0, initialReplyCount).map((reply, index) => { const article = document.createElement("article"); const head = document.createElement("div"); head.className = "forum-reply-head"; const avatar = document.createElement("img"); avatar.className = "forum-reply-avatar"; avatar.src = thread.avatar && /｜wl（楼主）/.test(reply.name) ? thread.avatar : isTaoyuanThread && /(梦与心|露露|爱生活爱生命|远远|南风吹不到|小北)/.test(reply.name) ? "assets/avatars/taoyuan-forum-avatar-v2.webp" : "assets/avatars/forum-default-avatar.webp"; avatar.alt = `${reply.name}头像`; const name = document.createElement("strong"); if(reply.name.includes(corruptedForumName)){const [floor] = reply.name.split("｜");name.append(document.createTextNode(`${floor}｜`));const corrupt=document.createElement("span");corrupt.className="forum-corrupt-name";corrupt.textContent=corruptedForumName;name.appendChild(corrupt);}else name.textContent = reply.name; head.append(avatar, name); const p = document.createElement("p"); if(reply.download){const download=document.createElement("button");download.type="button";download.className="forum-download-link";download.innerHTML=`<img src="assets/icons/case-archive-transparent.webp" alt=""> <span>${reply.download}</span>`;download.addEventListener("click",startCaseArchiveDownload);p.appendChild(download);}else if(reply.image){const imageButton=document.createElement("button");imageButton.type="button";imageButton.className="forum-attachment-link";imageButton.textContent=`查看帖子附图：${reply.imageName}`;imageButton.addEventListener("click",()=>openPhotoViewer({name:reply.imageName,source:"浮光论坛",src:reply.image}));p.appendChild(imageButton);}else p.textContent = reply.text; article.append(head, p); if (thread.initialReplyCount && index === thread.initialReplyCount && forumExpandedReplies.has(forumCurrent)) { const gap = document.createElement("div"); gap.className = "forum-reply-gap"; gap.textContent = "7—26楼的回复暂未显示"; replies.appendChild(gap); } return article; }));
     if (thread.initialReplyCount && forumExpandedReplies.has(forumCurrent) && replies.children[thread.initialReplyCount]) { const gap = document.createElement("div"); gap.className = "forum-reply-gap"; gap.textContent = "7—26楼的回复暂未显示"; replies.insertBefore(gap, replies.children[thread.initialReplyCount]); }
     if (thread.initialReplyCount && !forumExpandedReplies.has(forumCurrent)) { const more = document.createElement("button"); more.type = "button"; more.className = "forum-show-more"; more.textContent = "显示更多回复"; more.addEventListener("click", () => { forumExpandedReplies.add(forumCurrent); renderForumThread(); }); replies.appendChild(more); }
     forumTeaser.hidden = forumAuthed; forumFull.hidden = !forumAuthed; syncForumView();
@@ -1458,7 +1458,7 @@ const replies = forumFull.querySelector(".forum-replies"); const initialReplyCou
   toolbarButtons[1]?.addEventListener("click", () => { if (browserHistoryIndex >= browserHistory.length - 1) return; browserHistoryIndex++; restoreHistory(browserHistory[browserHistoryIndex]); });
   const weiboInput=weiboPage.querySelector("#weiboInput"), remain=weiboPage.querySelector("#weiboRemain"), feed=weiboPage.querySelector("#weiboFeed"), postCount=weiboPage.querySelector("#weiboPostCount");
   weiboInput.addEventListener("input",()=>{remain.textContent=String(140-weiboInput.value.length);});
-  weiboPage.querySelector("#weiboPublish").addEventListener("click",()=>{const text=weiboInput.value.trim();if(!text){status.textContent="请输入微博内容";weiboInput.focus();return;}const article=document.createElement("article");article.innerHTML='<img src="assets/avatars/xiaohang-user.png" alt="小航"><div><p><b>小航</b>：<span></span></p><small>刚刚　来自网页</small><footer><button>收藏</button> | <button>转发</button> | <button>评论</button></footer></div>';article.querySelector("p span").textContent=text;feed.prepend(article);weiboInput.value="";remain.textContent="140";postCount.textContent=String(Number(postCount.textContent)+1);status.textContent="微博发布成功";});
+  weiboPage.querySelector("#weiboPublish").addEventListener("click",()=>{const text=weiboInput.value.trim();if(!text){status.textContent="请输入微博内容";weiboInput.focus();return;}const article=document.createElement("article");article.innerHTML='<img src="assets/avatars/xiaohang-user.webp" alt="小航"><div><p><b>小航</b>：<span></span></p><small>刚刚　来自网页</small><footer><button>收藏</button> | <button>转发</button> | <button>评论</button></footer></div>';article.querySelector("p span").textContent=text;feed.prepend(article);weiboInput.value="";remain.textContent="140";postCount.textContent=String(Number(postCount.textContent)+1);status.textContent="微博发布成功";});
   weiboPage.addEventListener("click",event=>{const button=event.target.closest("button");if(button&&!button.id&&button.closest(".weibo-page")){status.textContent=`${button.textContent.trim()}：功能暂未开放`;}});
 }
 function setupQQLoginWindow(win) {
@@ -1504,8 +1504,8 @@ function setupQQContactsWindow(win) {
   content.querySelector("[data-qq-action=channel]")?.addEventListener("click", openQQChannelError);
   bindWindowResize(win);
 }
-function openQQSpace(profile = { name: "愿珍惜你的每一天", qq: "27491863", avatarSrc: "assets/avatars/xiaohang-user.png", signature: "希望身边的人都好好的" }) {
-  const safeProfile = profile?.name ? { ...profile } : { name: "愿珍惜你的每一天", qq: "27491863", avatarSrc: "assets/avatars/xiaohang-user.png", signature: "希望身边的人都好好的" };
+function openQQSpace(profile = { name: "愿珍惜你的每一天", qq: "27491863", avatarSrc: "assets/avatars/xiaohang-user.webp", signature: "希望身边的人都好好的" }) {
+  const safeProfile = profile?.name ? { ...profile } : { name: "愿珍惜你的每一天", qq: "27491863", avatarSrc: "assets/avatars/xiaohang-user.webp", signature: "希望身边的人都好好的" };
   if (String(safeProfile.qq) === "27491863") { safeProfile.name = "愿珍惜你的每一天"; safeProfile.signature = "希望身边的人都好好的"; }
   if (String(safeProfile.qq) === "5200718") safeProfile.signature = "一切顺遂";
   const spaceId = `qq-space-${safeProfile.qq}`;
@@ -1522,34 +1522,34 @@ function openQQSpace(profile = { name: "愿珍惜你的每一天", qq: "27491863
     {date:"2022年3月7日", text:"我和珍珍姐的新朋友：毛毛！", photo:"猫咪照片"},
     {date:"2022.9.3", text:"高一的题比想象中简单呀", comment:"你小子别装B"},
     {date:"2023.5.24", text:"幸好你一直在我身边，谢谢你", comment:"你们班那群SB，我大哥今天已经帮你好好教训他们了"},
-    {date:"2023.6.6", text:"节哀", images:[{src:"assets/photos/memorial-candle.png",name:"悼念蜡烛"}]}
+    {date:"2023.6.6", text:"节哀", images:[{src:"assets/photos/memorial-candle.webp",name:"悼念蜡烛"}]}
   ];
   const zhenzhenPosts = [
     {date:"2024.9.4", text:"转发了一条动态", repost:"佛法讲万法皆空，因果不空。我们今生所受的苦乐，皆是往昔造作的业力所感。而福报，正是善业累积的显现。布施、持戒、忍辱、精进、禅定、智慧，六度万行，无一不是在为我们的福田播种。\n当福报资粮具足，便可往生桃源世界。那里没有生老病死之苦，没有爱别离、怨憎会之恼，是真正的极乐净土、无忧地界。\n然需知，福报不够者，无有资格得入此门。因此，我辈当于日用之中，广行善事，存好心、说好话、做好人，莫以善小而不为，莫以恶小而为之。\n愿尔我皆能精进不退，早日积满福报，超脱轮回之苦，同生桃源，共证菩提。"},
-    {date:"2023.5.21", text:"最后还是没忍住……", images:[{src:"assets/photos/zhenzhen-desk.png",name:"新买的梳妆台"},{src:"assets/photos/zhenzhen-perfume.png",name:"香水"}], comments:[['林叔','上次不是还说舍不得买'],['强哥','喜欢就拿，省那点钱干啥'],['小雨','你最近是真的发财了'],['陈珍珍回复小雨','哪有，吃土了已经'],['峰哥','你现在眼光越来越高了'],['陈叔','下回来给你看个更好的'],['阿哲哥','又花钱，月底别来哭穷']]},
-    {date:"2023.4.30", text:"今晚风还挺舒服，随便拍两张", images:[{src:"assets/photos/zhenzhen-night.png",name:"夜景自拍"}], comments:[['强叔','又这么晚不回家'],['林叔','现在是越来越会拍了哈'],['陈珍珍回复林叔','哈哈'],['峰哥','夜里风大，别光顾着好看'],['陈珍珍回复峰哥','哈哈'],['陈叔','难怪今晚喊你你都不来'],['陈珍珍回复陈叔','哈哈']]},
-    {date:"2023.4.21", text:"这套比我想的好看一点", images:[{src:"assets/photos/zhenzhen-outfit.png",name:"新衣服"}], comments:[['强叔','小姑娘越来越会打扮了'],['林叔','这身比你平时那几套好看'],['峰哥','今天这么乖？不像你哦']]}
+    {date:"2023.5.21", text:"最后还是没忍住……", images:[{src:"assets/photos/zhenzhen-desk.webp",name:"新买的梳妆台"},{src:"assets/photos/zhenzhen-perfume.webp",name:"香水"}], comments:[['林叔','上次不是还说舍不得买'],['强哥','喜欢就拿，省那点钱干啥'],['小雨','你最近是真的发财了'],['陈珍珍回复小雨','哪有，吃土了已经'],['峰哥','你现在眼光越来越高了'],['陈叔','下回来给你看个更好的'],['阿哲哥','又花钱，月底别来哭穷']]},
+    {date:"2023.4.30", text:"今晚风还挺舒服，随便拍两张", images:[{src:"assets/photos/zhenzhen-night.webp",name:"夜景自拍"}], comments:[['强叔','又这么晚不回家'],['林叔','现在是越来越会拍了哈'],['陈珍珍回复林叔','哈哈'],['峰哥','夜里风大，别光顾着好看'],['陈珍珍回复峰哥','哈哈'],['陈叔','难怪今晚喊你你都不来'],['陈珍珍回复陈叔','哈哈']]},
+    {date:"2023.4.21", text:"这套比我想的好看一点", images:[{src:"assets/photos/zhenzhen-outfit.webp",name:"新衣服"}], comments:[['强叔','小姑娘越来越会打扮了'],['林叔','这身比你平时那几套好看'],['峰哥','今天这么乖？不像你哦']]}
   ];
   const tansiyuanPosts = [
-    {date:"2023.1.21", text:"", images:[{src:"assets/photos/tansiyuan-2023-01-21.png",name:"2023.1.21 照片"}]},
-    {date:"2023.8.22", text:"", images:[{src:"assets/photos/tansiyuan-2023-08-22.png",name:"2023.8.22 照片"}]}
+    {date:"2023.1.21", text:"", images:[{src:"assets/photos/tansiyuan-2023-01-21.webp",name:"2023.1.21 照片"}]},
+    {date:"2023.8.22", text:"", images:[{src:"assets/photos/tansiyuan-2023-08-22.webp",name:"2023.8.22 照片"}]}
   ];
   const dateValue = value => { const parts = String(value).match(/\d+/g) || []; return Number(parts[0] || 0) * 10000 + Number(parts[1] || 0) * 100 + Number(parts[2] || 0); };
   const posts = (isOwner ? ownerPosts : isZhenzhen ? zhenzhenPosts : isTansiyuan ? tansiyuanPosts : []).sort((a,b) => dateValue(b.date) - dateValue(a.date));
   const placeholder = label => '<div class="qz-photo" role="img" aria-label="' + label + '占位图"><span aria-hidden="true">▧</span><span>' + label + '</span><small>图片暂未上传</small></div>';
-  const feedAvatar = escape(safeProfile.avatarSrc || 'assets/avatars/xiaohang-user.png');
+  const feedAvatar = escape(safeProfile.avatarSrc || 'assets/avatars/xiaohang-user.webp');
   const feed = () => posts.length ? posts.map(post => {
     const images = post.images?.length ? '<div class="qz-photo-grid' + (post.images.length === 1 ? ' is-single' : '') + '">' + post.images.map(img => '<button type="button" data-qz-image="' + escape(img.src) + '" data-qz-image-name="' + escape(img.name) + '" aria-label="查看' + escape(img.name) + '"><img src="' + escape(img.src) + '" alt="' + escape(img.name) + '" /></button>').join('') + '</div>' : '';
     const comments = post.comments?.length ? '<div class="qz-comments">' + post.comments.map(([name, body]) => '<div class="qz-comment"><strong>' + escape(name) + '：</strong>' + escape(body) + '</div>').join('') + '</div>' : post.comment ? '<div class="qz-comment"><strong>珍珍姐：</strong>' + escape(post.comment) + '</div>' : '';
     const repost = post.repost ? '<button type="button" class="qz-repost qz-repost-link" data-qz-external-step="0">' + escape(post.repost).replace(/\n/g,'<br>') + '</button><div class="qz-external-notice" hidden aria-live="polite"></div>' : '';
     const likers = isZhenzhen ? ['珍珍姐', ...new Set((post.comments || []).map(([name]) => name).filter(name => !name.includes('回复'))), '愿珍惜你的每一天'] : [safeProfile.name];
     const likes = '<div class="qz-like">♡ <strong>' + likers.map(escape).join('、') + '</strong> 赞了这条说说 · ' + likers.length + '</div>';
-    return '<article class="qz-post qz-post-with-avatar"><img class="qz-feed-avatar" src="' + feedAvatar + '" alt="' + owner + '的头像" /><div class="qz-post-content"><div class="qz-post-meta"><strong>' + owner + '</strong><time>' + escape(post.date) + '</time></div>' + (post.text ? '<p>' + escape(post.text) + '</p>' : '') + repost + (post.photo === '猫咪照片' ? '<button type="button" class="qz-post-photo-button" data-qz-photo="maomao" aria-label="查看毛毛的照片"><img class="qz-post-photo" src="assets/photos/maomao.png" alt="毛毛，一只白色的猫" /></button>' : post.photo ? placeholder(post.photo) : '') + images + likes + comments + '</div></article>';
+    return '<article class="qz-post qz-post-with-avatar"><img class="qz-feed-avatar" src="' + feedAvatar + '" alt="' + owner + '的头像" /><div class="qz-post-content"><div class="qz-post-meta"><strong>' + owner + '</strong><time>' + escape(post.date) + '</time></div>' + (post.text ? '<p>' + escape(post.text) + '</p>' : '') + repost + (post.photo === '猫咪照片' ? '<button type="button" class="qz-post-photo-button" data-qz-photo="maomao" aria-label="查看毛毛的照片"><img class="qz-post-photo" src="assets/photos/maomao.webp" alt="毛毛，一只白色的猫" /></button>' : post.photo ? placeholder(post.photo) : '') + images + likes + comments + '</div></article>';
   }).join('') : '<p class="qz-empty">主人还没有发表说说。</p>';
   const page = document.createElement("section"); page.className = "qq-space-page";
   if (isOwner) page.classList.add("is-owner");
   if (String(safeProfile.qq) === "5200718") page.classList.add("is-zhenzhen");
-  const avatar = '<img src="' + escape(safeProfile.avatarSrc || 'assets/avatars/xiaohang-user.png') + '" alt="' + owner + '的头像" />';
+  const avatar = '<img src="' + escape(safeProfile.avatarSrc || 'assets/avatars/xiaohang-user.webp') + '" alt="' + owner + '的头像" />';
   page.innerHTML = '<header><span class="qq-space-star" aria-hidden="true">★</span><div><small>QZONE / 个人空间</small><strong>' + owner + '的 QQ 空间</strong><span>把生活里的小事，留在这里。</span></div></header><nav aria-label="空间导航"><button type="button" data-qz-tab="home" aria-pressed="true">主页</button><button type="button" data-qz-tab="board" aria-pressed="false">留言板</button><button type="button" data-qz-tab="posts" aria-pressed="false">说说</button><span>欢迎来到我的空间</span></nav><div class="qz-layout"><aside><section class="qz-module"><h3>个人档案</h3><div class="qz-profile"><div class="qz-avatar" aria-label="头像占位">头像</div><strong>' + owner + '</strong><small>QQ：' + escape(safeProfile.qq) + '</small><p>' + escape(safeProfile.signature || '记录生活，收藏回忆。') + '</p></div><div class="qz-stats"><span><b>' + posts.length + '</b>说说</span><span><b>' + posts.filter(p => p.photo).length + '</b>照片</span><span><b>0</b>留言</span></div></section><section class="qz-module"><h3>空间公告</h3><p class="qz-note">欢迎来我的小天地。<br>看看近况，留下你的足迹。</p></section><section class="qz-module"><h3>最近访客</h3><p class="qz-note">暂无访客记录</p></section></aside><main><section data-qz-panel="home"><section class="qz-module"><h3>我的主页 <small>HOME</small></h3><div class="qz-welcome"><strong>欢迎来到' + owner + '的空间</strong><p>一些日常，一些值得记住的人和事。</p></div></section><section class="qz-module"><h3>我的相册 <small>' + posts.filter(p => p.photo).length + ' 张照片</small></h3><div class="qz-album">' + (posts.filter(p => p.photo).map(p => placeholder(p.photo)).join('') || '<p>暂无照片</p>') + '</div></section><section class="qz-module"><h3>空间动态 <small>共 ' + posts.length + ' 条</small></h3>' + feed() + '</section></section><section data-qz-panel="board" hidden><section class="qz-module"><h3>留言板 <small>MESSAGE BOARD</small></h3><div class="qz-note"><p>有什么想说的，就留在这里吧。</p><form class="qz-message-form"><label>昵称<input name="nickname" maxlength="20" required placeholder="输入你的昵称"></label><label>留言<textarea name="message" maxlength="500" rows="4" required placeholder="写下你的留言……"></textarea></label><button type="submit">发表留言</button><small>留言仅保存在当前浏览器</small></form><div class="qz-messages" aria-live="polite"></div></div></section></section><section data-qz-panel="posts" hidden><section class="qz-module"><h3>我的说说 <small>共 ' + posts.length + ' 条</small></h3>' + feed() + '</section></section></main></div><footer>QQ空间 · 分享生活，留住感动</footer>';
   page.querySelector('.qq-space-star').removeAttribute('aria-hidden');
   page.querySelector('.qq-space-star').innerHTML = avatar;
@@ -1562,7 +1562,7 @@ function openQQSpace(profile = { name: "愿珍惜你的每一天", qq: "27491863
   page.addEventListener('click', event => {
     const externalLink = event.target.closest('.qz-repost-link');
     if (externalLink) { const notice = externalLink.nextElementSibling; const step = Number(externalLink.dataset.qzExternalStep || 0) + 1; externalLink.dataset.qzExternalStep = String(Math.min(step, 2)); if (step === 1) notice.innerHTML = '<strong>此为外部链接</strong><span>再次点击该文字继续</span><small>来源：浮光论坛</small>'; else notice.innerHTML = '<strong>需要从外部浏览器查看</strong><small>来源：浮光论坛</small>'; notice.hidden = false; win.querySelector('.statusbar span:first-child').textContent = step === 1 ? '外部链接提示' : '需要从外部浏览器查看'; return; }
-    if (event.target.closest('[data-qz-photo="maomao"]')) openPhotoViewer({ name:'毛毛.png', source:`${safeProfile.name}的QQ空间`, src:'assets/photos/maomao.png' });
+    if (event.target.closest('[data-qz-photo="maomao"]')) openPhotoViewer({ name:'毛毛.png', source:`${safeProfile.name}的QQ空间`, src:'assets/photos/maomao.webp' });
     const imageButton = event.target.closest('[data-qz-image]');
     if (imageButton) openPhotoViewer({ name:imageButton.dataset.qzImageName, source:`${safeProfile.name}的QQ空间`, src:imageButton.dataset.qzImage });
   });
@@ -1691,12 +1691,12 @@ function openQQUserInfo(name) {
   const card = document.createElement("section"); card.className = "qq-user-card";
   const avatarMarkup = profile.avatarSrc ? `<img src="${profile.avatarSrc}" alt="" />` : `<span class="qq-profile-placeholder ${profile.color || "blue"}">${profile.avatar || name.slice(0, 1)}</span>`;
   const previewPhotos = name === "谭某人（谭思远）" ? [
-    {src:"assets/photos/tansiyuan-2023-08-22.png",name:"2023.8.22 照片"},
-    {src:"assets/photos/tansiyuan-2023-01-21.png",name:"2023.1.21 照片"}
+    {src:"assets/photos/tansiyuan-2023-08-22.webp",name:"2023.8.22 照片"},
+    {src:"assets/photos/tansiyuan-2023-01-21.webp",name:"2023.1.21 照片"}
   ] : name === "珍珍姐" ? [
-    {src:"assets/photos/zhenzhen-desk.png",name:"2023.5.21 梳妆台"},
-    {src:"assets/photos/zhenzhen-perfume.png",name:"2023.5.21 香水"},
-    {src:"assets/photos/zhenzhen-night.png",name:"2023.4.30 夜景自拍"}
+    {src:"assets/photos/zhenzhen-desk.webp",name:"2023.5.21 梳妆台"},
+    {src:"assets/photos/zhenzhen-perfume.webp",name:"2023.5.21 香水"},
+    {src:"assets/photos/zhenzhen-night.webp",name:"2023.4.30 夜景自拍"}
   ] : [];
   const previewMarkup = previewPhotos.length ? previewPhotos.map(photo => `<i role="button" tabindex="0" data-profile-photo="${photo.name}" data-profile-src="${photo.src}" aria-label="查看${photo.name}"><img src="${photo.src}" alt="" /></i>`).join("") : '<span class="qq-space-no-photo">暂无照片</span>';
   card.innerHTML = `<header><div class="qq-user-avatar">${avatarMarkup}</div><div><strong>${name}</strong><small>QQ ${profile.qq}</small><em>${profile.status}</em></div></header><div class="qq-user-signature"><span>个性签名</span><p>${profile.signature ?? ""}</p></div><button type="button" class="qq-user-space"><span>QQ空间</span><span class="qq-space-thumbs">${previewMarkup}</span><b>进入 ›</b></button><footer><button type="button" data-profile-action="share"><span aria-hidden="true">↗</span>分享</button><button type="button" data-profile-action="message"><span aria-hidden="true">✉</span>发信息</button></footer>`;
@@ -1878,4 +1878,3 @@ document.addEventListener("keydown",event=>{
   if(event.key==="Escape"){setStartMenu(false);setVolumePopup(false);}
   if(event.key==="Enter"&&document.body.contains(loginError)){event.preventDefault();}
 });
-
