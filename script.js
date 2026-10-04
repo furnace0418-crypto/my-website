@@ -1397,7 +1397,33 @@ const replies = forumFull.querySelector(".forum-replies"); const initialReplyCou
   forumCornerAd.querySelector(".forum-corner-ad-image img").addEventListener("click", () => showAdError());
   const forumSearchInput = forumPage.querySelector(".forum-search input");
   forumSearchInput.name = `forum-search-${Date.now()}`; forumSearchInput.autocomplete = "off";
-  const updateForumSearch = (record = false) => { const query = forumSearchInput.value.trim(); const taoyuanSearch = forumAuthed && (query === "桃源市" || query === "桃原市" || query === "桃原"); const fortuneSearch = forumAuthed && query === "福报"; const gameSearch = forumAuthed && query === "像素空战"; const caseSearch = forumAuthed && query === "双子悬案"; const yunyangSearch = forumAuthed && query === "云阳"; const searching = query.length > 0; forumView = searching ? "search" : "home"; forumInThread = false; forumFromSearch = false; let found = 0; forumPage.querySelectorAll(".forum-thread-list button").forEach(button => { const key = button.dataset.forumOpen; const group = key.startsWith("taoyuan-") ? "taoyuan" : key.startsWith("fortune-") ? "fortune" : key.startsWith("game-") ? "game" : key.startsWith("case-") ? "case" : key.startsWith("yunyang-") ? "yunyang" : "home"; button.hidden = searching ? !((taoyuanSearch && group === "taoyuan") || (fortuneSearch && group === "fortune") || (gameSearch && group === "game") || (caseSearch && group === "case") || (yunyangSearch && group === "yunyang")) : group !== "home"; if (!button.hidden) found++; }); forumPage.querySelector(".forum-search-reserved").hidden = !taoyuanSearch; forumPage.querySelector(".forum-search-empty").hidden = !searching || found > 0; forumBoardTitle.textContent = searching ? "搜索结果" : "近期热帖"; forumPage.querySelector(".forum-board-heading span").textContent = `共 ${found} 条主题`; syncForumView(); forumPage.scrollTop = 0; if (record) recordForumHistory(true); };
+  const updateForumSearch = (record = false) => {
+    const query = forumSearchInput.value.trim();
+    const taoyuanSearch = forumAuthed && (query === "桃源市" || query === "桃原市" || query === "桃原");
+    const fortuneSearch = forumAuthed && query === "福报";
+    const gameSearch = forumAuthed && query === "像素空战";
+    const caseSearch = forumAuthed && query === "双子悬案";
+    const yunyangTitle = forumThreads["yunyang-letters"].title;
+    const yunyangSearch = forumAuthed && (yunyangTitle.includes(query) || query === "地图");
+    const searching = query.length > 0;
+    forumView = searching ? "search" : "home";
+    forumInThread = false;
+    forumFromSearch = false;
+    let found = 0;
+    forumPage.querySelectorAll(".forum-thread-list button").forEach(button => {
+      const key = button.dataset.forumOpen;
+      const group = key.startsWith("taoyuan-") ? "taoyuan" : key.startsWith("fortune-") ? "fortune" : key.startsWith("game-") ? "game" : key.startsWith("case-") ? "case" : key.startsWith("yunyang-") ? "yunyang" : "home";
+      button.hidden = searching ? !((taoyuanSearch && group === "taoyuan") || (fortuneSearch && group === "fortune") || (gameSearch && group === "game") || (caseSearch && group === "case") || (yunyangSearch && group === "yunyang")) : group !== "home";
+      if (!button.hidden) found++;
+    });
+    forumPage.querySelector(".forum-search-reserved").hidden = !taoyuanSearch;
+    forumPage.querySelector(".forum-search-empty").hidden = !searching || found > 0;
+    forumBoardTitle.textContent = searching ? "搜索结果" : "近期热帖";
+    forumPage.querySelector(".forum-board-heading span").textContent = `共 ${found} 条主题`;
+    syncForumView();
+    forumPage.scrollTop = 0;
+    if (record) recordForumHistory(true);
+  };
   forumSearchInput.addEventListener("input", () => updateForumSearch(true));
   forumPage.querySelector(".forum-crumb-home").addEventListener("click", () => { showForumSection("reading"); forumCurrent = "old-town"; renderForumThread(); forumPage.scrollTop = 0; });
   forumPage.querySelector(".forum-crumb-section").addEventListener("click", () => { if (forumFromSearch) { updateForumSearch(true); } else { showForumSection("reading"); } forumPage.scrollTop = 0; });
