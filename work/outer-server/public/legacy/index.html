@@ -165,6 +165,7 @@
         let desktopTotalBytes = 0;
         let displayedProgress = 0;
         let packNeedsPermission = false;
+        let packDownloading = false;
 
         const tellDesktop = (type) => {
           const frame = window.retroApplication?.cssScene?.children?.[0]?.element?.querySelector("iframe");
@@ -193,52 +194,74 @@
         };
 
         const downloadPack = async () => {
-          if (!window.showSaveFilePicker) {
-            packStatus.textContent = "SAVE LOCATION NOT SUPPORTED IN THIS BROWSER";
-            return;
-          }
-          let handle;
-          try {
-            // The picker must run directly from the click gesture.
-            handle = await window.showSaveFilePicker({
-              suggestedName: window.DesktopAssetPack.FILE_NAME,
-              types: [{ description: "Desktop asset archive", accept: { "application/zip": [".zip"] } }]
-            });
-          } catch (error) {
-            if (error.name !== "AbortError") packStatus.textContent = "COULD NOT CHOOSE SAVE LOCATION";
-            return;
-          }
+          packDownloading = true;
+          desktopPreloadReady = false;
           sessionStorage.setItem("desktop-pack-downloading", "1");
           tellDesktop("desktop-pack-download-start");
+          progressStatus.textContent = "LOADING PAUSED · DOWNLOADING ASSETS";
           packButton.disabled = true;
+          let handle;
+          if (window.showSaveFilePicker) {
+            try {
+              // Invoke the picker during the click gesture, before any await.
+              handle = await window.showSaveFilePicker({
+                suggestedName: window.DesktopAssetPack.FILE_NAME,
+                types: [{ description: "Desktop asset archive", accept: { "application/zip": [".zip"] } }]
+              });
+            } catch (error) {
+              packStatus.textContent = error.name === "AbortError" ? "DOWNLOAD CANCELED · LOADING ONLINE" : "SAVE LOCATION UNAVAILABLE · LOADING ONLINE";
+              packButton.disabled = false;
+              packDownloading = false;
+              sessionStorage.removeItem("desktop-pack-downloading");
+              tellDesktop("desktop-pack-online");
+              return;
+            }
+          }
           packStatus.textContent = "DOWNLOADING ASSET PACK · 0%";
           let writer;
           try {
             const url = new URL(`desktop/${window.DesktopAssetPack.URL_PATH}`, location.href);
-            const response = await fetch(url);
+            const response = await fetch(url, { cache: "no-store" });
             if (!response.ok) throw new Error(`Archive HTTP ${response.status}`);
-            writer = await handle.createWritable();
-            const total = Number(response.headers.get("content-length")) || 65633719;
+            if (handle) writer = await handle.createWritable();
+            const chunks = [];
+            const total = Number(response.headers.get("content-length")) || 65634182;
             let received = 0;
             if (response.body?.getReader) {
               const reader = response.body.getReader();
               while (true) {
                 const { done, value } = await reader.read();
                 if (done) break;
-                await writer.write(value);
+                if (writer) await writer.write(value);
+                else chunks.push(value);
                 received += value.byteLength;
                 packStatus.textContent = `DOWNLOADING ASSET PACK · ${Math.min(99, Math.floor(received / total * 100))}%`;
               }
             } else {
               const bytes = await response.arrayBuffer();
-              await writer.write(bytes);
+              if (writer) await writer.write(bytes);
+              else chunks.push(bytes);
             }
-            await writer.close();
-            writer = null;
-            await window.DesktopAssetPack.rememberFile(handle);
-            packStatus.textContent = "SAVED · PREPARING LOCAL ASSETS";
-            packButton.textContent = "LOCAL PACK SAVED";
-            tellDesktop("desktop-pack-ready");
+            if (writer) {
+              await writer.close();
+              writer = null;
+              await window.DesktopAssetPack.rememberFile(handle);
+              packStatus.textContent = "SAVED · PREPARING LOCAL ASSETS";
+              packButton.textContent = "LOCAL PACK SAVED";
+              tellDesktop("desktop-pack-ready");
+            } else {
+              const link = document.createElement("a");
+              const objectUrl = URL.createObjectURL(new Blob(chunks, { type: "application/zip" }));
+              link.href = objectUrl;
+              link.download = window.DesktopAssetPack.FILE_NAME;
+              document.body.append(link);
+              link.click();
+              link.remove();
+              setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
+              packStatus.textContent = "ZIP DOWNLOADED · LOCAL REUSE REQUIRES CHROME OR EDGE";
+              packButton.disabled = false;
+              tellDesktop("desktop-pack-online");
+            }
           } catch (error) {
             console.warn("Asset pack download failed", error);
             await writer?.abort().catch(() => {});
@@ -246,7 +269,9 @@
             packButton.disabled = false;
             tellDesktop("desktop-pack-online");
           } finally {
+            packDownloading = false;
             sessionStorage.removeItem("desktop-pack-downloading");
+            finishWhenEverythingIsReady();
           }
         };
 
@@ -299,7 +324,7 @@
         };
 
         const finishWhenEverythingIsReady = () => {
-          if (sceneReady && desktopPreloadReady && originalStart) finishLoading(originalStart);
+          if (!packDownloading && sceneReady && desktopPreloadReady && originalStart) finishLoading(originalStart);
         };
 
         window.addEventListener("message", (event) => {
@@ -436,6 +461,10 @@
 
         const update = (now) => {
           if (finishing) return;
+          if (packDownloading) {
+            requestAnimationFrame(update);
+            return;
+          }
           const elapsed = now - startedAt;
           const startButton = findVisibleStart();
           if (startButton && elapsed > 1200) {
