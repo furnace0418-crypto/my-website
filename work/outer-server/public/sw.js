@@ -1,4 +1,6 @@
 const CACHE_PREFIX = "taoyuan-desktop-";
+// Keep the existing image cache for this strategy change. Bump this version
+// when an image is replaced at the same URL, or use a new filename.
 const CACHE_NAME = `${CACHE_PREFIX}20261001-1`;
 
 self.addEventListener("install", () => self.skipWaiting());
@@ -40,6 +42,12 @@ async function cacheFirstAndRefresh(event) {
   return refreshed;
 }
 
+async function cacheFirstImage(request) {
+  const cache = await caches.open(CACHE_NAME);
+  const cached = await cache.match(request);
+  return cached || updateCache(request);
+}
+
 async function networkFirst(request) {
   try {
     return await updateCache(request);
@@ -59,6 +67,13 @@ self.addEventListener("fetch", (event) => {
 
   if (request.mode === "navigate" || /\.(?:css|js)$/i.test(url.pathname)) {
     event.respondWith(networkFirst(request));
+    return;
+  }
+
+  // Images in the preload manifest are fetched again as Image elements.
+  // Reuse the cached bytes without starting a second background download.
+  if (request.destination === "image" || /\.(?:png|jpe?g|webp|gif|svg|avif|bmp|ico)$/i.test(url.pathname)) {
+    event.respondWith(cacheFirstImage(request));
     return;
   }
 
