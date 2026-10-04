@@ -290,6 +290,8 @@ body.pixel-loading #ui-interactive {
     outline: none;
 }
 
+.pixel-progress-frame[hidden] { display: none; }
+
 #pixel-pack-download {
     margin-top: 14px;
     min-width: 164px;

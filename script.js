@@ -155,7 +155,7 @@
       if (saved?.version === window.DesktopAssetPack.VERSION) {
         const permission = saved.blob ? "granted" : await saved.handle.queryPermission({ mode: "read" });
         if (permission === "granted") {
-          await preloadLocalPack();
+          notify("desktop-pack-available");
           return;
         }
         notify("desktop-pack-needs-permission");

@@ -71,10 +71,10 @@
           .catch((error) => console.warn("Persistent asset cache unavailable", error));
       }
     </script>
-    <script defer src="retro-workstation.js?v=20261005-2"></script>
+    <script defer src="retro-workstation.js?v=20261005-3"></script>
     <script defer src="bundle.retro-workstation.js?v=20261005-1"></script>
-    <link href="main.css?v=20261005-2" rel="stylesheet" />
-    <script src="desktop/asset-pack.js?v=20261005-2"></script>
+    <link href="main.css?v=20261005-3" rel="stylesheet" />
+    <script src="desktop/asset-pack.js?v=20261005-3"></script>
   
   </head>
   <body class="pixel-loading">
@@ -86,13 +86,13 @@
     <div id="custom-pixel-loader" role="status" aria-live="polite" aria-label="Loading">
       <div class="pixel-loader-card">
         <div class="pixel-loader-title">LOADING<span class="pixel-loader-dots" aria-hidden="true"></span></div>
-        <div class="pixel-progress-frame" aria-hidden="true">
+        <div class="pixel-progress-frame" aria-hidden="true" hidden>
           <div class="pixel-progress-track">
             <div id="pixel-progress-fill"></div>
           </div>
         </div>
-        <div id="pixel-progress-status">DOWNLOAD ASSET PACK TO CONTINUE</div>
-        <button id="pixel-pack-download" type="button">DOWNLOAD PACK</button>
+        <div id="pixel-progress-status">SEARCHING FOR ASSET PACK...</div>
+        <button id="pixel-pack-download" type="button" hidden>DOWNLOAD PACK</button>
         <button id="pixel-start-button" type="button">START</button>
       </div>
     </div>
@@ -136,6 +136,7 @@
 
         const loader = document.querySelector("#custom-pixel-loader");
         const fill = document.querySelector("#pixel-progress-fill");
+        const progressFrame = document.querySelector(".pixel-progress-frame");
         const progressStatus = document.querySelector("#pixel-progress-status");
         const start = document.querySelector("#pixel-start-button");
         const packButton = document.querySelector("#pixel-pack-download");
@@ -163,7 +164,7 @@
         let packReading = false;
         let packDownloadedThisVisit = false;
         let downloadProgress = 0;
-        let packWaitingStatus = "DOWNLOAD ASSET PACK TO CONTINUE";
+        let packWaitingStatus = "SEARCHING FOR ASSET PACK...";
 
         const tellDesktop = (type) => {
           const frame = window.retroApplication?.cssScene?.children?.[0]?.element?.querySelector("iframe");
@@ -173,12 +174,14 @@
         const useStoredPack = async () => {
           try {
             const saved = await window.DesktopAssetPack.storedFile();
-            if (!saved?.handle) throw new Error("Saved file not found");
-            const permission = await saved.handle.requestPermission({ mode: "read" });
+            if (!saved || saved.version !== window.DesktopAssetPack.VERSION) throw new Error("Saved file not found");
+            const permission = saved.blob ? "granted" : await saved.handle.requestPermission({ mode: "read" });
             if (permission !== "granted") throw new Error("File access was not granted");
             packNeedsPermission = false;
             packReading = true;
             packButton.hidden = true;
+            progressFrame.hidden = false;
+            displayedProgress = 0;
             progressStatus.textContent = "READING SAVED ASSET PACK";
             tellDesktop("desktop-pack-ready");
           } catch (error) {
@@ -195,6 +198,9 @@
           packDownloading = true;
           packReading = false;
           downloadProgress = 0;
+          displayedProgress = 0;
+          fill.style.width = "0%";
+          progressFrame.hidden = false;
           desktopPreloadReady = false;
           desktopPreloadProgress = 0;
           desktopLoaded = 0;
@@ -217,6 +223,7 @@
               packWaitingStatus = error.name === "AbortError" ? "DOWNLOAD CANCELED · RETRY" : "SAVE LOCATION UNAVAILABLE · RETRY";
               packButton.disabled = false;
               packDownloading = false;
+              progressFrame.hidden = true;
               sessionStorage.removeItem("desktop-pack-downloading");
               return;
             }
@@ -275,6 +282,7 @@
             packDownloadedThisVisit = false;
             packWaitingStatus = "DOWNLOAD FAILED · RETRY";
             packButton.disabled = false;
+            progressFrame.hidden = true;
           } finally {
             packDownloading = false;
             sessionStorage.removeItem("desktop-pack-downloading");
@@ -332,6 +340,7 @@
           if (event.data.type === "desktop-preload-progress") {
             packReading = true;
             packButton.hidden = true;
+            progressFrame.hidden = false;
             desktopPreloadProgress = Math.max(0, Math.min(1, Number(event.data.progress) || 0));
             desktopLoaded = Math.max(0, Number(event.data.loaded) || 0);
             desktopTotal = Math.max(0, Number(event.data.total) || 0);
@@ -349,6 +358,14 @@
             desktopPreloadReady = true;
             finishWhenEverythingIsReady();
           }
+          if (event.data.type === "desktop-pack-available") {
+            if (packDownloading || packReading || desktopPreloadReady) return;
+            packNeedsPermission = true;
+            packButton.hidden = false;
+            packButton.disabled = false;
+            packButton.textContent = "ALLOW LOAD";
+            packWaitingStatus = "ASSET PACK FOUND · ALLOW LOAD";
+          }
           if (event.data.type === "desktop-pack-required") {
             if (packDownloading) return;
             packReading = false;
@@ -357,6 +374,7 @@
             packButton.disabled = false;
             packButton.textContent = "DOWNLOAD PACK";
             packWaitingStatus = "DOWNLOAD ASSET PACK TO CONTINUE";
+            progressFrame.hidden = true;
           }
           if (event.data.type === "desktop-pack-needs-permission") {
             if (packDownloading) return;
@@ -364,8 +382,9 @@
             packNeedsPermission = true;
             packButton.hidden = false;
             packButton.disabled = false;
-            packButton.textContent = "GRANT FILE ACCESS";
-            packWaitingStatus = "GRANT FILE ACCESS TO CONTINUE";
+            packButton.textContent = "ALLOW LOAD";
+            packWaitingStatus = "ASSET PACK FOUND · ALLOW LOAD";
+            progressFrame.hidden = true;
           }
           if (event.data.type === "desktop-pack-error") {
             if (packDownloading) return;
@@ -375,6 +394,7 @@
             packButton.disabled = false;
             packButton.textContent = "DOWNLOAD PACK";
             packWaitingStatus = "ASSET PACK INVALID · DOWNLOAD AGAIN";
+            progressFrame.hidden = true;
           }
         });
 
@@ -482,13 +502,12 @@
             originalStart = startButton;
             finishWhenEverythingIsReady();
           }
-          // Scene setup and desktop assets advance independently. Keeping both
-          // visible prevents a long, unexplained pause at the end of the bar.
-          const timedSceneProgress = 58 * (1 - Math.exp(-elapsed / 2600));
-          const sceneProgress = sceneReady ? 58 : Math.min(57.5, timedSceneProgress);
-          const assetProgress = packDownloading ? downloadProgress * 30
-            : packDownloadedThisVisit ? 30 + desktopPreloadProgress * 10
-            : desktopPreloadProgress * 40;
+          // Show progress only after the player chooses to load or download.
+          // The scene is initialized in parallel but never advances a timer-based bar.
+          const sceneProgress = sceneReady ? 20 : 0;
+          const assetProgress = packDownloading ? downloadProgress * 60
+            : packDownloadedThisVisit ? 60 + desktopPreloadProgress * 20
+            : desktopPreloadProgress * 80;
           const targetProgress = Math.min(98, sceneProgress + assetProgress);
           displayedProgress += (targetProgress - displayedProgress) * .075;
           if (targetProgress - displayedProgress < .03) displayedProgress = targetProgress;
