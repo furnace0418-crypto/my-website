@@ -6,28 +6,90 @@
     window.parent.postMessage({ type, ...detail }, "*");
   };
 
-  const waitForFirstScreen = async () => {
-    // Only the login image is needed before entering the desktop. Album,
-    // forum, game and file images are requested when their views are opened.
-    const image = document.querySelector(".boot-login-icon img");
-    const total = image ? 1 : 0;
-    notify("desktop-preload-progress", { loaded: 0, total, failed: 0, progress: total ? 0 : 1 });
-    let failed = 0;
-    if (image) {
-      try {
-        await Promise.race([
-          image.decode(),
-          new Promise((_, reject) => setTimeout(() => reject(new Error("login image timeout")), 8000))
-        ]);
-      } catch (error) {
-        failed = 1;
-        console.warn("Desktop login image unavailable", error);
-      }
+  const preloadImages = async () => {
+    let paths = [];
+    try {
+      const response = await fetch("assets/image-preload-manifest.json", { cache: "force-cache" });
+      if (!response.ok) throw new Error(`manifest ${response.status}`);
+      paths = await response.json();
+    } catch (error) {
+      console.warn("Desktop image preload manifest unavailable", error);
+      notify("desktop-preload-ready", { loaded: 0, total: 0, failed: 1 });
+      return;
     }
-    notify("desktop-preload-ready", { loaded: total, total, failed });
+
+    const items = paths.map(item => typeof item === "string"
+      ? { path: item, bytes: 1 }
+      : item
+    );
+    let cursor = 0;
+    let loaded = 0;
+    let failed = 0;
+    let loadedBytes = 0;
+    let lastProgressSentAt = 0;
+    const total = items.length;
+    const totalBytes = items.reduce((sum, item) => sum + Math.max(1, Number(item.bytes) || 1), 0);
+    const decodedImages = [];
+    window.__preloadedDesktopImages = decodedImages;
+    window.__preloadedDesktopImagesByPath = new Map();
+    const reportProgress = (force = false) => {
+      const now = performance.now();
+      if (!force && now - lastProgressSentAt < 90) return;
+      lastProgressSentAt = now;
+      notify("desktop-preload-progress", {
+        loaded, total, failed, loadedBytes, totalBytes,
+        progress: totalBytes ? Math.min(1, loadedBytes / totalBytes) : 1
+      });
+    };
+    const worker = async () => {
+      while (cursor < total) {
+        const index = cursor++;
+        const item = items[index];
+        const expectedBytes = Math.max(1, Number(item.bytes) || 1);
+        let receivedBytes = 0;
+        try {
+          const response = await fetch(item.path, { cache: "force-cache" });
+          if (!response.ok) throw new Error(`${item.path} ${response.status}`);
+          if (response.body?.getReader) {
+            const reader = response.body.getReader();
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              receivedBytes += value.byteLength;
+              loadedBytes += value.byteLength;
+              reportProgress();
+            }
+          } else {
+            await response.arrayBuffer();
+            receivedBytes = expectedBytes;
+            loadedBytes += expectedBytes;
+          }
+          const image = new Image();
+          image.decoding = "async";
+          image.src = item.path;
+          decodedImages.push(image);
+          if (typeof image.decode === "function") await image.decode();
+          else await new Promise((resolve, reject) => {
+            image.addEventListener("load", resolve, { once: true });
+            image.addEventListener("error", reject, { once: true });
+          });
+          window.__preloadedDesktopImagesByPath.set(item.path, image);
+        } catch (error) {
+          failed++;
+          console.warn("Desktop image preload failed", item.path, error);
+        } finally {
+          loadedBytes += Math.max(0, expectedBytes - receivedBytes);
+          loaded++;
+          reportProgress(true);
+        }
+      }
+    };
+
+    await Promise.all(Array.from({ length: Math.min(6, total || 1) }, worker));
+    notify("desktop-preload-ready", { loaded, total, failed });
   };
 
-  waitForFirstScreen();
+  preloadImages();
 })();
 
 const apps = {
@@ -574,6 +636,11 @@ const skyGameDownloadAssets = [
   ["第三段雪山地图.webp", 2047470]
 ].map(([name, bytes]) => ({ path: `assets/sky-game/${name}`, bytes }));
 async function downloadAndDecodeImages(items, signal, onProgress) {
+  const preloaded = window.__preloadedDesktopImagesByPath;
+  if (preloaded && items.every(item => preloaded.has(item.path))) {
+    onProgress(100);
+    return new Map(items.map(item => [item.path, preloaded.get(item.path)]));
+  }
   const totalBytes = items.reduce((sum, item) => sum + item.bytes, 0);
   let receivedBytes = 0, cursor = 0;
   const images = new Map(), urls = [];

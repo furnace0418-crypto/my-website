@@ -41,8 +41,8 @@
   const desktopFrame=app.cssScene.children[0]?.element?.querySelector('iframe');
   if(desktopFrame){
    const desktopUrl=new URL(desktopFrame.src);
-   if(desktopUrl.searchParams.get('contentVersion')!=='20261004-2'){
-    desktopUrl.searchParams.set('contentVersion','20261004-2');
+   if(desktopUrl.searchParams.get('contentVersion')!=='20261004-3'){
+    desktopUrl.searchParams.set('contentVersion','20261004-3');
     desktopFrame.src=desktopUrl.toString();
    }
    // At wide and desk distance the first screen click advances the camera only;
