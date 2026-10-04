@@ -9,7 +9,7 @@
   const preloadImages = async () => {
     let paths = [];
     try {
-      const response = await fetch("assets/image-preload-manifest.json", { cache: "force-cache" });
+      const response = await fetch("assets/image-preload-manifest.json?v=20261004-4", { cache: "force-cache" });
       if (!response.ok) throw new Error(`manifest ${response.status}`);
       paths = await response.json();
     } catch (error) {
