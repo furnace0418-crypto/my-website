@@ -29,12 +29,12 @@
     }
   }
 
-  async function rememberFile(handle) {
+  async function rememberPack(value) {
     const db = await openDatabase();
     try {
       await new Promise((resolve, reject) => {
         const transaction = db.transaction(STORE_NAME, "readwrite");
-        transaction.objectStore(STORE_NAME).put({ version: VERSION, handle }, "desktop-pack");
+        transaction.objectStore(STORE_NAME).put({ version: VERSION, ...value }, "desktop-pack");
         transaction.oncomplete = resolve;
         transaction.onerror = () => reject(transaction.error);
       });
@@ -42,6 +42,9 @@
       db.close();
     }
   }
+
+  const rememberFile = handle => rememberPack({ handle });
+  const rememberBlob = blob => rememberPack({ blob });
 
   function unpackStoredZip(buffer) {
     const view = new DataView(buffer), decoder = new TextDecoder();
@@ -70,8 +73,9 @@
     return { items, entries };
   }
 
-  async function readFile(handle) {
-    const file = await handle.getFile();
+  async function readStored(saved) {
+    const file = saved.handle ? await saved.handle.getFile() : saved.blob;
+    if (!file) throw new Error("Saved asset pack is missing");
     const buffer = await file.arrayBuffer();
     const digest = await crypto.subtle.digest("SHA-256", buffer);
     const hex = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, "0")).join("");
@@ -79,5 +83,5 @@
     return unpackStoredZip(buffer);
   }
 
-  window.DesktopAssetPack = { VERSION, FILE_NAME, URL_PATH, storedFile, rememberFile, readFile };
+  window.DesktopAssetPack = { VERSION, FILE_NAME, URL_PATH, storedFile, rememberFile, rememberBlob, readStored };
 })();

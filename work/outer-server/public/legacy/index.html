@@ -71,10 +71,10 @@
           .catch((error) => console.warn("Persistent asset cache unavailable", error));
       }
     </script>
-    <script defer src="retro-workstation.js?v=20261005-1"></script>
+    <script defer src="retro-workstation.js?v=20261005-2"></script>
     <script defer src="bundle.retro-workstation.js?v=20261005-1"></script>
-    <link href="main.css?v=20261004-6" rel="stylesheet" />
-    <script src="desktop/asset-pack.js?v=20261005-1"></script>
+    <link href="main.css?v=20261005-2" rel="stylesheet" />
+    <script src="desktop/asset-pack.js?v=20261005-2"></script>
   
   </head>
   <body class="pixel-loading">
@@ -91,13 +91,9 @@
             <div id="pixel-progress-fill"></div>
           </div>
         </div>
-        <div id="pixel-progress-status">INITIALIZING SCENE · 0%</div>
+        <div id="pixel-progress-status">DOWNLOAD ASSET PACK TO CONTINUE</div>
+        <button id="pixel-pack-download" type="button">DOWNLOAD PACK</button>
         <button id="pixel-start-button" type="button">START</button>
-      </div>
-      <div class="pixel-pack-controls">
-        <button id="pixel-pack-download" type="button">DOWNLOAD</button>
-        <button id="pixel-pack-online" type="button" hidden>LOAD ONLINE</button>
-        <div id="pixel-pack-status" aria-live="polite">SAVE DESKTOP ASSETS FOR NEXT VISIT</div>
       </div>
     </div>
     <div id="custom-fixed-controls" aria-label="Scene controls">
@@ -143,8 +139,6 @@
         const progressStatus = document.querySelector("#pixel-progress-status");
         const start = document.querySelector("#pixel-start-button");
         const packButton = document.querySelector("#pixel-pack-download");
-        const onlineButton = document.querySelector("#pixel-pack-online");
-        const packStatus = document.querySelector("#pixel-pack-status");
         const controls = document.querySelector("#custom-fixed-controls");
         const audioControl = document.querySelector("#custom-audio-control");
         const viewControl = document.querySelector("#custom-view-control");
@@ -166,6 +160,10 @@
         let displayedProgress = 0;
         let packNeedsPermission = false;
         let packDownloading = false;
+        let packReading = false;
+        let packDownloadedThisVisit = false;
+        let downloadProgress = 0;
+        let packWaitingStatus = "DOWNLOAD ASSET PACK TO CONTINUE";
 
         const tellDesktop = (type) => {
           const frame = window.retroApplication?.cssScene?.children?.[0]?.element?.querySelector("iframe");
@@ -179,26 +177,33 @@
             const permission = await saved.handle.requestPermission({ mode: "read" });
             if (permission !== "granted") throw new Error("File access was not granted");
             packNeedsPermission = false;
-            onlineButton.hidden = true;
-            packButton.textContent = "LOCAL PACK READY";
-            packButton.disabled = true;
-            packStatus.textContent = "READING SAVED FILE";
+            packReading = true;
+            packButton.hidden = true;
+            progressStatus.textContent = "READING SAVED ASSET PACK";
             tellDesktop("desktop-pack-ready");
           } catch (error) {
-            packStatus.textContent = "LOCAL FILE UNAVAILABLE · LOADING ONLINE";
             packNeedsPermission = false;
-            onlineButton.hidden = true;
-            packButton.textContent = "DOWNLOAD";
-            tellDesktop("desktop-pack-online");
+            packButton.hidden = false;
+            packButton.disabled = false;
+            packButton.textContent = "DOWNLOAD PACK";
+            packWaitingStatus = "FILE ACCESS FAILED · DOWNLOAD AGAIN";
           }
         };
 
         const downloadPack = async () => {
+          packWaitingStatus = "DOWNLOAD ASSET PACK TO CONTINUE";
           packDownloading = true;
+          packReading = false;
+          downloadProgress = 0;
           desktopPreloadReady = false;
+          desktopPreloadProgress = 0;
+          desktopLoaded = 0;
+          desktopTotal = 0;
+          desktopLoadedBytes = 0;
+          desktopTotalBytes = 0;
           sessionStorage.setItem("desktop-pack-downloading", "1");
           tellDesktop("desktop-pack-download-start");
-          progressStatus.textContent = "LOADING PAUSED · DOWNLOADING ASSETS";
+          progressStatus.textContent = "CHOOSE WHERE TO SAVE THE ASSET PACK";
           packButton.disabled = true;
           let handle;
           if (window.showSaveFilePicker) {
@@ -209,15 +214,14 @@
                 types: [{ description: "Desktop asset archive", accept: { "application/zip": [".zip"] } }]
               });
             } catch (error) {
-              packStatus.textContent = error.name === "AbortError" ? "DOWNLOAD CANCELED · LOADING ONLINE" : "SAVE LOCATION UNAVAILABLE · LOADING ONLINE";
+              packWaitingStatus = error.name === "AbortError" ? "DOWNLOAD CANCELED · RETRY" : "SAVE LOCATION UNAVAILABLE · RETRY";
               packButton.disabled = false;
               packDownloading = false;
               sessionStorage.removeItem("desktop-pack-downloading");
-              tellDesktop("desktop-pack-online");
               return;
             }
           }
-          packStatus.textContent = "DOWNLOADING ASSET PACK · 0%";
+          progressStatus.textContent = "DOWNLOADING ASSET PACK · 0%";
           let writer;
           try {
             const url = new URL(`desktop/${window.DesktopAssetPack.URL_PATH}`, location.href);
@@ -235,39 +239,42 @@
                 if (writer) await writer.write(value);
                 else chunks.push(value);
                 received += value.byteLength;
-                packStatus.textContent = `DOWNLOADING ASSET PACK · ${Math.min(99, Math.floor(received / total * 100))}%`;
+                downloadProgress = Math.min(1, received / total);
               }
             } else {
               const bytes = await response.arrayBuffer();
               if (writer) await writer.write(bytes);
               else chunks.push(bytes);
+              downloadProgress = 1;
             }
             if (writer) {
               await writer.close();
               writer = null;
               await window.DesktopAssetPack.rememberFile(handle);
-              packStatus.textContent = "SAVED · PREPARING LOCAL ASSETS";
-              packButton.textContent = "LOCAL PACK SAVED";
-              tellDesktop("desktop-pack-ready");
             } else {
+              const blob = new Blob(chunks, { type: "application/zip" });
+              await window.DesktopAssetPack.rememberBlob(blob);
               const link = document.createElement("a");
-              const objectUrl = URL.createObjectURL(new Blob(chunks, { type: "application/zip" }));
+              const objectUrl = URL.createObjectURL(blob);
               link.href = objectUrl;
               link.download = window.DesktopAssetPack.FILE_NAME;
               document.body.append(link);
               link.click();
               link.remove();
               setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
-              packStatus.textContent = "ZIP DOWNLOADED · LOCAL REUSE REQUIRES CHROME OR EDGE";
-              packButton.disabled = false;
-              tellDesktop("desktop-pack-online");
             }
+            packDownloadedThisVisit = true;
+            downloadProgress = 1;
+            packReading = true;
+            packButton.hidden = true;
+            progressStatus.textContent = "READING DOWNLOADED ASSET PACK";
+            tellDesktop("desktop-pack-ready");
           } catch (error) {
             console.warn("Asset pack download failed", error);
             await writer?.abort().catch(() => {});
-            packStatus.textContent = "DOWNLOAD FAILED · LOADING ONLINE";
+            packDownloadedThisVisit = false;
+            packWaitingStatus = "DOWNLOAD FAILED · RETRY";
             packButton.disabled = false;
-            tellDesktop("desktop-pack-online");
           } finally {
             packDownloading = false;
             sessionStorage.removeItem("desktop-pack-downloading");
@@ -278,13 +285,6 @@
         packButton.addEventListener("click", () => {
           if (packNeedsPermission) useStoredPack();
           else downloadPack();
-        });
-        onlineButton.addEventListener("click", () => {
-          onlineButton.hidden = true;
-          packNeedsPermission = false;
-          packButton.textContent = "DOWNLOAD";
-          packStatus.textContent = "LOADING ASSETS ONLINE";
-          tellDesktop("desktop-pack-online");
         });
 
         const syncControlStates = () => {
@@ -330,6 +330,8 @@
         window.addEventListener("message", (event) => {
           if (event.source === window || !event.data) return;
           if (event.data.type === "desktop-preload-progress") {
+            packReading = true;
+            packButton.hidden = true;
             desktopPreloadProgress = Math.max(0, Math.min(1, Number(event.data.progress) || 0));
             desktopLoaded = Math.max(0, Number(event.data.loaded) || 0);
             desktopTotal = Math.max(0, Number(event.data.total) || 0);
@@ -337,30 +339,42 @@
             desktopTotalBytes = Math.max(0, Number(event.data.totalBytes) || 0);
           }
           if (event.data.type === "desktop-preload-ready") {
+            packReading = false;
+            packButton.hidden = true;
             desktopPreloadProgress = 1;
             desktopLoaded = Math.max(0, Number(event.data.loaded) || desktopLoaded);
             desktopTotal = Math.max(0, Number(event.data.total) || desktopTotal);
             desktopLoadedBytes = Math.max(0, Number(event.data.loadedBytes) || desktopLoadedBytes);
             desktopTotalBytes = Math.max(0, Number(event.data.totalBytes) || desktopTotalBytes);
             desktopPreloadReady = true;
-            if (event.data.source === "local-pack") {
-              packButton.textContent = "LOCAL PACK READY";
-              packButton.disabled = true;
-              packStatus.textContent = "ASSETS READ FROM SAVED FILE";
-            }
             finishWhenEverythingIsReady();
           }
+          if (event.data.type === "desktop-pack-required") {
+            if (packDownloading) return;
+            packReading = false;
+            packNeedsPermission = false;
+            packButton.hidden = false;
+            packButton.disabled = false;
+            packButton.textContent = "DOWNLOAD PACK";
+            packWaitingStatus = "DOWNLOAD ASSET PACK TO CONTINUE";
+          }
           if (event.data.type === "desktop-pack-needs-permission") {
+            if (packDownloading) return;
+            packReading = false;
             packNeedsPermission = true;
-            onlineButton.hidden = false;
+            packButton.hidden = false;
+            packButton.disabled = false;
             packButton.textContent = "GRANT FILE ACCESS";
-            packStatus.textContent = "BROWSER NEEDS PERMISSION TO READ SAVED PACK";
+            packWaitingStatus = "GRANT FILE ACCESS TO CONTINUE";
           }
           if (event.data.type === "desktop-pack-error") {
-            onlineButton.hidden = true;
-            packStatus.textContent = "LOCAL PACK UNAVAILABLE · LOADING ONLINE";
+            if (packDownloading) return;
+            packReading = false;
+            packNeedsPermission = false;
+            packButton.hidden = false;
             packButton.disabled = false;
-            packButton.textContent = "DOWNLOAD";
+            packButton.textContent = "DOWNLOAD PACK";
+            packWaitingStatus = "ASSET PACK INVALID · DOWNLOAD AGAIN";
           }
         });
 
@@ -461,10 +475,6 @@
 
         const update = (now) => {
           if (finishing) return;
-          if (packDownloading) {
-            requestAnimationFrame(update);
-            return;
-          }
           const elapsed = now - startedAt;
           const startButton = findVisibleStart();
           if (startButton && elapsed > 1200) {
@@ -476,21 +486,25 @@
           // visible prevents a long, unexplained pause at the end of the bar.
           const timedSceneProgress = 58 * (1 - Math.exp(-elapsed / 2600));
           const sceneProgress = sceneReady ? 58 : Math.min(57.5, timedSceneProgress);
-          const assetProgress = desktopPreloadProgress * 40;
+          const assetProgress = packDownloading ? downloadProgress * 30
+            : packDownloadedThisVisit ? 30 + desktopPreloadProgress * 10
+            : desktopPreloadProgress * 40;
           const targetProgress = Math.min(98, sceneProgress + assetProgress);
           displayedProgress += (targetProgress - displayedProgress) * .075;
           if (targetProgress - displayedProgress < .03) displayedProgress = targetProgress;
           fill.style.width = `${Math.max(1, displayedProgress)}%`;
           const percent = Math.floor(Math.max(1, displayedProgress));
-          if (!sceneReady) {
-            progressStatus.textContent = desktopPreloadProgress > 0
-              ? `LOADING SCENE & ASSETS · ${percent}%`
-              : `INITIALIZING SCENE · ${percent}%`;
+          if (packDownloading) {
+            progressStatus.textContent = `DOWNLOADING ASSET PACK · ${Math.floor(downloadProgress * 100)}%`;
+          } else if (packNeedsPermission || (!packReading && !desktopPreloadReady)) {
+            progressStatus.textContent = packWaitingStatus;
           } else if (!desktopPreloadReady) {
             const bytes = desktopTotalBytes
               ? ` ${(desktopLoadedBytes / 1048576).toFixed(1)}/${(desktopTotalBytes / 1048576).toFixed(1)} MB`
               : desktopTotal ? ` ${desktopLoaded}/${desktopTotal}` : "";
-            progressStatus.textContent = `LOADING DESKTOP ASSETS${bytes} · ${percent}%`;
+            progressStatus.textContent = `READING ASSET PACK${bytes} · ${percent}%`;
+          } else if (!sceneReady) {
+            progressStatus.textContent = `INITIALIZING SCENE · ${percent}%`;
           } else {
             progressStatus.textContent = `PREPARING DESKTOP · ${percent}%`;
           }

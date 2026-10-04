@@ -9,6 +9,8 @@
   let networkController = null;
   let runId = 0;
   let downloadResultHandled = false;
+  let localLoading = false;
+  let localReady = false;
   const stopNetworkPreload = () => {
     runId++;
     networkController?.abort();
@@ -16,9 +18,12 @@
   };
 
   const preloadLocalPack = async () => {
+    if (localLoading || localReady) return;
+    localLoading = true;
+    try {
     const saved = await window.DesktopAssetPack.storedFile();
     if (!saved || saved.version !== window.DesktopAssetPack.VERSION) throw new Error("No current local pack");
-    const { items, entries } = await window.DesktopAssetPack.readFile(saved.handle);
+    const { items, entries } = await window.DesktopAssetPack.readStored(saved);
     const totalBytes = items.reduce((sum, item) => sum + item.bytes, 0);
     const cache = await caches.open("taoyuan-desktop-20261005-1");
     const decodedImages = [];
@@ -27,23 +32,32 @@
     window.__preloadedDesktopImages = decodedImages;
     window.__preloadedDesktopImagesByPath = byPath;
     notify("desktop-preload-progress", { loaded, total: items.length, failed: 0, loadedBytes, totalBytes, progress: 0 });
-    for (const item of items) {
-      const bytes = entries.get(item.path);
-      const extension = item.path.split(".").pop().toLowerCase();
-      const mime = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp", svg: "image/svg+xml", gif: "image/gif" }[extension] || "application/octet-stream";
-      const blob = new Blob([bytes], { type: mime });
-      await cache.put(new Request(new URL(item.path, location.href)), new Response(blob, { headers: { "Content-Type": mime } }));
-      const image = new Image();
-      image.decoding = "async";
-      image.src = URL.createObjectURL(blob);
-      await image.decode();
-      decodedImages.push(image);
-      byPath.set(item.path, image);
-      loadedBytes += bytes.byteLength;
-      loaded++;
-      notify("desktop-preload-progress", { loaded, total: items.length, failed: 0, loadedBytes, totalBytes, progress: Math.min(1, loadedBytes / totalBytes) });
-    }
+    let cursor = 0;
+    const worker = async () => {
+      while (cursor < items.length) {
+        const item = items[cursor++];
+        const bytes = entries.get(item.path);
+        const extension = item.path.split(".").pop().toLowerCase();
+        const mime = { webp: "image/webp", svg: "image/svg+xml" }[extension] || "application/octet-stream";
+        const blob = new Blob([bytes], { type: mime });
+        await cache.put(new Request(new URL(item.path, location.href)), new Response(blob, { headers: { "Content-Type": mime } }));
+        const image = new Image();
+        image.decoding = "async";
+        image.src = URL.createObjectURL(blob);
+        await image.decode();
+        decodedImages.push(image);
+        byPath.set(item.path, image);
+        loadedBytes += bytes.byteLength;
+        loaded++;
+        notify("desktop-preload-progress", { loaded, total: items.length, failed: 0, loadedBytes, totalBytes, progress: Math.min(1, loadedBytes / totalBytes) });
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(6, items.length) }, worker));
+    localReady = true;
     notify("desktop-preload-ready", { loaded, total: items.length, failed: 0, loadedBytes, totalBytes, source: "local-pack" });
+    } finally {
+      localLoading = false;
+    }
   };
 
   const preloadImages = async () => {
@@ -139,7 +153,7 @@
     try {
       const saved = await window.DesktopAssetPack?.storedFile();
       if (saved?.version === window.DesktopAssetPack.VERSION) {
-        const permission = await saved.handle.queryPermission({ mode: "read" });
+        const permission = saved.blob ? "granted" : await saved.handle.queryPermission({ mode: "read" });
         if (permission === "granted") {
           await preloadLocalPack();
           return;
@@ -157,9 +171,7 @@
         clearInterval(waitForDownload);
         if (!downloadResultHandled) tryLocalPack();
       }, 400);
-    } else {
-      preloadImages();
-    }
+    } else notify("desktop-pack-required");
   };
 
   window.addEventListener("message", event => {
@@ -171,12 +183,7 @@
     if (event.data?.type === "desktop-pack-ready") {
       downloadResultHandled = true;
       stopNetworkPreload();
-      preloadLocalPack().catch(error => { console.warn("Could not use saved pack", error); notify("desktop-pack-error"); preloadImages(); });
-    }
-    if (event.data?.type === "desktop-pack-online") {
-      downloadResultHandled = true;
-      stopNetworkPreload();
-      preloadImages();
+      preloadLocalPack().catch(error => { console.warn("Could not use saved pack", error); notify("desktop-pack-error"); });
     }
   });
 
