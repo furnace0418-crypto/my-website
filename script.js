@@ -565,15 +565,71 @@ function installSkyGameDesktopIcon() {
   button.innerHTML = '<span class="pixel-icon sky-game-icon"><i></i></span><span class="icon-label">像素空战</span>';
   document.querySelector(".desktop-icons").appendChild(button); bindDesktopAppIcon(button);
 }
+const skyGameDownloadAssets = [
+  ["我方飞机.webp", 207138], ["飞机2.webp", 81552], ["飞机3.webp", 48422],
+  ["飞机4.webp", 77380], ["飞机1.webp", 77050], ["boss.webp", 523600],
+  ["弹幕4.webp", 19056], ["弹幕1.webp", 61202], ["弹幕2.webp", 15460],
+  ["弹幕3.webp", 32536], ["弹幕5.webp", 24132], ["击杀.webp", 191812],
+  ["第一关地图.webp", 2234594], ["第二关沙漠地图.webp", 2109502],
+  ["第三段雪山地图.webp", 2047470]
+].map(([name, bytes]) => ({ path: `assets/sky-game/${name}`, bytes }));
+async function downloadAndDecodeImages(items, signal, onProgress) {
+  const totalBytes = items.reduce((sum, item) => sum + item.bytes, 0);
+  let receivedBytes = 0, cursor = 0;
+  const images = new Map(), urls = [];
+  const report = () => onProgress(Math.min(99, Math.floor(receivedBytes / totalBytes * 99)));
+  const worker = async () => {
+    while (cursor < items.length) {
+      const item = items[cursor++];
+      const response = await fetch(item.path, { signal });
+      if (!response.ok) throw new Error(`${item.path}: HTTP ${response.status}`);
+      let blob;
+      if (response.body?.getReader) {
+        const reader = response.body.getReader(), chunks = [];
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          chunks.push(value);
+          receivedBytes += value.byteLength;
+          report();
+        }
+        blob = new Blob(chunks, { type: response.headers.get("content-type") || "image/webp" });
+      } else {
+        blob = await response.blob();
+        receivedBytes += blob.size;
+        report();
+      }
+      const url = URL.createObjectURL(blob);
+      urls.push(url);
+      const image = new Image();
+      image.src = url;
+      await image.decode();
+      if (signal.aborted) throw new DOMException("Download cancelled", "AbortError");
+      images.set(item.path, image);
+    }
+  };
+  const workers = Array.from({ length: Math.min(3, items.length) }, worker);
+  try {
+    await Promise.all(workers);
+    onProgress(100);
+    return images;
+  } catch (error) {
+    await Promise.allSettled(workers);
+    urls.forEach(url => URL.revokeObjectURL(url));
+    throw error;
+  }
+}
 function startSkyGameDownload() {
   if (skyGameInstalledThisPage) { openApp("sky-game"); return; }
   const existing = document.querySelector(".sky-download-dialog"); if (existing) { existing.style.zIndex = ++highestZ; return; }
   const dialog = document.createElement("section"); dialog.className = "sky-download-dialog"; dialog.setAttribute("role","dialog"); dialog.setAttribute("aria-label","正在下载像素空战"); dialog.style.zIndex = ++highestZ;
   dialog.innerHTML = '<header><img src="assets/icons/pixel-air-combat.png" alt=""><strong>文件下载</strong><button type="button" aria-label="取消下载" title="取消下载">×</button></header><main><img class="sky-download-logo" src="assets/icons/pixel-air-combat.png" alt="像素空战"><div><h2>正在下载像素空战</h2><p>来自：game.fuguang.cn</p><div class="sky-download-track"><span></span></div><small>准备下载…　0%</small></div></main><footer>下载过程中请不要关闭此窗口。</footer>';
   document.querySelector("#desktop").appendChild(dialog);
-  let progress=0,cancelled=false; const bar=dialog.querySelector(".sky-download-track span"),label=dialog.querySelector("main small"),cancel=dialog.querySelector("header button");
-  const stop=()=>{cancelled=true;clearInterval(timer);dialog.remove();}; cancel.addEventListener("click",stop);
-  const timer=setInterval(()=>{if(cancelled||!dialog.isConnected){clearInterval(timer);return;}progress=Math.min(100,progress+2+Math.floor(Math.random()*4));bar.style.width=`${progress}%`;label.textContent=progress<100?`正在接收游戏文件…　${progress}%`:'下载完成　100%';if(progress===100){clearInterval(timer);dialog.classList.add("complete");dialog.querySelector("h2").textContent="像素空战下载完成";dialog.querySelector("footer").textContent="游戏快捷方式已添加到桌面。";installSkyGameDesktopIcon();setTimeout(()=>dialog.remove(),1100);}},190);
+  const controller=new AbortController(),bar=dialog.querySelector(".sky-download-track span"),label=dialog.querySelector("main small"),cancel=dialog.querySelector("header button");
+  cancel.addEventListener("click",()=>{controller.abort();dialog.remove();});
+  downloadAndDecodeImages(skyGameDownloadAssets,controller.signal,percent=>{bar.style.width=`${percent}%`;label.textContent=percent<100?`正在接收游戏文件…　${percent}%`:'下载完成　100%';})
+    .then(images=>{if(controller.signal.aborted)return;window.__downloadedSkyGameArt=images;dialog.classList.add("complete");dialog.querySelector("h2").textContent="像素空战下载完成";dialog.querySelector("footer").textContent="游戏快捷方式已添加到桌面。";installSkyGameDesktopIcon();setTimeout(()=>dialog.remove(),1100);})
+    .catch(error=>{if(controller.signal.aborted)return;console.warn("Game download failed",error);label.textContent="下载失败，请重试";dialog.querySelector("footer").textContent="网络或文件读取失败，请关闭窗口后重新下载。";});
 }
 function installCaseArchiveDesktopIcon() {
   if (caseArchiveDownloadedThisPage || document.querySelector(".case-archive-desktop-entry")) return;
@@ -587,9 +643,11 @@ function startCaseArchiveDownload() {
   const existing=document.querySelector(".sky-download-dialog");if(existing){existing.style.zIndex=++highestZ;return;}
   const dialog=document.createElement("section");dialog.className="sky-download-dialog";dialog.setAttribute("role","dialog");dialog.setAttribute("aria-label","正在下载档案整理.zip");dialog.style.zIndex=++highestZ;
   dialog.innerHTML='<header><img src="assets/icons/case-archive-transparent.png" alt=""><strong>文件下载</strong><button type="button" aria-label="取消下载" title="取消下载">×</button></header><main><img class="sky-download-logo" src="assets/icons/case-archive-transparent.png" alt="压缩包"><div><h2>正在下载档案整理.zip</h2><p>来自：bbs.fuguang.cn</p><div class="sky-download-track"><span></span></div><small>准备下载…　0%</small></div></main><footer>下载过程中请不要关闭此窗口。</footer>';
-  document.querySelector("#desktop").appendChild(dialog);let progress=0,cancelled=false;const bar=dialog.querySelector(".sky-download-track span"),label=dialog.querySelector("main small"),cancel=dialog.querySelector("header button");
-  const stop=()=>{cancelled=true;clearInterval(timer);dialog.remove();};cancel.addEventListener("click",stop);
-  const timer=setInterval(()=>{if(cancelled||!dialog.isConnected){clearInterval(timer);return;}progress=Math.min(100,progress+3+Math.floor(Math.random()*5));bar.style.width=`${progress}%`;label.textContent=progress<100?`正在接收压缩文件…　${progress}%`:'下载完成　100%';if(progress===100){clearInterval(timer);dialog.classList.add("complete");dialog.querySelector("h2").textContent="档案整理.zip 下载完成";dialog.querySelector("footer").textContent="压缩文件已保存到桌面。";installCaseArchiveDesktopIcon();setTimeout(()=>dialog.remove(),1100);}},190);
+  document.querySelector("#desktop").appendChild(dialog);const controller=new AbortController(),bar=dialog.querySelector(".sky-download-track span"),label=dialog.querySelector("main small"),cancel=dialog.querySelector("header button");
+  cancel.addEventListener("click",()=>{controller.abort();dialog.remove();});
+  downloadAndDecodeImages([{path:"assets/documents/case-archive-page.png",bytes:1602057}],controller.signal,percent=>{bar.style.width=`${percent}%`;label.textContent=percent<100?`正在接收压缩文件…　${percent}%`:'下载完成　100%';})
+    .then(images=>{if(controller.signal.aborted)return;window.__downloadedCasePage=images.get("assets/documents/case-archive-page.png");dialog.classList.add("complete");dialog.querySelector("h2").textContent="档案整理.zip 下载完成";dialog.querySelector("footer").textContent="压缩文件已保存到桌面。";installCaseArchiveDesktopIcon();setTimeout(()=>dialog.remove(),1100);})
+    .catch(error=>{if(controller.signal.aborted)return;console.warn("Archive download failed",error);label.textContent="下载失败，请重试";dialog.querySelector("footer").textContent="网络或文件读取失败，请关闭窗口后重新下载。";});
 }
 function setupCaseArchiveWindow(win) {
   win.classList.add("case-archive-window");win.style.width=`${Math.min(720,innerWidth-50)}px`;win.style.height=`${Math.min(520,innerHeight-80)}px`;win.querySelector(".window-mini-icon").classList.add("case-archive");
@@ -611,7 +669,7 @@ function setupCasePdfWindow(win) {
   win.querySelector(".menu-bar").innerHTML='<button type="button">文件(<u>F</u>)</button><button type="button">查看(<u>V</u>)</button><button type="button">帮助(<u>H</u>)</button>';
   win.querySelector(".toolbar").innerHTML='<span class="case-pdf-toolbar-label">案件整理.pdf</span><button type="button" data-pdf-zoom="out" aria-label="缩小">－</button><output>100%</output><button type="button" data-pdf-zoom="in" aria-label="放大">＋</button><button type="button" data-pdf-zoom="fit">适合宽度</button><span class="case-pdf-page-count">第 1 页 / 共 1 页</span>';
   const viewport=document.createElement("div");viewport.className="case-pdf-viewport";
-  const page=document.createElement("img");page.className="case-pdf-page";page.src="assets/documents/case-archive-page.png?v=20261001-1";page.alt="案件整理 PDF 第 1 页的完整内容";viewport.appendChild(page);
+  const page=document.createElement("img");page.className="case-pdf-page";page.src=window.__downloadedCasePage?.src || "assets/documents/case-archive-page.png?v=20261001-1";page.alt="案件整理 PDF 第 1 页的完整内容";viewport.appendChild(page);
   win.querySelector(".window-content").replaceChildren(viewport);
   let zoom=1;const output=win.querySelector(".toolbar output");
   const updateZoom=()=>{page.style.width=`${Math.round(760*zoom)}px`;output.textContent=`${Math.round(zoom*100)}%`;};
