@@ -252,12 +252,12 @@ body.pixel-loading #ui-interactive {
     min-height: 10px;
     margin-top: 7px;
     color: #a9a9a9;
-    font-family: "Courier New", monospace;
-    font-size: 8px;
+    font-family: "SimSun", "NSimSun", monospace;
+    font-size: 11px;
     font-weight: 700;
     line-height: 1.2;
-    letter-spacing: 0.04em;
-    white-space: nowrap;
+    letter-spacing: 0;
+    white-space: normal;
 }
 
 #pixel-start-button {
@@ -299,8 +299,8 @@ body.pixel-loading #ui-interactive {
     border: 2px solid #fff;
     color: #fff;
     background: #000;
-    font: 700 12px/1 "Courier New", monospace;
-    letter-spacing: .12em;
+    font: 700 14px/1 "SimSun", "NSimSun", monospace;
+    letter-spacing: .08em;
     cursor: pointer;
 }
 

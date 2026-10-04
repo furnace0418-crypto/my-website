@@ -71,10 +71,10 @@
           .catch((error) => console.warn("Persistent asset cache unavailable", error));
       }
     </script>
-    <script defer src="retro-workstation.js?v=20261005-3"></script>
+    <script defer src="retro-workstation.js?v=20261005-4"></script>
     <script defer src="bundle.retro-workstation.js?v=20261005-1"></script>
-    <link href="main.css?v=20261005-3" rel="stylesheet" />
-    <script src="desktop/asset-pack.js?v=20261005-3"></script>
+    <link href="main.css?v=20261005-4" rel="stylesheet" />
+    <script src="desktop/asset-pack.js?v=20261005-4"></script>
   
   </head>
   <body class="pixel-loading">
@@ -83,7 +83,7 @@
     <div id="overlay"></div>
     <div id="ui-interactive"></div>
     <div id="ui"></div>
-    <div id="custom-pixel-loader" role="status" aria-live="polite" aria-label="Loading">
+    <div id="custom-pixel-loader" role="status" aria-live="polite" aria-label="加载中">
       <div class="pixel-loader-card">
         <div class="pixel-loader-title">LOADING<span class="pixel-loader-dots" aria-hidden="true"></span></div>
         <div class="pixel-progress-frame" aria-hidden="true" hidden>
@@ -91,8 +91,8 @@
             <div id="pixel-progress-fill"></div>
           </div>
         </div>
-        <div id="pixel-progress-status">SEARCHING FOR ASSET PACK...</div>
-        <button id="pixel-pack-download" type="button" hidden>DOWNLOAD PACK</button>
+        <div id="pixel-progress-status">正在查找资源包...</div>
+        <button id="pixel-pack-download" type="button" hidden>下载资源包</button>
         <button id="pixel-start-button" type="button">START</button>
       </div>
     </div>
@@ -164,7 +164,7 @@
         let packReading = false;
         let packDownloadedThisVisit = false;
         let downloadProgress = 0;
-        let packWaitingStatus = "SEARCHING FOR ASSET PACK...";
+        let packWaitingStatus = "正在查找资源包...";
 
         const tellDesktop = (type) => {
           const frame = window.retroApplication?.cssScene?.children?.[0]?.element?.querySelector("iframe");
@@ -182,19 +182,19 @@
             packButton.hidden = true;
             progressFrame.hidden = false;
             displayedProgress = 0;
-            progressStatus.textContent = "READING SAVED ASSET PACK";
+            progressStatus.textContent = "正在读取本地资源包";
             tellDesktop("desktop-pack-ready");
           } catch (error) {
             packNeedsPermission = false;
             packButton.hidden = false;
             packButton.disabled = false;
-            packButton.textContent = "DOWNLOAD PACK";
-            packWaitingStatus = "FILE ACCESS FAILED · DOWNLOAD AGAIN";
+            packButton.textContent = "下载资源包";
+            packWaitingStatus = "读取授权失败，请重新下载";
           }
         };
 
         const downloadPack = async () => {
-          packWaitingStatus = "DOWNLOAD ASSET PACK TO CONTINUE";
+          packWaitingStatus = "请下载资源包后继续";
           packDownloading = true;
           packReading = false;
           downloadProgress = 0;
@@ -209,7 +209,7 @@
           desktopTotalBytes = 0;
           sessionStorage.setItem("desktop-pack-downloading", "1");
           tellDesktop("desktop-pack-download-start");
-          progressStatus.textContent = "CHOOSE WHERE TO SAVE THE ASSET PACK";
+          progressStatus.textContent = "请选择资源包保存位置";
           packButton.disabled = true;
           let handle;
           if (window.showSaveFilePicker) {
@@ -220,7 +220,7 @@
                 types: [{ description: "Desktop asset archive", accept: { "application/zip": [".zip"] } }]
               });
             } catch (error) {
-              packWaitingStatus = error.name === "AbortError" ? "DOWNLOAD CANCELED · RETRY" : "SAVE LOCATION UNAVAILABLE · RETRY";
+              packWaitingStatus = error.name === "AbortError" ? "已取消下载，可重试" : "保存位置不可用，请重试";
               packButton.disabled = false;
               packDownloading = false;
               progressFrame.hidden = true;
@@ -228,7 +228,7 @@
               return;
             }
           }
-          progressStatus.textContent = "DOWNLOADING ASSET PACK · 0%";
+          progressStatus.textContent = "正在下载资源包 · 0%";
           let writer;
           try {
             const url = new URL(`desktop/${window.DesktopAssetPack.URL_PATH}`, location.href);
@@ -274,13 +274,13 @@
             downloadProgress = 1;
             packReading = true;
             packButton.hidden = true;
-            progressStatus.textContent = "READING DOWNLOADED ASSET PACK";
+            progressStatus.textContent = "正在读取下载的资源包";
             tellDesktop("desktop-pack-ready");
           } catch (error) {
             console.warn("Asset pack download failed", error);
             await writer?.abort().catch(() => {});
             packDownloadedThisVisit = false;
-            packWaitingStatus = "DOWNLOAD FAILED · RETRY";
+            packWaitingStatus = "下载失败，请重试";
             packButton.disabled = false;
             progressFrame.hidden = true;
           } finally {
@@ -320,7 +320,7 @@
             const progress = Math.min(1, (now - finishStartedAt) / 760);
             displayedProgress = 99 + progress;
             fill.style.width = `${displayedProgress}%`;
-            progressStatus.textContent = progress < 1 ? "FINALIZING · 99%" : "READY · 100%";
+            progressStatus.textContent = progress < 1 ? "正在完成 · 99%" : "准备就绪 · 100%";
             if (progress < 1) {
               requestAnimationFrame(complete);
               return;
@@ -363,8 +363,8 @@
             packNeedsPermission = true;
             packButton.hidden = false;
             packButton.disabled = false;
-            packButton.textContent = "ALLOW LOAD";
-            packWaitingStatus = "ASSET PACK FOUND · ALLOW LOAD";
+            packButton.textContent = "允许加载";
+            packWaitingStatus = "已找到资源包，请允许加载";
           }
           if (event.data.type === "desktop-pack-required") {
             if (packDownloading) return;
@@ -372,8 +372,8 @@
             packNeedsPermission = false;
             packButton.hidden = false;
             packButton.disabled = false;
-            packButton.textContent = "DOWNLOAD PACK";
-            packWaitingStatus = "DOWNLOAD ASSET PACK TO CONTINUE";
+            packButton.textContent = "下载资源包";
+            packWaitingStatus = "未找到资源包，请下载";
             progressFrame.hidden = true;
           }
           if (event.data.type === "desktop-pack-needs-permission") {
@@ -382,8 +382,8 @@
             packNeedsPermission = true;
             packButton.hidden = false;
             packButton.disabled = false;
-            packButton.textContent = "ALLOW LOAD";
-            packWaitingStatus = "ASSET PACK FOUND · ALLOW LOAD";
+            packButton.textContent = "允许加载";
+            packWaitingStatus = "已找到资源包，请允许加载";
             progressFrame.hidden = true;
           }
           if (event.data.type === "desktop-pack-error") {
@@ -392,8 +392,8 @@
             packNeedsPermission = false;
             packButton.hidden = false;
             packButton.disabled = false;
-            packButton.textContent = "DOWNLOAD PACK";
-            packWaitingStatus = "ASSET PACK INVALID · DOWNLOAD AGAIN";
+            packButton.textContent = "下载资源包";
+            packWaitingStatus = "资源包无效，请重新下载";
             progressFrame.hidden = true;
           }
         });
@@ -514,18 +514,18 @@
           fill.style.width = `${Math.max(1, displayedProgress)}%`;
           const percent = Math.floor(Math.max(1, displayedProgress));
           if (packDownloading) {
-            progressStatus.textContent = `DOWNLOADING ASSET PACK · ${Math.floor(downloadProgress * 100)}%`;
+            progressStatus.textContent = `正在下载资源包 · ${Math.floor(downloadProgress * 100)}%`;
           } else if (packNeedsPermission || (!packReading && !desktopPreloadReady)) {
             progressStatus.textContent = packWaitingStatus;
           } else if (!desktopPreloadReady) {
             const bytes = desktopTotalBytes
-              ? ` ${(desktopLoadedBytes / 1048576).toFixed(1)}/${(desktopTotalBytes / 1048576).toFixed(1)} MB`
+              ? ` ${(desktopLoadedBytes / 1048576).toFixed(1)}/${(desktopTotalBytes / 1048576).toFixed(1)} 兆`
               : desktopTotal ? ` ${desktopLoaded}/${desktopTotal}` : "";
-            progressStatus.textContent = `READING ASSET PACK${bytes} · ${percent}%`;
+            progressStatus.textContent = `正在读取资源包${bytes} · ${percent}%`;
           } else if (!sceneReady) {
-            progressStatus.textContent = `INITIALIZING SCENE · ${percent}%`;
+            progressStatus.textContent = `正在初始化场景 · ${percent}%`;
           } else {
-            progressStatus.textContent = `PREPARING DESKTOP · ${percent}%`;
+            progressStatus.textContent = `正在准备桌面 · ${percent}%`;
           }
           requestAnimationFrame(update);
         };
