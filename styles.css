@@ -887,6 +887,9 @@ button { font: inherit; }
 .notepad-findbar button { height:27px; border:2px solid; border-color:#fff #444 #444 #fff; background:#c0c0c0; }
 .notepad-findbar button:active { border-color:#444 #fff #fff #444; }
 .notepad-shell .notepad-document { flex:1 1 auto; min-height:0; height:auto; margin:0; border:0; }
+.archive-note-document { flex:1; padding:12px; background:#fff; color:#111; font:16px/1.5 "Fixedsys",SimSun,monospace; overflow:auto; overflow-wrap:anywhere; }
+.archive-note-document a { color:#0000aa; text-decoration:underline; cursor:pointer; }
+.archive-note-document a:hover { color:#b00000; }
 .notepad-save-state{margin-left:auto;padding:0 9px;color:#345b36;font:13px SimSun;white-space:nowrap}
 
 /* Windows 98 回收站。 */

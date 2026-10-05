@@ -198,7 +198,8 @@ const apps = {
   word: { title: "地理错题整理.docx - Microsoft Word", path: "D:\\我的文件\\学习资料\\地理错题整理.docx" },
   "sky-game": { title: "像素空战", path: "C:\\GAME\\PIXELAIR.EXE" },
   "case-archive": { title: "档案整理.zip - 压缩文件夹", path: "桌面\\档案整理.zip" },
-  "case-pdf": { title: "案件整理.pdf - PDF 阅读器", path: "档案整理.zip\\图片资料\\案件整理.pdf" }
+  "case-pdf": { title: "案件整理.pdf - PDF 阅读器", path: "档案整理.zip\\图片资料\\案件整理.pdf" },
+  "archive-note": { title: "说明.txt - 记事本", path: "档案整理.zip\\说明.txt" }
 };
 let forumFavoriteThisDesktopSession = false;
 let skyGameInstalledThisPage = false;
@@ -705,7 +706,7 @@ function openApp(appId) {
   const app = apps[appId]; if (!app) return; const win = template.content.firstElementChild.cloneNode(true); const id = `window-${appId}`;
   win.id = id; win.dataset.app = appId; win.setAttribute("aria-label", app.title); win.querySelector("h2").textContent = app.title; win.querySelector(".address-field").textContent = app.path; win.querySelector(".window-mini-icon").classList.add(appId);
   win.style.left = `${Math.min(110 + windowOffset, Math.max(82, innerWidth - 360))}px`; win.style.top = `${55 + windowOffset}px`; windowOffset = (windowOffset + 28) % 140;
-  if (appId === "computer" || appId === "folder") setupFileExplorerWindow(win, appId); if (appId === "notes") setupNotepadWindow(win); if (appId === "excel") setupExcelWindow(win); if (appId === "word") setupWordReadOnlyWindow(win); if (appId === "recycle") setupRecycleBinWindow(win); if (appId === "browser") setupBrowserWindow(win); if (appId === "sky-game") setupSkyGameWindow(win); if (appId === "case-archive") setupCaseArchiveWindow(win); if (appId === "case-pdf") setupCasePdfWindow(win); if (appId === "qq") { if (qqAuthenticatedThisPage) setupQQContactsWindow(win); else setupQQLoginWindow(win); }
+  if (appId === "computer" || appId === "folder") setupFileExplorerWindow(win, appId); if (appId === "notes") setupNotepadWindow(win); if (appId === "archive-note") setupArchiveNoteWindow(win); if (appId === "excel") setupExcelWindow(win); if (appId === "word") setupWordReadOnlyWindow(win); if (appId === "recycle") setupRecycleBinWindow(win); if (appId === "browser") setupBrowserWindow(win); if (appId === "sky-game") setupSkyGameWindow(win); if (appId === "case-archive") setupCaseArchiveWindow(win); if (appId === "case-pdf") setupCasePdfWindow(win); if (appId === "qq") { if (qqAuthenticatedThisPage) setupQQContactsWindow(win); else setupQQLoginWindow(win); }
   if (appId === "browser") { win.dataset.restore = JSON.stringify({ left:win.style.left,top:win.style.top,width:win.style.width,height:win.style.height }); win.classList.add("maximized"); }
   layer.appendChild(win);
   const task = document.createElement("button"); task.className = "task-item"; task.dataset.windowId = id; task.innerHTML = `<span class="task-app-icon ${appId}" aria-hidden="true"></span><span class="task-title"></span>`; task.querySelector(".task-title").textContent = appId === "qq" ? (qqAuthenticatedThisPage ? "QQ 2001 - 好友列表" : "QQ 2001 - 用户登录") : app.title;
@@ -812,6 +813,24 @@ function startCaseArchiveDownload() {
     .then(images=>{if(controller.signal.aborted)return;window.__downloadedCasePage=images.get("assets/documents/case-archive-page.webp");dialog.classList.add("complete");dialog.querySelector("h2").textContent="档案整理.zip 下载完成";dialog.querySelector("footer").textContent="压缩文件已保存到桌面。";installCaseArchiveDesktopIcon();setTimeout(()=>dialog.remove(),1100);})
     .catch(error=>{if(controller.signal.aborted)return;console.warn("Archive download failed",error);label.textContent="下载失败，请重试";dialog.querySelector("footer").textContent="网络或文件读取失败，请关闭窗口后重新下载。";});
 }
+function setupArchiveNoteWindow(win) {
+  win.classList.add("notepad-window", "archive-note-window");
+  win.style.width = `${Math.min(700, innerWidth - 100)}px`;
+  win.style.height = `${Math.min(420, innerHeight - 95)}px`;
+  win.querySelector(".window-mini-icon").classList.add("notes");
+  win.querySelector(".toolbar")?.remove();
+  win.querySelector(".menu-bar").innerHTML = '<button type="button">文件(<u>F</u>)</button><button type="button">编辑(<u>E</u>)</button><button type="button">帮助(<u>H</u>)</button>';
+  win.querySelector(".window-content").innerHTML = '<section class="notepad-shell"><div class="archive-note-document">https://furnace0418-crypto.github.io/my-website/memorial/#home</div></section>';
+  const documentText = win.querySelector(".archive-note-document");
+  const url = "https://furnace0418-crypto.github.io/my-website/memorial/#home";
+  const link = document.createElement("a");
+  link.href = url;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.textContent = url;
+  documentText.replaceChildren(link);
+  win.querySelector(".statusbar span:first-child").textContent = "只读　单击链接打开网页";
+}
 function setupCaseArchiveWindow(win) {
   win.classList.add("case-archive-window");win.style.width=`${Math.min(720,innerWidth-50)}px`;win.style.height=`${Math.min(520,innerHeight-80)}px`;win.querySelector(".window-mini-icon").classList.add("case-archive");
   win.querySelector(".menu-bar").innerHTML='<button>文件(<u>F</u>)</button><button>操作(<u>A</u>)</button><button>设置(<u>S</u>)</button><button>帮助(<u>H</u>)</button>';
@@ -822,7 +841,7 @@ function setupCaseArchiveWindow(win) {
   win.querySelectorAll(".archive-toolbar button").forEach(button=>button.addEventListener("click",showMissingSoftware));
 const showFolder=()=>{content.innerHTML='<section class="case-archive-folder"><div class="case-folder-note"><button type="button" data-archive-back>↑</button><span>档案整理.zip　&gt;　图片资料</span></div><div class="case-image-grid"><button type="button" class="explorer-item case-pdf-file" aria-label="打开案件整理.pdf"><span class="explorer-item-icon pdf" aria-hidden="true"></span><span class="explorer-item-copy"><strong>案件整理.pdf</strong><small>189 KB　PDF 文档</small></span></button><button type="button" class="explorer-item case-corrupt-file" aria-label="打开云阳市城区示意图"><span class="explorer-item-icon jpeg" aria-hidden="true"></span><span class="explorer-item-copy"><strong>云阳市城区示意图.png</strong><small>PNG 图像</small></span></button></div></section>';content.querySelector("[data-archive-back]").addEventListener("click",showRoot);const pdf=content.querySelector(".case-pdf-file");pdf.addEventListener("click",()=>pdf.classList.add("selected"));pdf.addEventListener("dblclick",()=>openApp("case-pdf"));content.querySelector(".case-corrupt-file").addEventListener("click",showCorruptImage);status.textContent="共 2 个文件";};
 const showPassword=()=>{if(caseArchiveUnlockedThisPage){showFolder();return;}if(content.querySelector(".case-password-dialog"))return;const form=document.createElement("form");form.className="case-password-dialog";form.autocomplete="off";form.innerHTML='<header><strong>请输入密令</strong><button type="button" data-archive-cancel aria-label="关闭">×</button></header><main><h3>文件夹已加密</h3><p>请输入密令以打开“图片资料”。</p><label>passcode：<input type="password" name="archivePassword" autocomplete="off" autofocus></label><small role="alert"></small></main><footer><button type="submit">确定</button><button type="button" data-archive-cancel>取消</button></footer>';content.appendChild(form);const input=form.elements.archivePassword,error=form.querySelector("small"),close=()=>{form.remove();status.textContent="共 2 个文件和 1 个文件夹　压缩率 39.3%";};form.addEventListener("submit",event=>{event.preventDefault();const normalizePasscode=value=>value.trim().toUpperCase().replace(/[\s-]/g, "");if(normalizePasscode(input.value) === normalizePasscode(window.skyGameArchivePasscode)){caseArchiveUnlockedThisPage=true;form.remove();showFolder();return;}error.textContent="密令不正确，请重新输入。";input.value="";input.focus();playFaultAlert();});form.querySelectorAll("[data-archive-cancel]").forEach(button=>button.addEventListener("click",close));setTimeout(()=>input.focus(),0);status.textContent="请输入加密文件夹密令";};
-  function showRoot(){content.innerHTML='<section class="archive-root"><div class="archive-address"><button type="button" disabled>↑</button><span><img src="assets/icons/case-archive-transparent.webp" alt="">档案整理.zip　-　解包大小 8.4 MB</span><label>搜索包内文件 <b>⌕</b></label></div><div class="archive-columns"><b>名称</b><b>压缩前</b><b>压缩后</b><b>类型</b></div><div class="archive-row archive-up"><span>📁 ..（上级目录）</span><span></span><span></span><span>文件夹</span></div><button type="button" class="archive-row archive-protected-folder"><span>📁 图片资料 <em>🔒</em></span><span>8.4 MB</span><span>5.1 MB</span><span>加密文件夹</span></button><div class="archive-row"><span>▤ 说明.txt</span><span>2 KB</span><span>1 KB</span><span>文本文档</span></div></section>';content.querySelector(".archive-protected-folder").addEventListener("click",showPassword);status.textContent="共 2 个文件和 1 个文件夹　压缩率 39.3%";}
+  function showRoot(){content.innerHTML='<section class="archive-root"><div class="archive-address"><button type="button" disabled>↑</button><span><img src="assets/icons/case-archive-transparent.webp" alt="">档案整理.zip　-　解包大小 8.4 MB</span><label>搜索包内文件 <b>⌕</b></label></div><div class="archive-columns"><b>名称</b><b>压缩前</b><b>压缩后</b><b>类型</b></div><div class="archive-row archive-up"><span>📁 ..（上级目录）</span><span></span><span></span><span>文件夹</span></div><button type="button" class="archive-row archive-protected-folder"><span>📁 图片资料 <em>🔒</em></span><span>8.4 MB</span><span>5.1 MB</span><span>加密文件夹</span></button><button type="button" class="archive-row archive-readme" aria-label="打开说明.txt"><span>▤ 说明.txt</span><span>2 KB</span><span>1 KB</span><span>文本文档</span></button></section>';content.querySelector(".archive-protected-folder").addEventListener("click",showPassword);content.querySelector(".archive-readme").addEventListener("click",()=>{if(localStorage.getItem("archive-night-locked")==="1"){openApp("archive-note");return;}localStorage.setItem("archive-night-locked","1");parent.postMessage({type:"archive-night-glitch"},"*");status.textContent="说明.txt　读取异常";});status.textContent="共 2 个文件和 1 个文件夹　压缩率 39.3%";}
   showRoot();
 }
 function setupCasePdfWindow(win) {
