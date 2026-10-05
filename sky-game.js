@@ -1,5 +1,5 @@
 // The passcode revealed after a qualifying win also unlocks the case archive.
-window.skyGameArchivePasscode = "SKY7-2023";
+window.skyGameArchivePasscode = "M7Q2-8R5K";
 
 function setupSkyGameWindow(win) {
   win.classList.add("sky-game-window");
