@@ -1,19 +1,5 @@
-// A fresh passcode is generated for each full page load and shared with the archive.
-window.skyGameArchivePasscode = (() => {
-  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let previous = "";
-  try { previous = sessionStorage.getItem("skyGameArchivePasscodeLast") || ""; } catch (_) {}
-  let passcode;
-  do {
-    const bytes = new Uint8Array(8);
-    if (window.crypto?.getRandomValues) window.crypto.getRandomValues(bytes);
-    else bytes.forEach((_, index) => { bytes[index] = Math.floor(Math.random() * 256); });
-    const characters = [...bytes].map(byte => alphabet[byte % alphabet.length]).join("");
-    passcode = `${characters.slice(0, 4)}-${characters.slice(4)}`;
-  } while (passcode === previous);
-  try { sessionStorage.setItem("skyGameArchivePasscodeLast", passcode); } catch (_) {}
-  return passcode;
-})();
+// The passcode revealed after a qualifying win also unlocks the case archive.
+window.skyGameArchivePasscode = "SKY7-2023";
 
 function setupSkyGameWindow(win) {
   win.classList.add("sky-game-window");
