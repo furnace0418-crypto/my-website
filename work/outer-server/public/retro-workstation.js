@@ -41,8 +41,8 @@
   const desktopFrame=app.cssScene.children[0]?.element?.querySelector('iframe');
   if(desktopFrame){
    const desktopUrl=new URL(desktopFrame.src);
-   if(desktopUrl.searchParams.get('contentVersion')!=='20261005-22'){
-    desktopUrl.searchParams.set('contentVersion','20261005-22');
+   if(desktopUrl.searchParams.get('contentVersion')!=='20261005-23'){
+    desktopUrl.searchParams.set('contentVersion','20261005-23');
     desktopFrame.src=desktopUrl.toString();
    }
    // At wide and desk distance the first screen click advances the camera only;
@@ -658,6 +658,18 @@
    const context=app.world.audioManager.context;
    return context.decodeAudioData(await response.arrayBuffer());
   };
+  const stopOriginalAmbience=()=>{
+   const audio=app.world.audioManager;
+   const key=audio.audioSources?.ambience?.poolKey;
+   const keys=new Set([key,...Object.keys(audio.audioPool||{}).filter(name=>name.startsWith('office_'))]);
+   for(const name of keys){
+    const original=audio.audioPool?.[name];
+    if(!original)continue;
+    original.stop();
+    delete audio.audioPool[name];
+   }
+   audio.listener.setMasterVolume(window.archiveSceneMuted?0:1);
+  };
   const playArchiveSound=buffer=>{
    const context=app.world.audioManager.context;
    const source=context.createBufferSource();
@@ -699,7 +711,7 @@
    flash.style.opacity='1';
    setTimeout(()=>flash.style.opacity='0',180);
    setTimeout(()=>flash.style.opacity='1',340);
-   setTimeout(()=>{flash.remove();target=1;app.world.audioManager?.listener?.setMasterVolume(0);button.innerHTML=icon(moon);button.title='夜间模式已锁定';button.setAttribute('aria-label',button.title);button.setAttribute('aria-pressed','true');button.style.cursor='not-allowed';archiveSound.then(playArchiveSound).catch(error=>console.warn('Archive audio could not load',error));},580);
+   setTimeout(()=>{flash.remove();target=1;stopOriginalAmbience();button.innerHTML=icon(moon);button.title='夜间模式已锁定';button.setAttribute('aria-label',button.title);button.setAttribute('aria-pressed','true');button.style.cursor='not-allowed';archiveSound.then(playArchiveSound).catch(error=>console.warn('Archive audio could not load',error));},580);
   });
   const bg=app.scene.background?.isColor?app.scene.background.clone():null;
   function animate(){
