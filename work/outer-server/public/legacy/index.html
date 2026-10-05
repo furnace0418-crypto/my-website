@@ -67,14 +67,14 @@
     <script>
       if ("serviceWorker" in navigator && location.protocol === "https:") {
         window.persistentCacheReady = navigator.serviceWorker
-          .register("./sw.js?v=20261005-1", { scope: "./", updateViaCache: "none" })
+          .register("./sw.js?v=20261005-2", { scope: "./", updateViaCache: "none" })
           .catch((error) => console.warn("Persistent asset cache unavailable", error));
       }
     </script>
-    <script defer src="retro-workstation.js?v=20261005-15"></script>
+    <script defer src="retro-workstation.js?v=20261005-16"></script>
     <script defer src="bundle.retro-workstation.js?v=20261005-1"></script>
     <link href="main.css?v=20261005-5" rel="stylesheet" />
-    <script src="desktop/asset-pack.js?v=20261005-4"></script>
+    <script src="desktop/asset-pack.js?v=20261005-5"></script>
   
   </head>
   <body class="pixel-loading">
@@ -236,7 +236,7 @@
             if (!response.ok) throw new Error(`Archive HTTP ${response.status}`);
             if (handle) writer = await handle.createWritable();
             const chunks = [];
-            const total = Number(response.headers.get("content-length")) || 20469380;
+            const total = Number(response.headers.get("content-length")) || 20488148;
             let received = 0;
             if (response.body?.getReader) {
               const reader = response.body.getReader();

@@ -1,6 +1,6 @@
 const CACHE_PREFIX = "taoyuan-desktop-";
 // New image formats use a fresh cache; discard stale PNG/JPEG entries.
-const CACHE_NAME = `${CACHE_PREFIX}20261005-1`;
+const CACHE_NAME = `${CACHE_PREFIX}20261005-2`;
 
 self.addEventListener("install", () => self.skipWaiting());
 
