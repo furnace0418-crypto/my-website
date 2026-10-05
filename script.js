@@ -228,7 +228,6 @@ const explorerNodes = {
     items: [
       { name: "我的文件", detail: "已加密的文件夹", type: "folder", target: "my-files", locked: true },
       { name: "照片", detail: "文件夹", type: "folder", target: "d-photos" },
-      { name: "备份资料", detail: "文件夹", type: "folder", target: "d-backup" },
       { name: "test", detail: "文件夹", type: "folder", target: "d-school" }
     ]
   },
@@ -238,13 +237,14 @@ const explorerNodes = {
       { name: "重要", detail: "文件夹", type: "folder", target: "my-pictures" },
       { name: "学习资料", detail: "文件夹", type: "folder", target: "study-files" },
       { name: "游戏存档", detail: "文件夹", type: "folder", target: "game-saves" },
+      { name: "备份资料", detail: "文件夹", type: "folder", target: "d-backup" },
       { name: "密码防忘.txt", detail: "1 KB　文本文档", type: "txt", content: "QQ：zy2625\n论坛：出生日期" }
     ]
   },
   "program-files": { title: "Program Files", path: "C:\\Program Files", parent: "drive-c", items: [{ name: "Internet Explorer", detail: "文件夹", type: "folder", target: "internet-explorer" }, { name: "Tencent", detail: "文件夹", type: "folder", target: "tencent-folder" }] },
   "windows-folder": { title: "WINDOWS", path: "C:\\WINDOWS", parent: "drive-c", items: [{ name: "SYSTEM", detail: "文件夹", type: "folder", target: "system-folder" }, { name: "桌面", detail: "文件夹", type: "folder", target: "desktop-folder" }, { name: "win.ini", detail: "1 KB　配置设置", type: "txt", content: "[windows]\nload=\nrun=" }] },
   "d-photos": { title: "照片", path: "D:\\照片", parent: "drive-d", items: [{ name: "死装.jpg", detail: "86 KB　JPEG 图像", type: "jpeg", src: "assets/photos/si-zhuang.webp" }, { name: "没踩雷！.jpg", detail: "124 KB　JPEG 图像", type: "jpeg", src: "assets/photos/mei-cai-lei.webp" }, { name: "差点被发现.jpg", detail: "72 KB　JPEG 图像", type: "jpeg", src: "assets/photos/cha-dian-bei-fa-xian.webp" }] },
-  "d-backup": { title: "备份资料", path: "D:\\备份资料", parent: "drive-d", items: [{ name: "云阳市城区示意图.png", detail: "PNG 图像", type: "jpeg", src: "assets/photos/yunyang-city-map.webp" }] },
+  "d-backup": { title: "备份资料", path: "D:\\我的文件\\备份资料", parent: "my-files", items: [{ name: "云阳市城区示意图.png", detail: "PNG 图像", type: "jpeg", src: "assets/photos/yunyang-city-map.webp" }] },
   "d-school": { title: "test", path: "D:\\test", parent: "drive-d", items: [{ name: "未标题-1.png", detail: "1.9 MB　PNG 图像", type: "jpeg", src: "assets/photos/school-test-image.webp" }] },
   "my-pictures": { title: "重要", path: "D:\\我的文件\\重要", parent: "my-files", items: [{ name: "奖学金.jpg", detail: "JPEG 图像", type: "jpeg", src: "assets/photos/scholarship-new.webp" }, { name: "学生证.png", detail: "PNG 图像", type: "jpeg", src: "assets/photos/student-id-zhengyuan.webp" }] },
   "study-files": { title: "学习资料", path: "D:\\我的文件\\学习资料", parent: "my-files", items: [{ name: "2022学年", detail: "文件夹", type: "folder", target: "study-2022" }, { name: "地理错题整理.docx", detail: "只读　Microsoft Word 文档", type: "word", src: "assets/documents/地理错题整理.docx" }, { name: "英语单词.txt", detail: "1 KB　文本文档", type: "txt", content: "diplomacy 外交(n.)\npalette 调色盘(n.)\nsupervision 监管.监督(n.)\nconfine 限制.局限(v.)\nconventional 传统的.常规的(adj.)" }] },
@@ -872,10 +872,12 @@ function setupFileExplorerWindow(win, appId) {
     const list = shell.querySelector(".explorer-items"); list.replaceChildren();
     node.items.forEach(item => {
       const button = document.createElement("button"); button.type = "button"; button.className = "explorer-item"; button.setAttribute("role", "listitem");
-      button.innerHTML = `<span class="explorer-item-icon ${item.type}${item.locked ? " locked" : ""}" aria-hidden="true"></span><span class="explorer-item-copy"><strong></strong><small></small>${item.type === "drive" ? '<span class="explorer-drive-meter" aria-label="磁盘已用空间"><i></i></span>' : ""}</span>`;
-      button.querySelector("strong").textContent = item.name; button.querySelector("small").textContent = item.detail || "";
+      const locked = item.locked && !myFilesUnlocked;
+      const detail = item.locked && myFilesUnlocked ? "文件夹" : item.detail || "";
+      button.innerHTML = `<span class="explorer-item-icon ${item.type}${locked ? " locked" : ""}" aria-hidden="true"></span><span class="explorer-item-copy"><strong></strong><small></small>${item.type === "drive" ? '<span class="explorer-drive-meter" aria-label="磁盘已用空间"><i></i></span>' : ""}</span>`;
+      button.querySelector("strong").textContent = item.name; button.querySelector("small").textContent = detail;
       if (item.type === "drive") button.querySelector(".explorer-drive-meter i").style.width = `${item.used}%`;
-      button.addEventListener("click", () => { list.querySelectorAll(".explorer-item").forEach(entry => entry.classList.toggle("selected", entry === button)); shell.querySelector(".explorer-selection-detail").innerHTML = `<b>${item.name}</b><span>${item.detail || ""}</span>`; });
+      button.addEventListener("click", () => { list.querySelectorAll(".explorer-item").forEach(entry => entry.classList.toggle("selected", entry === button)); shell.querySelector(".explorer-selection-detail").innerHTML = `<b>${item.name}</b><span>${detail}</span>`; });
       if (item.target) button.addEventListener("dblclick", () => navigate(item.target));
       else if (item.type === "txt") button.addEventListener("dblclick", () => openExplorerTextFile(item));
       else if (item.type === "excel") button.addEventListener("dblclick", () => openApp("excel"));
@@ -1067,7 +1069,7 @@ function openPhotoViewer(photo) {
   const isYunyangMap = safePhoto.src.includes("yunyang-city-map.webp");
   const properties = win.querySelector(".photo-properties"); properties.hidden = !isYunyangMap; win.querySelector(".photo-viewer").classList.toggle("show-properties", isYunyangMap);
   win.querySelector('[data-photo-property="name"]').textContent = safePhoto.name;
-  win.querySelector('[data-photo-property="path"]').textContent = isYunyangMap ? `D:\\备份资料\\${safePhoto.name}` : "未记录";
+  win.querySelector('[data-photo-property="path"]').textContent = isYunyangMap ? `D:\\我的文件\\备份资料\\${safePhoto.name}` : "未记录";
   win.querySelector('[data-photo-property="dimensions"]').textContent = "读取中…";
   win.querySelector(".photo-property-note").hidden = !isYunyangMap;
   win.querySelector('[data-photo-property="note"]').textContent = isYunyangMap ? "来源：浮光论坛" : "";
