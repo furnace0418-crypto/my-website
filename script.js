@@ -206,28 +206,6 @@ let skyGameInstalledThisPage = false;
 let caseArchiveDownloadedThisPage = false;
 let caseArchiveUnlockedThisPage = false;
 let caseArchiveNightTriggeredThisPage = false;
-let caseArchiveWhiteNoise = null;
-window.addEventListener("message", event => {
-  if (event.source !== parent || event.data?.type !== "archive-night-audio-muted") return;
-  if (caseArchiveWhiteNoise) caseArchiveWhiteNoise.muted = Boolean(event.data.muted);
-});
-function startCaseArchiveWhiteNoise() {
-  caseArchiveWhiteNoise ??= new Audio("assets/sounds/white-noise.mp3");
-  caseArchiveWhiteNoise.loop = true;
-  caseArchiveWhiteNoise.volume = 0;
-  const triggeredAt = performance.now();
-  const fadeIn = () => setTimeout(() => {
-    const start = performance.now();
-    const fade = now => {
-      caseArchiveWhiteNoise.volume = Math.min(.65, (now - start) / 4200 * .65);
-      if (caseArchiveWhiteNoise.volume < .65) requestAnimationFrame(fade);
-    };
-    requestAnimationFrame(fade);
-  }, Math.max(0, 580 - (performance.now() - triggeredAt)));
-  caseArchiveWhiteNoise.play().then(fadeIn).catch(() => {
-    document.addEventListener("pointerdown", () => caseArchiveWhiteNoise.play().then(fadeIn).catch(() => {}), { once: true });
-  });
-}
 const forumRepliesThisDesktopSession = {};
 let browserFavoritesThisDesktopSession = [{ title:"云阳新闻网", url:"http://news.yunyang.cn/" }];
 let browserFavoriteTipShownThisPage = false;
@@ -864,7 +842,7 @@ function setupCaseArchiveWindow(win) {
   win.querySelectorAll(".archive-toolbar button").forEach(button=>button.addEventListener("click",showMissingSoftware));
 const showFolder=()=>{content.innerHTML='<section class="case-archive-folder"><div class="case-folder-note"><button type="button" data-archive-back>↑</button><span>档案整理.zip　&gt;　图片资料</span></div><div class="case-image-grid"><button type="button" class="explorer-item case-pdf-file" aria-label="打开案件整理.pdf"><span class="explorer-item-icon pdf" aria-hidden="true"></span><span class="explorer-item-copy"><strong>案件整理.pdf</strong><small>189 KB　PDF 文档</small></span></button><button type="button" class="explorer-item case-corrupt-file" aria-label="打开云阳市城区示意图"><span class="explorer-item-icon jpeg" aria-hidden="true"></span><span class="explorer-item-copy"><strong>云阳市城区示意图.png</strong><small>PNG 图像</small></span></button></div></section>';content.querySelector("[data-archive-back]").addEventListener("click",showRoot);const pdf=content.querySelector(".case-pdf-file");pdf.addEventListener("click",()=>pdf.classList.add("selected"));pdf.addEventListener("dblclick",()=>openApp("case-pdf"));content.querySelector(".case-corrupt-file").addEventListener("click",showCorruptImage);status.textContent="共 2 个文件";};
 const showPassword=()=>{if(caseArchiveUnlockedThisPage){showFolder();return;}if(content.querySelector(".case-password-dialog"))return;const form=document.createElement("form");form.className="case-password-dialog";form.autocomplete="off";form.innerHTML='<header><strong>请输入密令</strong><button type="button" data-archive-cancel aria-label="关闭">×</button></header><main><h3>文件夹已加密</h3><p>请输入密令以打开“图片资料”。</p><label>passcode：<input type="password" name="archivePassword" autocomplete="off" autofocus></label><small role="alert"></small></main><footer><button type="submit">确定</button><button type="button" data-archive-cancel>取消</button></footer>';content.appendChild(form);const input=form.elements.archivePassword,error=form.querySelector("small"),close=()=>{form.remove();status.textContent="共 2 个文件和 1 个文件夹　压缩率 39.3%";};form.addEventListener("submit",event=>{event.preventDefault();const normalizePasscode=value=>value.trim().toUpperCase().replace(/[\s-]/g, "");if(normalizePasscode(input.value) === normalizePasscode(window.skyGameArchivePasscode)){caseArchiveUnlockedThisPage=true;form.remove();showFolder();return;}error.textContent="密令不正确，请重新输入。";input.value="";input.focus();playFaultAlert();});form.querySelectorAll("[data-archive-cancel]").forEach(button=>button.addEventListener("click",close));setTimeout(()=>input.focus(),0);status.textContent="请输入加密文件夹密令";};
-  function showRoot(){content.innerHTML='<section class="archive-root"><div class="archive-address"><button type="button" disabled>↑</button><span><img src="assets/icons/case-archive-transparent.webp" alt="">档案整理.zip　-　解包大小 8.4 MB</span><label>搜索包内文件 <b>⌕</b></label></div><div class="archive-columns"><b>名称</b><b>压缩前</b><b>压缩后</b><b>类型</b></div><div class="archive-row archive-up"><span>📁 ..（上级目录）</span><span></span><span></span><span>文件夹</span></div><button type="button" class="archive-row archive-protected-folder"><span>📁 图片资料 <em>🔒</em></span><span>8.4 MB</span><span>5.1 MB</span><span>加密文件夹</span></button><button type="button" class="archive-row archive-readme" aria-label="打开说明.txt"><span>▤ 说明.txt</span><span>2 KB</span><span>1 KB</span><span>文本文档</span></button></section>';content.querySelector(".archive-protected-folder").addEventListener("click",showPassword);const readme=content.querySelector(".archive-readme");readme.addEventListener("click",()=>readme.classList.add("selected"));readme.addEventListener("dblclick",()=>{if(caseArchiveNightTriggeredThisPage){openApp("archive-note");return;}caseArchiveNightTriggeredThisPage=true;startCaseArchiveWhiteNoise();parent.postMessage({type:"archive-night-glitch"},"*");status.textContent="说明.txt　读取异常";});status.textContent="共 2 个文件和 1 个文件夹　压缩率 39.3%";}
+  function showRoot(){content.innerHTML='<section class="archive-root"><div class="archive-address"><button type="button" disabled>↑</button><span><img src="assets/icons/case-archive-transparent.webp" alt="">档案整理.zip　-　解包大小 8.4 MB</span><label>搜索包内文件 <b>⌕</b></label></div><div class="archive-columns"><b>名称</b><b>压缩前</b><b>压缩后</b><b>类型</b></div><div class="archive-row archive-up"><span>📁 ..（上级目录）</span><span></span><span></span><span>文件夹</span></div><button type="button" class="archive-row archive-protected-folder"><span>📁 图片资料 <em>🔒</em></span><span>8.4 MB</span><span>5.1 MB</span><span>加密文件夹</span></button><button type="button" class="archive-row archive-readme" aria-label="打开说明.txt"><span>▤ 说明.txt</span><span>2 KB</span><span>1 KB</span><span>文本文档</span></button></section>';content.querySelector(".archive-protected-folder").addEventListener("click",showPassword);const readme=content.querySelector(".archive-readme");readme.addEventListener("click",()=>readme.classList.add("selected"));readme.addEventListener("dblclick",()=>{if(caseArchiveNightTriggeredThisPage){openApp("archive-note");return;}caseArchiveNightTriggeredThisPage=true;parent.postMessage({type:"archive-night-glitch"},"*");status.textContent="说明.txt　读取异常";});status.textContent="共 2 个文件和 1 个文件夹　压缩率 39.3%";}
   showRoot();
 }
 function setupCasePdfWindow(win) {

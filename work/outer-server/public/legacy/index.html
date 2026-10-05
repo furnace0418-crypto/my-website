@@ -71,7 +71,7 @@
           .catch((error) => console.warn("Persistent asset cache unavailable", error));
       }
     </script>
-    <script defer src="retro-workstation.js?v=20261005-20"></script>
+    <script defer src="retro-workstation.js?v=20261005-21"></script>
     <script defer src="bundle.retro-workstation.js?v=20261005-1"></script>
     <link href="main.css?v=20261005-5" rel="stylesheet" />
     <script src="desktop/asset-pack.js?v=20261005-5"></script>
@@ -452,10 +452,7 @@
           muted = !muted;
           window.archiveSceneMuted = muted;
           audio.listener.setMasterVolume(window.archiveNightSoundActive ? 0 : muted ? 0 : 1);
-          if (window.archiveNightSoundActive) {
-            const frame = window.retroApplication?.cssScene?.children?.[0]?.element?.querySelector("iframe");
-            frame?.contentWindow?.postMessage({ type: "archive-night-audio-muted", muted }, new URL(frame.src, location.href).origin);
-          }
+          if (window.archiveNightMuteGain) window.archiveNightMuteGain.gain.value = muted ? 0 : 1;
           audio.context?.resume();
           syncControlStates();
         });

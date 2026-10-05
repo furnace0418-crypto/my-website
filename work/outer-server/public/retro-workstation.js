@@ -41,8 +41,8 @@
   const desktopFrame=app.cssScene.children[0]?.element?.querySelector('iframe');
   if(desktopFrame){
    const desktopUrl=new URL(desktopFrame.src);
-   if(desktopUrl.searchParams.get('contentVersion')!=='20261005-20'){
-    desktopUrl.searchParams.set('contentVersion','20261005-20');
+   if(desktopUrl.searchParams.get('contentVersion')!=='20261005-21'){
+    desktopUrl.searchParams.set('contentVersion','20261005-21');
     desktopFrame.src=desktopUrl.toString();
    }
    // At wide and desk distance the first screen click advances the camera only;
@@ -652,6 +652,26 @@
   button.innerHTML=icon(moon);Object.assign(button.style,{position:'fixed',left:'136px',top:'32px',width:'42px',height:'42px',borderRadius:'50%',border:'1px solid rgba(255,255,255,.85)',background:'rgba(40,48,60,.12)',color:'white',display:'grid',placeItems:'center',padding:'0',cursor:'pointer',zIndex:'10000',backdropFilter:'blur(4px)'});
   let nightLocked=false;
   let target=0;
+  const loadArchiveSound=async()=>{
+   const response=await fetch(new URL('desktop/assets/sounds/white-noise.mp3?v=2',location.href),{cache:'no-store'});
+   if(!response.ok)throw new Error(`Archive audio HTTP ${response.status}`);
+   const context=app.world.audioManager.context;
+   return context.decodeAudioData(await response.arrayBuffer());
+  };
+  const playArchiveSound=buffer=>{
+   const context=app.world.audioManager.context;
+   const source=context.createBufferSource();
+   const fade=context.createGain();
+   const mute=context.createGain();
+   source.buffer=buffer;
+   source.loop=true;
+   fade.gain.setValueAtTime(0,context.currentTime);
+   fade.gain.linearRampToValueAtTime(.65,context.currentTime+4.2);
+   mute.gain.value=window.archiveSceneMuted?0:1;
+   window.archiveNightMuteGain=mute;
+   source.connect(fade).connect(mute).connect(context.destination);
+   context.resume().then(()=>source.start()).catch(error=>console.warn('Archive audio could not start',error));
+  };
   button.addEventListener('mousedown',e=>e.stopPropagation());
   button.addEventListener('click',e=>{e.stopPropagation();if(nightLocked)return;target=target?0:1;button.innerHTML=icon(target?sun:moon);button.title=target?'切换到白天':'切换到夜晚';button.setAttribute('aria-label',button.title);button.setAttribute('aria-pressed',String(!!target));});
   document.body.appendChild(button);
@@ -660,14 +680,14 @@
    if(!frame||e.origin!==new URL(frame.src,location.href).origin||e.data?.type!=='archive-night-glitch'||e.source!==frame.contentWindow||nightLocked)return;
    nightLocked=true;
    window.archiveNightSoundActive=true;
-   frame.contentWindow.postMessage({type:'archive-night-audio-muted',muted:Boolean(window.archiveSceneMuted)},e.origin);
+   const archiveSound=loadArchiveSound();
    const flash=document.createElement('div');
    Object.assign(flash.style,{position:'fixed',inset:'0',zIndex:'2147483647',background:'#000',pointerEvents:'none',opacity:'0'});
    document.body.appendChild(flash);
    flash.style.opacity='1';
    setTimeout(()=>flash.style.opacity='0',180);
    setTimeout(()=>flash.style.opacity='1',340);
-   setTimeout(()=>{flash.remove();target=1;app.world.audioManager?.listener?.setMasterVolume(0);button.innerHTML=icon(moon);button.title='夜间模式已锁定';button.setAttribute('aria-label',button.title);button.setAttribute('aria-pressed','true');button.style.cursor='not-allowed';},580);
+   setTimeout(()=>{flash.remove();target=1;app.world.audioManager?.listener?.setMasterVolume(0);button.innerHTML=icon(moon);button.title='夜间模式已锁定';button.setAttribute('aria-label',button.title);button.setAttribute('aria-pressed','true');button.style.cursor='not-allowed';archiveSound.then(playArchiveSound).catch(error=>console.warn('Archive audio could not load',error));},580);
   });
   const bg=app.scene.background?.isColor?app.scene.background.clone():null;
   function animate(){
