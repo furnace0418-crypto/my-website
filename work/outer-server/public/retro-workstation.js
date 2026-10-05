@@ -41,8 +41,8 @@
   const desktopFrame=app.cssScene.children[0]?.element?.querySelector('iframe');
   if(desktopFrame){
    const desktopUrl=new URL(desktopFrame.src);
-   if(desktopUrl.searchParams.get('contentVersion')!=='20261005-21'){
-    desktopUrl.searchParams.set('contentVersion','20261005-21');
+   if(desktopUrl.searchParams.get('contentVersion')!=='20261005-22'){
+    desktopUrl.searchParams.set('contentVersion','20261005-22');
     desktopFrame.src=desktopUrl.toString();
    }
    // At wide and desk distance the first screen click advances the camera only;
@@ -661,16 +661,28 @@
   const playArchiveSound=buffer=>{
    const context=app.world.audioManager.context;
    const source=context.createBufferSource();
+   const lowpass=context.createBiquadFilter();
+   const distanceGain=context.createGain();
    const fade=context.createGain();
    const mute=context.createGain();
    source.buffer=buffer;
    source.loop=true;
+   lowpass.type='lowpass';
+   const updateDistanceSound=()=>{
+    const distance=app.camera.instance.position.length();
+    // Match the original office ambience's per-frame camera-distance mix.
+    const volume=Math.min(Math.max((distance-1200)/8800*.2,.05),.1);
+    const cutoff=Math.max(0,Math.min(22050,100+distance/10000*21900-3000));
+    distanceGain.gain.setTargetAtTime(volume,context.currentTime,.01);
+    lowpass.frequency.setValueAtTime(cutoff,context.currentTime);
+    requestAnimationFrame(updateDistanceSound);
+   };
    fade.gain.setValueAtTime(0,context.currentTime);
-   fade.gain.linearRampToValueAtTime(.65,context.currentTime+4.2);
+   fade.gain.linearRampToValueAtTime(1,context.currentTime+4.2);
    mute.gain.value=window.archiveSceneMuted?0:1;
    window.archiveNightMuteGain=mute;
-   source.connect(fade).connect(mute).connect(context.destination);
-   context.resume().then(()=>source.start()).catch(error=>console.warn('Archive audio could not start',error));
+   source.connect(lowpass).connect(distanceGain).connect(fade).connect(mute).connect(context.destination);
+   context.resume().then(()=>{source.start();updateDistanceSound();}).catch(error=>console.warn('Archive audio could not start',error));
   };
   button.addEventListener('mousedown',e=>e.stopPropagation());
   button.addEventListener('click',e=>{e.stopPropagation();if(nightLocked)return;target=target?0:1;button.innerHTML=icon(target?sun:moon);button.title=target?'切换到白天':'切换到夜晚';button.setAttribute('aria-label',button.title);button.setAttribute('aria-pressed',String(!!target));});
