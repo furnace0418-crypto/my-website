@@ -8,7 +8,6 @@ build/
 .codex/
 .agents/
 desktop-recovery/
-memorial/
 *.log
 .DS_Store
 Thumbs.db
