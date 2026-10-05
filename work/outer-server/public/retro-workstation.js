@@ -41,8 +41,8 @@
   const desktopFrame=app.cssScene.children[0]?.element?.querySelector('iframe');
   if(desktopFrame){
    const desktopUrl=new URL(desktopFrame.src);
-   if(desktopUrl.searchParams.get('contentVersion')!=='20261005-23'){
-    desktopUrl.searchParams.set('contentVersion','20261005-23');
+   if(desktopUrl.searchParams.get('contentVersion')!=='20261005-24'){
+    desktopUrl.searchParams.set('contentVersion','20261005-24');
     desktopFrame.src=desktopUrl.toString();
    }
    // At wide and desk distance the first screen click advances the camera only;
@@ -683,7 +683,7 @@
    const updateDistanceSound=()=>{
     const distance=app.camera.instance.position.length();
     // Match the original office ambience's per-frame camera-distance mix.
-    const volume=Math.min(Math.max((distance-1200)/8800*.2,.05),.1);
+    const volume=Math.min(Math.max((distance-1200)/8800*.2,.05),.1)*1.25;
     const cutoff=Math.max(0,Math.min(22050,100+distance/10000*21900-3000));
     distanceGain.gain.setTargetAtTime(volume,context.currentTime,.01);
     lowpass.frequency.setValueAtTime(cutoff,context.currentTime);
