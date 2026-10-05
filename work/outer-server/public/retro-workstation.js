@@ -41,8 +41,8 @@
   const desktopFrame=app.cssScene.children[0]?.element?.querySelector('iframe');
   if(desktopFrame){
    const desktopUrl=new URL(desktopFrame.src);
-   if(desktopUrl.searchParams.get('contentVersion')!=='20261005-18'){
-    desktopUrl.searchParams.set('contentVersion','20261005-18');
+   if(desktopUrl.searchParams.get('contentVersion')!=='20261005-19'){
+    desktopUrl.searchParams.set('contentVersion','20261005-19');
     desktopFrame.src=desktopUrl.toString();
    }
    // At wide and desk distance the first screen click advances the camera only;
@@ -652,6 +652,28 @@
   button.innerHTML=icon(moon);Object.assign(button.style,{position:'fixed',left:'136px',top:'32px',width:'42px',height:'42px',borderRadius:'50%',border:'1px solid rgba(255,255,255,.85)',background:'rgba(40,48,60,.12)',color:'white',display:'grid',placeItems:'center',padding:'0',cursor:'pointer',zIndex:'10000',backdropFilter:'blur(4px)'});
   let nightLocked=false;
   let target=0;
+  let whiteNoise=null;
+  const startWhiteNoise=()=>{
+   app.world.audioManager?.listener?.setMasterVolume(0);
+   if(!whiteNoise){
+    whiteNoise=new Audio(new URL('white-noise.mp3',location.href).href);
+    whiteNoise.loop=true;
+    whiteNoise.preload='auto';
+    whiteNoise.volume=0;
+    window.archiveNightSound=whiteNoise;
+   }
+   window.archiveNightSoundActive=true;
+   whiteNoise.muted=Boolean(window.archiveSceneMuted);
+   const play=()=>whiteNoise.play().catch(()=>{});
+   play();
+   document.addEventListener('pointerdown',play,{once:true});
+   const start=performance.now();
+   const fade=now=>{
+    whiteNoise.volume=Math.min(.48,(now-start)/4200*.48);
+    if(whiteNoise.volume<.48)requestAnimationFrame(fade);
+   };
+   requestAnimationFrame(fade);
+  };
   button.addEventListener('mousedown',e=>e.stopPropagation());
   button.addEventListener('click',e=>{e.stopPropagation();if(nightLocked)return;target=target?0:1;button.innerHTML=icon(target?sun:moon);button.title=target?'切换到白天':'切换到夜晚';button.setAttribute('aria-label',button.title);button.setAttribute('aria-pressed',String(!!target));});
   document.body.appendChild(button);
@@ -665,7 +687,7 @@
    flash.style.opacity='1';
    setTimeout(()=>flash.style.opacity='0',180);
    setTimeout(()=>flash.style.opacity='1',340);
-   setTimeout(()=>{flash.remove();target=1;button.innerHTML=icon(sun);button.title='夜间模式已锁定';button.setAttribute('aria-label',button.title);button.setAttribute('aria-pressed','true');button.style.cursor='not-allowed';},580);
+   setTimeout(()=>{flash.remove();target=1;button.innerHTML=icon(sun);button.title='夜间模式已锁定';button.setAttribute('aria-label',button.title);button.setAttribute('aria-pressed','true');button.style.cursor='not-allowed';startWhiteNoise();},580);
   });
   const bg=app.scene.background?.isColor?app.scene.background.clone():null;
   function animate(){

@@ -71,7 +71,7 @@
           .catch((error) => console.warn("Persistent asset cache unavailable", error));
       }
     </script>
-    <script defer src="retro-workstation.js?v=20261005-18"></script>
+    <script defer src="retro-workstation.js?v=20261005-19"></script>
     <script defer src="bundle.retro-workstation.js?v=20261005-1"></script>
     <link href="main.css?v=20261005-5" rel="stylesheet" />
     <script src="desktop/asset-pack.js?v=20261005-5"></script>
@@ -450,7 +450,9 @@
           const audio = window.retroApplication?.world?.audioManager;
           if (!audio?.listener) return;
           muted = !muted;
-          audio.listener.setMasterVolume(muted ? 0 : 1);
+          window.archiveSceneMuted = muted;
+          audio.listener.setMasterVolume(window.archiveNightSoundActive ? 0 : muted ? 0 : 1);
+          if (window.archiveNightSound) window.archiveNightSound.muted = muted;
           audio.context?.resume();
           syncControlStates();
         });
