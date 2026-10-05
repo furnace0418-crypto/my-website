@@ -236,7 +236,6 @@ const explorerNodes = {
     items: [
       { name: "重要", detail: "文件夹", type: "folder", target: "my-pictures" },
       { name: "学习资料", detail: "文件夹", type: "folder", target: "study-files" },
-      { name: "游戏存档", detail: "文件夹", type: "folder", target: "game-saves" },
       { name: "备份资料", detail: "文件夹", type: "folder", target: "d-backup" },
       { name: "密码防忘.txt", detail: "1 KB　文本文档", type: "txt", content: "QQ：zy2625\n论坛：出生日期" }
     ]
@@ -249,7 +248,6 @@ const explorerNodes = {
   "my-pictures": { title: "重要", path: "D:\\我的文件\\重要", parent: "my-files", items: [{ name: "奖学金.jpg", detail: "JPEG 图像", type: "jpeg", src: "assets/photos/scholarship-new.webp" }, { name: "学生证.png", detail: "PNG 图像", type: "jpeg", src: "assets/photos/student-id-zhengyuan.webp" }] },
   "study-files": { title: "学习资料", path: "D:\\我的文件\\学习资料", parent: "my-files", items: [{ name: "2022学年", detail: "文件夹", type: "folder", target: "study-2022" }, { name: "地理错题整理.docx", detail: "只读　Microsoft Word 文档", type: "word", src: "assets/documents/地理错题整理.docx" }, { name: "英语单词.txt", detail: "1 KB　文本文档", type: "txt", content: "diplomacy 外交(n.)\npalette 调色盘(n.)\nsupervision 监管.监督(n.)\nconfine 限制.局限(v.)\nconventional 传统的.常规的(adj.)" }] },
   "study-2022": { title: "2022学年", path: "D:\\我的文件\\学习资料\\2022学年", parent: "study-files", items: [{ name: "期末成绩单.xlsx", detail: "10 KB　Microsoft Excel 工作表", type: "excel" }] },
-  "game-saves": { title: "游戏存档", path: "D:\\我的文件\\游戏存档", parent: "my-files", items: [{ name: "README.txt", detail: "1 KB　文本文档", type: "txt", content: "请勿修改或删除游戏存档。" }] },
   "internet-explorer": { title: "Internet Explorer", path: "C:\\Program Files\\Internet Explorer", parent: "program-files", items: [] },
   "tencent-folder": { title: "Tencent", path: "C:\\Program Files\\Tencent", parent: "program-files", items: [{ name: "QQ", detail: "文件夹", type: "folder", target: "qq-program-folder" }] },
   "system-folder": { title: "SYSTEM", path: "C:\\WINDOWS\\SYSTEM", parent: "windows-folder", items: [] },
