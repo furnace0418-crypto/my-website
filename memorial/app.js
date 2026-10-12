@@ -33,17 +33,21 @@ const offerings=()=>offeringState;
 const saveOffering=type=>(offeringState={...offeringState,[type]:true});
 let zhangOfferingState={};
 let chenRegistrationNoticeShown=false;
-let chenRegistrationNoticePending='';
+let chenRegistrationNoticePending=false;
+let chenRegistrationNoticeWaitForSearch=false;
 function queueChenRegistrationNotice(source){
   if(chenRegistrationNoticeShown||chenRegistrationNoticePending||document.body.classList.contains('invite-theme'))return;
-  if(offerings().flower&&offerings().lamp)chenRegistrationNoticePending=source;
+  if(offerings().flower&&offerings().lamp){
+    chenRegistrationNoticePending=true;
+    chenRegistrationNoticeWaitForSearch=source==='lamp';
+  }
 }
-function showChenRegistrationNotice(source){
-  if(chenRegistrationNoticeShown||chenRegistrationNoticePending!==source)return;
-  if(document.body.classList.contains('invite-theme')){chenRegistrationNoticePending='';return}
-  if(source==='flower'&&!document.querySelector('.flower-confirm')?.hidden)return;
-  if(source==='lamp'&&!location.hash.startsWith('#browse'))return;
-  chenRegistrationNoticePending='';
+function showChenRegistrationNotice(){
+  if(chenRegistrationNoticeShown||!chenRegistrationNoticePending)return;
+  if(document.body.classList.contains('invite-theme')){chenRegistrationNoticePending=false;return}
+  if(chenRegistrationNoticeWaitForSearch&&!location.hash.startsWith('#browse'))return;
+  if(!chenRegistrationNoticeWaitForSearch&&!document.querySelector('.flower-confirm')?.hidden)return;
+  chenRegistrationNoticePending=false;
   chenRegistrationNoticeShown=true;
   const notice=document.createElement('div');
   notice.className='chen-registration-notice';
@@ -278,7 +282,7 @@ function zhenzhenMemorial(initialTab='story'){
   if(initialTab!=='story')document.querySelector(`[data-life-tab="${initialTab}"]`)?.click();
   const offeringNotice=document.createElement('div');offeringNotice.className='offering-notice';offeringNotice.setAttribute('role','status');offeringNotice.textContent=offeringText(offerings());offeringNotice.hidden=!offerings().flower&&!offerings().lamp;document.querySelector('.life-story').prepend(offeringNotice);
   const flowerConfirm=document.querySelector('.flower-confirm');
-  const closeFlowerConfirm=()=>{flowerConfirm.hidden=true;showChenRegistrationNotice('flower')};
+  const closeFlowerConfirm=()=>{flowerConfirm.hidden=true;showChenRegistrationNotice()};
   document.querySelector('.life-flower').onclick=()=>{offeringNotice.textContent=offeringText(saveOffering('flower'));offeringNotice.hidden=false;flowerConfirm.hidden=false;document.querySelector('.flower-confirm-ok').focus();queueChenRegistrationNotice('flower')};
   document.querySelector('.flower-confirm-close').onclick=closeFlowerConfirm;
   document.querySelector('.flower-confirm-ok').onclick=closeFlowerConfirm;
@@ -291,7 +295,7 @@ function route(){
   rememberInviteVideo();applyInviteTheme();header();
   const hash=decodeURIComponent(location.hash.slice(1)||'home');
   const [page,id,tab]=hash.split('/');
-  if(!account()&&['letters','articles','services'].includes(page)){location.hash='#login';return}
+  if(!account()&&(['letters','articles'].includes(page)||(page==='services'&&!['chen-zhenzhen','zhang-wenhua'].includes(id)))){location.hash='#login';return}
   if(page==='home')home();
   else if(page==='services'){
     const source=['chen-zhenzhen','zhang-wenhua'].includes(id)?`lantern.html?memorial=${id}`:'lantern.html';
@@ -308,7 +312,7 @@ function route(){
   applyOfferingIcons();
   decoratePortalFrames();
   scrollTo(0,0);
-  if(page==='browse')showChenRegistrationNotice('lamp');
+  if(page==='browse')showChenRegistrationNotice();
 }
 document.addEventListener('submit',e=>{
   const form=e.target.closest?.('.hero-search, #hallSearchForm');
