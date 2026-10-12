@@ -252,6 +252,7 @@
   $('brightness').oninput=()=>{state.brightness=+$('brightness').value;$('brightnessOut').textContent=Math.round(state.brightness*100)+'%';};
   $('wish').oninput=()=>{$('wishDisplay').textContent=state.wish=$('wish').value;};
   $('rotate').onclick=()=>{rotating=!rotating;$('rotate').textContent=rotating?'暂停旋转':'自动旋转';$('rotate').setAttribute('aria-pressed',String(rotating));};
+  $('rotate').disabled=false;
   function lightButton(){$('light').textContent=dedicated?(lit?'已点灯':'点灯'):(lit?'熄灯':'点灯');$('light').disabled=dedicated&&lit;$('light').setAttribute('aria-pressed',String(lit));}
   lightButton();
   const closeLampConfirm=()=>{$('lampConfirm').hidden=true};
