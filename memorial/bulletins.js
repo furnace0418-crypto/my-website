@@ -28,10 +28,10 @@ const memorialBulletins=[
 function wireHomeBulletins(){
   const panel=app.querySelector('.notice-panel');
   if(!panel)return;
-  panel.querySelector('h2').innerHTML='<span>︽</span> 会务与文告 <span>︾</span>';
+  panel.querySelector('h2').innerHTML='<span>︽</span> 资讯 <span>︾</span>';
   panel.querySelector('.section-heading p').textContent='研究会公告、平台说明与纪念文化';
   panel.querySelector('ul').innerHTML=memorialBulletins.map(item=>`<li><a href="#articles/${item.id}">${esc(item.title)}</a><time datetime="${item.date}">${item.date}</time></li>`).join('');
-  const more=document.createElement('a');more.className='bulletin-home-more';more.href='#articles';more.textContent='阅览全部文告 · 福报说明 →';panel.appendChild(more);
+  const more=document.createElement('a');more.className='bulletin-home-more';more.href='#articles';more.textContent='阅览全部资讯 · 福报说明 →';panel.appendChild(more);
 }
 
 function bulletinPage(id='launch'){
@@ -39,6 +39,6 @@ function bulletinPage(id='launch'){
   const fortune=id==='fortune';
   let fortuneBody;
   if(fortune){fortuneExplanation();fortuneBody=app.querySelector('.fortune-body')}
-  app.innerHTML=`<div class="page-shell bulletin-page"><header class="bulletin-heading"><p>福善文化研究会 · 安念堂</p><h1>会务与文告</h1><span>存一份记忆，传一份善意。</span></header><div class="bulletin-layout"><nav class="bulletin-sidebar" aria-label="文告选择"><h2>研究会公告</h2>${memorialBulletins.map(item=>`<a href="#articles/${item.id}" ${!fortune&&item.id===selected.id?'aria-current="page"':''}><span>${esc(item.title)}</span><time datetime="${item.date}">${item.date}</time></a>`).join('')}<h2 class="bulletin-subheading">纪念文化</h2><a href="#articles/fortune" ${fortune?'aria-current="page"':''}><span>福报说明</span><small>善念与善行</small></a><a class="bulletin-back" href="#home">← 返回首页</a></nav><article class="bulletin-reader" aria-labelledby="bulletin-title"><header class="bulletin-article-header"><p>${fortune?'纪念文化':'研究会公告'}</p><h2 id="bulletin-title">${fortune?'福报说明':esc(selected.title)}</h2><div>福善文化研究会${fortune?'':`<span>发布于 <time datetime="${selected.date}">${selected.date.replaceAll('-','.')}</time></span>`}</div></header><div class="bulletin-article-body">${fortune?'':`<p class="bulletin-intro">${esc(selected.intro)}</p>${selected.sections.map(([title,body])=>`<section><h3>${esc(title)}</h3><p>${esc(body)}</p></section>`).join('')}<footer class="bulletin-signature"><p>福善文化研究会</p><time datetime="${selected.date}">${selected.date.replaceAll('-','.')}</time></footer>`}</div></article></div></div>`;
+  app.innerHTML=`<div class="page-shell bulletin-page"><header class="bulletin-heading"><h1>资讯</h1></header><div class="bulletin-layout"><nav class="bulletin-sidebar" aria-label="资讯选择"><h2>研究会公告</h2>${memorialBulletins.map(item=>`<a href="#articles/${item.id}" ${!fortune&&item.id===selected.id?'aria-current="page"':''}><span>${esc(item.title)}</span><time datetime="${item.date}">${item.date}</time></a>`).join('')}<h2 class="bulletin-subheading">纪念文化</h2><a href="#articles/fortune" ${fortune?'aria-current="page"':''}><span>福报说明</span><small>善念与善行</small></a><a class="bulletin-back" href="#home">← 返回首页</a></nav><article class="bulletin-reader" aria-labelledby="bulletin-title"><header class="bulletin-article-header"><p>${fortune?'纪念文化':'研究会公告'}</p><h2 id="bulletin-title">${fortune?'福报说明':esc(selected.title)}</h2><div>福善文化研究会${fortune?'':`<span>发布于 <time datetime="${selected.date}">${selected.date.replaceAll('-','.')}</time></span>`}</div></header><div class="bulletin-article-body">${fortune?'':`<p class="bulletin-intro">${esc(selected.intro)}</p>${selected.sections.map(([title,body])=>`<section><h3>${esc(title)}</h3><p>${esc(body)}</p></section>`).join('')}<footer class="bulletin-signature"><p>福善文化研究会</p><time datetime="${selected.date}">${selected.date.replaceAll('-','.')}</time></footer>`}</div></article></div></div>`;
   if(fortuneBody)app.querySelector('.bulletin-article-body').appendChild(fortuneBody);
 }
