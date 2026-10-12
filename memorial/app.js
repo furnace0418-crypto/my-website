@@ -34,19 +34,18 @@ const saveOffering=type=>(offeringState={...offeringState,[type]:true});
 let zhangOfferingState={};
 let chenRegistrationNoticeShown=false;
 let chenRegistrationNoticePending=false;
-let chenRegistrationNoticeWaitForSearch=false;
-function queueChenRegistrationNotice(source){
+function queueChenRegistrationNotice(){
   if(chenRegistrationNoticeShown||chenRegistrationNoticePending||document.body.classList.contains('invite-theme'))return;
   if(offerings().flower&&offerings().lamp){
     chenRegistrationNoticePending=true;
-    chenRegistrationNoticeWaitForSearch=source==='lamp';
   }
 }
 function showChenRegistrationNotice(){
   if(chenRegistrationNoticeShown||!chenRegistrationNoticePending)return;
   if(document.body.classList.contains('invite-theme')){chenRegistrationNoticePending=false;return}
-  if(chenRegistrationNoticeWaitForSearch&&!location.hash.startsWith('#browse'))return;
-  if(!chenRegistrationNoticeWaitForSearch&&!document.querySelector('.flower-confirm')?.hidden)return;
+  if(location.hash.startsWith('#services'))return;
+  const flowerConfirm=document.querySelector('.flower-confirm');
+  if(flowerConfirm&&!flowerConfirm.hidden)return;
   chenRegistrationNoticePending=false;
   chenRegistrationNoticeShown=true;
   const notice=document.createElement('div');
@@ -298,7 +297,7 @@ function route(){
   if(!account()&&(['letters','articles'].includes(page)||(page==='services'&&!['chen-zhenzhen','zhang-wenhua'].includes(id)))){location.hash='#login';return}
   if(page==='home')home();
   else if(page==='services'){
-    const source=['chen-zhenzhen','zhang-wenhua'].includes(id)?`lantern.html?memorial=${id}`:'lantern.html';
+    const source=['chen-zhenzhen','zhang-wenhua'].includes(id)?`lantern.html?memorial=${id}&v=2`:'lantern.html?v=2';
     app.innerHTML=`<iframe title="云祭服务 · 定制长明灯" src="${source}" style="display:block;width:100%;height:1250px;border:0" allow="fullscreen"></iframe>`;
   }
   else if(page==='articles')fortuneExplanation();
@@ -312,7 +311,7 @@ function route(){
   applyOfferingIcons();
   decoratePortalFrames();
   scrollTo(0,0);
-  if(page==='browse')showChenRegistrationNotice();
+  showChenRegistrationNotice();
 }
 document.addEventListener('submit',e=>{
   const form=e.target.closest?.('.hero-search, #hallSearchForm');
