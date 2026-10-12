@@ -33,9 +33,17 @@ const offerings=()=>offeringState;
 const saveOffering=type=>(offeringState={...offeringState,[type]:true});
 let zhangOfferingState={};
 let chenRegistrationNoticeShown=false;
-function showChenRegistrationNoticeIfReady(){
-  if(chenRegistrationNoticeShown||document.body.classList.contains('invite-theme'))return;
-  if(!offerings().flower||!offerings().lamp)return;
+let chenRegistrationNoticePending='';
+function queueChenRegistrationNotice(source){
+  if(chenRegistrationNoticeShown||chenRegistrationNoticePending||document.body.classList.contains('invite-theme'))return;
+  if(offerings().flower&&offerings().lamp)chenRegistrationNoticePending=source;
+}
+function showChenRegistrationNotice(source){
+  if(chenRegistrationNoticeShown||chenRegistrationNoticePending!==source)return;
+  if(document.body.classList.contains('invite-theme')){chenRegistrationNoticePending='';return}
+  if(source==='flower'&&!document.querySelector('.flower-confirm')?.hidden)return;
+  if(source==='lamp'&&!location.hash.startsWith('#browse'))return;
+  chenRegistrationNoticePending='';
   chenRegistrationNoticeShown=true;
   const notice=document.createElement('div');
   notice.className='chen-registration-notice';
@@ -44,7 +52,7 @@ function showChenRegistrationNoticeIfReady(){
   document.body.appendChild(notice);
   setTimeout(()=>notice.remove(),1100);
 }
-window.memorialLampBridge={recordLamp:id=>{if(id==='zhang-wenhua')zhangOfferingState={...zhangOfferingState,lamp:true};else if(id==='chen-zhenzhen'){saveOffering('lamp');showChenRegistrationNoticeIfReady()}}};
+window.memorialLampBridge={recordLamp:id=>{if(id==='zhang-wenhua')zhangOfferingState={...zhangOfferingState,lamp:true};else if(id==='chen-zhenzhen'){saveOffering('lamp');queueChenRegistrationNotice('lamp')}}};
 const offeringText=state=>state.flower&&state.lamp?'你已经献花，并点燃长明灯了。':state.flower?'你已经献花了。':state.lamp?'你已经点燃长明灯了。':'你还没有进行祭奠。';
 const wishKey='chen-zhenzhen-wishes';
 const memorialWishes=()=>{try{const entries=JSON.parse(localStorage.getItem(wishKey)||'[]');return Array.isArray(entries)?entries:[]}catch(_){return[]}};
@@ -270,8 +278,8 @@ function zhenzhenMemorial(initialTab='story'){
   if(initialTab!=='story')document.querySelector(`[data-life-tab="${initialTab}"]`)?.click();
   const offeringNotice=document.createElement('div');offeringNotice.className='offering-notice';offeringNotice.setAttribute('role','status');offeringNotice.textContent=offeringText(offerings());offeringNotice.hidden=!offerings().flower&&!offerings().lamp;document.querySelector('.life-story').prepend(offeringNotice);
   const flowerConfirm=document.querySelector('.flower-confirm');
-  const closeFlowerConfirm=()=>{flowerConfirm.hidden=true};
-  document.querySelector('.life-flower').onclick=()=>{offeringNotice.textContent=offeringText(saveOffering('flower'));offeringNotice.hidden=false;flowerConfirm.hidden=false;document.querySelector('.flower-confirm-ok').focus();showChenRegistrationNoticeIfReady()};
+  const closeFlowerConfirm=()=>{flowerConfirm.hidden=true;showChenRegistrationNotice('flower')};
+  document.querySelector('.life-flower').onclick=()=>{offeringNotice.textContent=offeringText(saveOffering('flower'));offeringNotice.hidden=false;flowerConfirm.hidden=false;document.querySelector('.flower-confirm-ok').focus();queueChenRegistrationNotice('flower')};
   document.querySelector('.flower-confirm-close').onclick=closeFlowerConfirm;
   document.querySelector('.flower-confirm-ok').onclick=closeFlowerConfirm;
   flowerConfirm.onclick=e=>{if(e.target===flowerConfirm)closeFlowerConfirm()};
@@ -300,6 +308,7 @@ function route(){
   applyOfferingIcons();
   decoratePortalFrames();
   scrollTo(0,0);
+  if(page==='browse')showChenRegistrationNotice('lamp');
 }
 document.addEventListener('submit',e=>{
   const form=e.target.closest?.('.hero-search, #hallSearchForm');
