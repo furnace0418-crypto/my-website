@@ -269,6 +269,15 @@ function zhenzhenMemorial(initialTab='story'){
     profileRows[4].querySelector('dt').textContent='登记地';
     profileRows[4].querySelector('dd').textContent='桃原市纪念馆';
   }
+  if(localStorage.getItem('chen-zhenzhen-registration-updated')==='1'){
+    const profile=app.querySelector('.life-profile dl');
+    for(const [label,value] of [['居民编号','TYF03262620240912'],['母亲','张文华'],['迁入时间','2013年11月3日']]){
+      const row=document.createElement('div');
+      const term=document.createElement('dt');term.textContent=label;
+      const detail=document.createElement('dd');detail.textContent=value;
+      row.append(term,detail);profile.appendChild(row);
+    }
+  }
   addMemorialBackLink('陈珍珍');
   document.querySelector('.tribute-action').href='#services/chen-zhenzhen';
   const messagePane=document.querySelector('[data-life-pane="messages"]');
