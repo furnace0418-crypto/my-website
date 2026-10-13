@@ -1,4 +1,12 @@
 const app=document.querySelector('#app');
+const inviteGlitchAudio=new Audio('assets/invite-jumpscare.mp3');
+inviteGlitchAudio.preload='auto';
+inviteGlitchAudio.volume=.9;
+inviteGlitchAudio.load();
+const InviteAudioContext=window.AudioContext||window.webkitAudioContext;
+const inviteAudioContext=InviteAudioContext?new InviteAudioContext():null;
+let inviteAudioBuffer=null;
+if(inviteAudioContext)fetch('assets/invite-jumpscare.mp3').then(response=>response.arrayBuffer()).then(data=>inviteAudioContext.decodeAudioData(data)).then(buffer=>inviteAudioBuffer=buffer).catch(()=>{});
 const fortuneVideoUrl=new URL('assets/invite-home-v2.mp4',document.baseURI).href;
 let fortuneVideoCachePromise;
 let fortuneVideoObjectUrl;
@@ -177,8 +185,8 @@ function activateInviteAccess(){
   inviteAccessGranted=true;
   localStorage.setItem('memorial-invite-theme','1');
   inviteVideoDelayUntil=performance.now()+2350;
-  playInviteGlitchSound();
-  setTimeout(()=>{playInviteEntryFx();applyInviteTheme();if(location.hash==='#home')route();else location.hash='#home'},950);
+  inviteAudioContext?.resume().catch(()=>{});
+  setTimeout(()=>{playInviteGlitchSound();playInviteEntryFx();applyInviteTheme();if(location.hash==='#home')route();else location.hash='#home'},950);
 }
 function showInviteVerification(){
   document.querySelector('.invite-prompt.invite-recheck')?.remove();
@@ -234,9 +242,16 @@ function register(){
   };
 }
 function playInviteGlitchSound(){
-  const audio=new Audio('assets/invite-jumpscare.mp3');
-  audio.preload='auto';audio.volume=.9;audio.currentTime=0;
-  audio.play().catch(()=>{});
+  if(inviteAudioBuffer&&inviteAudioContext?.state==='running'){
+    const source=inviteAudioContext.createBufferSource();
+    const gain=inviteAudioContext.createGain();
+    source.buffer=inviteAudioBuffer;gain.gain.value=.9;
+    source.connect(gain).connect(inviteAudioContext.destination);
+    source.start(0,.82);
+    return;
+  }
+  inviteGlitchAudio.currentTime=.82;
+  inviteGlitchAudio.play().catch(()=>{});
 }
 function playInviteEntryFx(){
   document.querySelector('.invite-entry-fx')?.remove();
