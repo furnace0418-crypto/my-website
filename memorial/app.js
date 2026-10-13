@@ -313,6 +313,7 @@ function zhenzhenMemorial(initialTab='story'){
     ['高中时期｜生活发生变化','进入高中后，陈珍珍逐渐认识了一些校外人士，开始频繁参加聚会，偶尔逃课，原本的生活圈也随之发生变化。此后她接触到一些较为复杂的社交关系，并曾卷入带有金钱往来的私人交往。她很少向家人和旧友详细谈起这些经历，只偶尔表示自己“最近很忙”。'],
     ['2024年｜离世','高三期间，陈珍珍与过去的同学和朋友往来越来越少，也很少再更新自己的日常。生命最后一段时间，她开始频繁接触有关“福报”“善业”和人生意义的内容，并转发过多篇相关文章。2024年，陈珍珍于云阳市家中离世。']
   ];
+  const tributes=[['x华','献花','2025年09月25日 20:16'],['xx远','点燃长明灯','2025年07月14日 08:42'],['x梅','献花','2025年04月04日 10:05'],['xx兰','点燃长明灯','2025年01月29日 17:31'],['x宁','献花','2024年12月21日 09:12'],['xx安','点燃长明灯','2024年10月03日 19:48'],['x林','献花','2024年09月18日 14:26']];
   const fortuneRecords=[
     {title:'捡垃圾，清理路面',paragraphs:['陈珍珍曾长期在居住地附近清理路边垃圾，捡拾烟头、塑料袋和废纸，并主动清扫楼栋周边的卫生死角。'],verdict:'清净环境，积累微量福报。'},
     {title:'布施蚂蚁',paragraphs:['陈珍珍会定期在楼下角落投放糖水、米粒和饼干碎屑，认为这样是在“照顾微小生命”。','后期她开始频繁提到“它们也有去处”“小东西也要被看见”。'],verdict:'获取福报'},
@@ -320,9 +321,13 @@ function zhenzhenMemorial(initialTab='story'){
     {title:'在妇科医院劝人不要堕胎',paragraphs:['陈珍珍曾多次前往妇科医院附近，与陌生人交谈，劝说对方“留下生命”“不要亲手结束一个可能来到世上的人”。'],verdict:'福报提升'},
     {title:'与抑郁症网友聊天，并劝其前往桃原市',paragraphs:['陈珍珍曾在网络上长期接触情绪低落、厌世或有自毁倾向的网友。她最初以安慰、陪伴和倾听为主，但后期聊天内容逐渐发生变化。她开始频繁提到“桃原市”，并将那里描述成一个“不会再痛苦的地方”、“真正可以结束一切的地方”。'],verdict:'福报已满'}
   ];
-  app.innerHTML=`<div class="life-memorial-shell"><aside class="life-profile"><img class="life-portrait" src="assets/chen-zhenzhen-portrait.jpg" alt="陈珍珍"><h1>陈珍珍</h1><p class="life-dates">2004.03.14　—　2024</p><p class="life-wish">愿你在另一处，获得平静。</p><dl><div><dt>性别</dt><dd>女</dd></div><div><dt>出生</dt><dd>2004年3月14日</dd></div><div><dt>籍贯</dt><dd>云阳市</dd></div><div><dt>离世</dt><dd>2024年</dd></div><div><dt>安葬地</dt><dd>云阳市纪念馆</dd></div></dl><button class="life-flower" type="button">✿　献花</button></aside><section class="life-story"><nav class="life-tabs" aria-label="纪念馆栏目"><button class="active" data-life-tab="story">过往记事</button><button data-life-tab="tributes">祭奠记录</button><button data-life-tab="messages">留言板</button><span>／ 生者记忆 · 让爱延续 ／</span></nav><div class="life-pane active" data-life-pane="story"><div class="life-timeline">${timeline.map(([title,text])=>`<article><i></i><h2>${esc(title)}</h2><p>${esc(text)}</p></article>`).join('')}</div></div><div class="life-pane" data-life-pane="tributes"><div class="tribute-heading"><h2>祭奠记录</h2><p>每一次到访，都让思念有了回声。</p></div><div class="tribute-list fortune-record-list">${fortuneRecords.map(({title,paragraphs,verdict})=>`<article class="fortune-record"><h3>${esc(title)}</h3>${paragraphs.map(text=>`<p>${esc(text)}</p>`).join('')}<p class="fortune-verdict"><strong>系统判定：</strong>${esc(verdict)}</p></article>`).join('')}</div><a class="tribute-action" href="#services">前往祭奠</a></div><div class="life-pane" data-life-pane="messages"><div class="tribute-heading"><h2>留言板</h2><p>那些没有说完的话，仍可以在这里轻轻写下。</p></div><article class="memorial-message"><b>◇◇</b><p>愿你在另一个世界，不再为生活奔波。</p><time>2025年09月20日</time></article><article class="memorial-message"><b>✧✧✧</b><p>我们记得你，也会好好生活。</p><time>2025年09月14日</time></article></div></section></div><div class="flower-confirm" hidden><section role="dialog" aria-modal="true" aria-labelledby="flower-confirm-title"><button class="flower-confirm-close" type="button" aria-label="关闭">×</button><div class="flower-confirm-icon">✿</div><h2 id="flower-confirm-title">已献花</h2><p>愿这一束花伴她安眠，也让思念长久芬芳。</p><button class="flower-confirm-ok" type="button">确定</button></section></div>`;
-  app.querySelector('[data-life-pane="tributes"] .tribute-heading p').textContent='以下为已记录的福报事项。';
+  app.innerHTML=`<div class="life-memorial-shell"><aside class="life-profile"><img class="life-portrait" src="assets/chen-zhenzhen-portrait.jpg" alt="陈珍珍"><h1>陈珍珍</h1><p class="life-dates">2004.03.14　—　2024</p><p class="life-wish">愿你在另一处，获得平静。</p><dl><div><dt>性别</dt><dd>女</dd></div><div><dt>出生</dt><dd>2004年3月14日</dd></div><div><dt>籍贯</dt><dd>云阳市</dd></div><div><dt>离世</dt><dd>2024年</dd></div><div><dt>安葬地</dt><dd>云阳市纪念馆</dd></div></dl><button class="life-flower" type="button">✿　献花</button></aside><section class="life-story"><nav class="life-tabs" aria-label="纪念馆栏目"><button class="active" data-life-tab="story">过往记事</button><button data-life-tab="tributes">祭奠记录</button><button data-life-tab="messages">留言板</button><span>／ 生者记忆 · 让爱延续 ／</span></nav><div class="life-pane active" data-life-pane="story"><div class="life-timeline">${timeline.map(([title,text])=>`<article><i></i><h2>${esc(title)}</h2><p>${esc(text)}</p></article>`).join('')}</div></div><div class="life-pane" data-life-pane="tributes"><div class="tribute-heading"><h2>祭奠记录</h2><p>每一次到访，都让思念有了回声。</p></div><div class="tribute-list">${tributes.map(([name,type,time])=>`<article><div class="tribute-person"><span>${name}</span><b>${type==='献花'?'✿ 献花':'♨ 点燃长明灯'}</b></div><time>${time}</time></article>`).join('')}</div><a class="tribute-action" href="#services">前往祭奠</a></div><div class="life-pane" data-life-pane="messages"><div class="tribute-heading"><h2>留言板</h2><p>那些没有说完的话，仍可以在这里轻轻写下。</p></div><article class="memorial-message"><b>◇◇</b><p>愿你在另一个世界，不再为生活奔波。</p><time>2025年09月20日</time></article><article class="memorial-message"><b>✧✧✧</b><p>我们记得你，也会好好生活。</p><time>2025年09月14日</time></article></div></section></div><div class="flower-confirm" hidden><section role="dialog" aria-modal="true" aria-labelledby="flower-confirm-title"><button class="flower-confirm-close" type="button" aria-label="关闭">×</button><div class="flower-confirm-icon">✿</div><h2 id="flower-confirm-title">已献花</h2><p>愿这一束花伴她安眠，也让思念长久芬芳。</p><button class="flower-confirm-ok" type="button">确定</button></section></div>`;
   if(document.body.classList.contains('invite-theme')){
+    app.querySelectorAll('[data-life-tab="tributes"], [data-life-pane="tributes"] .tribute-heading h2').forEach(label=>label.textContent='福报记录');
+    app.querySelector('[data-life-pane="tributes"] .tribute-heading p').textContent='以下为已记录的福报事项。';
+    const recordList=app.querySelector('[data-life-pane="tributes"] .tribute-list');
+    recordList.classList.add('fortune-record-list');
+    recordList.innerHTML=fortuneRecords.map(({title,paragraphs,verdict})=>`<article class="fortune-record"><h3>${esc(title)}</h3>${paragraphs.map(text=>`<p>${esc(text)}</p>`).join('')}<p class="fortune-verdict"><strong>系统判定：</strong>${esc(verdict)}</p></article>`).join('');
     app.querySelector('.life-portrait').src='assets/chen-zhenzhen-taoyuan.png?v=2';
     app.querySelector('.life-wish').textContent='祝陈女士在桃原市生活愉快';
     app.querySelector('.life-timeline').innerHTML=taoyuanTimeline.map(([title,body])=>`<article><i></i><h2>${esc(title)}</h2><p>${esc(body)}</p></article>`).join('');
@@ -348,10 +353,10 @@ function zhenzhenMemorial(initialTab='story'){
   document.querySelector('.flower-confirm-close').onclick=closeFlowerConfirm;
   document.querySelector('.flower-confirm-ok').onclick=closeFlowerConfirm;
   flowerConfirm.onclick=e=>{if(e.target===flowerConfirm)closeFlowerConfirm()};
-  app.querySelectorAll('[data-life-tab="tributes"], [data-life-pane="tributes"] .tribute-heading h2').forEach(label=>label.textContent='福报记录');
-  app.querySelectorAll('[data-life-pane="tributes"] .tribute-list article').forEach(record=>{if(record.querySelector('b')?.textContent.includes('献花'))record.remove()});
-  app.querySelector('.life-flower')?.remove();
-  flowerConfirm.remove();
+  if(document.body.classList.contains('invite-theme')){
+    app.querySelector('.life-flower')?.remove();
+    flowerConfirm.remove();
+  }
 }
 function hall(id,tab){if(id==='chen-zhenzhen'){zhenzhenMemorial(tab);return}if(id==='zhang-wenhua'){zhangwenhuaMemorial(tab);return}const h=halls().find(x=>x.id===id);if(!h){browse();return}app.innerHTML=`<div class="page-shell"><div class="panel"><div class="detail-head"><div class="portrait">☾</div><div><h1>${esc(h.name)}</h1><p>${esc(h.birth)} - ${esc(h.death)}　创建者: ${esc(h.creator)}</p><div class="rite-actions"><button data-rite="点烛">🕯 点烛</button><button data-rite="上香">♨ 上香</button><button data-rite="献花">🌿 献花</button></div></div></div><div class="detail-content"><h2>生平简介</h2><p class="bio">${esc(h.bio||'暂无生平简介')}</p><h2>祭祀记录</h2><div id="recordList"></div><form id="messageForm"><label class="field"><span>留下思念</span><textarea name="message" placeholder="写下想说的话" required></textarea></label><button class="btn" type="submit">发表留言</button></form></div></div></div>`;const list=document.querySelector('#recordList');function records(){list.innerHTML=h.records.length?h.records.map(r=>`<article class="record"><div class="record-top"><span><b>${esc(r.by)}</b>　${esc(r.type)}</span><time>${esc(r.at)}</time></div><p>${esc(r.text)}</p></article>`).join(''):'<p class="empty">尚无祭祀记录</p>'}records();function add(type,text){h.records.unshift({type,by:account()?.name||'访客',at:dateText(),text});if(h.id!=='demo'){localStorage.setItem('memorial-halls',JSON.stringify(saved().map(x=>x.id===h.id?h:x)))}records()}document.querySelectorAll('[data-rite]').forEach(b=>b.onclick=()=>{const t=b.dataset.rite;add(t,({点烛:'点燃了一支蜡烛，照亮前路',上香:'献上了一炷香，寄托哀思',献花:'献上了一束花，表达怀念'})[t])});document.querySelector('#messageForm').onsubmit=e=>{e.preventDefault();const f=e.currentTarget;add('留言',f.message.value.trim());f.reset()};}
 function simple(title){app.innerHTML=`<div class="page-shell simple-page"><h1 class="page-heading">${title}</h1><p>相关内容正在整理中。</p><a class="btn" href="#home">返回首页</a></div>`;}
@@ -442,12 +447,15 @@ function zhangwenhuaMemorial(initialTab='story'){
   if(initialTab!=='story')app.querySelector(`[data-life-tab="${initialTab}"]`)?.click();
   const notice=document.createElement('div');notice.className='offering-notice';notice.setAttribute('role','status');notice.textContent=offeringText(zhangOfferingState);notice.hidden=!zhangOfferingState.flower&&!zhangOfferingState.lamp;app.querySelector('.life-story').prepend(notice);
   const tributes=app.querySelector('.tribute-list');
-  if(zhangOfferingState.lamp)tributes.innerHTML='<article><div class="tribute-person"><span>普通用户</span><b>♨ 点燃长明灯</b></div><time>今日</time></article>';
+  if(zhangOfferingState.flower||zhangOfferingState.lamp)tributes.innerHTML=Object.entries(zhangOfferingState).filter(([,active])=>active).map(([type])=>`<article><div class="tribute-person"><span>普通用户</span><b>${type==='flower'?'✿ 献花':'♨ 点燃长明灯'}</b></div><time>今日</time></article>`).join('');
   const dialog=app.querySelector('.flower-confirm'),close=()=>dialog.hidden=true;
   app.querySelector('.life-flower').onclick=()=>{zhangOfferingState={...zhangOfferingState,flower:true};notice.textContent=offeringText(zhangOfferingState);notice.hidden=false;dialog.hidden=false;app.querySelector('.flower-confirm-ok').focus()};
   app.querySelector('.flower-confirm-close').onclick=close;app.querySelector('.flower-confirm-ok').onclick=close;dialog.onclick=e=>{if(e.target===dialog)close()};
-  app.querySelectorAll('[data-life-tab="tributes"], [data-life-pane="tributes"] .tribute-heading h2').forEach(label=>label.textContent='福报记录');
-  app.querySelector('.life-flower')?.remove();
-  dialog.remove();
+  if(document.body.classList.contains('invite-theme')){
+    app.querySelectorAll('[data-life-tab="tributes"], [data-life-pane="tributes"] .tribute-heading h2').forEach(label=>label.textContent='福报记录');
+    tributes.querySelectorAll('article').forEach(record=>{if(record.querySelector('b')?.textContent.includes('献花'))record.remove()});
+    app.querySelector('.life-flower')?.remove();
+    dialog.remove();
+  }
 }
 addEventListener('hashchange',route);route();
