@@ -16,6 +16,22 @@ function renderAdminContact(host){
     log.scrollTop=log.scrollHeight;
   };
   const actions=host.querySelector('.admin-chat-actions');
+  const deliver=async(messages,next)=>{
+    actions.replaceChildren();
+    for(const message of messages){
+      const typing=document.createElement('div');
+      typing.className='admin-chat-row from-admin admin-typing';
+      typing.innerHTML=`${avatar}<div class="admin-message" aria-label="管理员正在输入"><i></i><i></i><i></i></div>`;
+      log.appendChild(typing);
+      log.scrollTop=log.scrollHeight;
+      await new Promise(resolve=>setTimeout(resolve,650));
+      if(!host.isConnected)return;
+      typing.remove();
+      appendMessage('admin',message);
+      await new Promise(resolve=>setTimeout(resolve,180));
+    }
+    if(host.isConnected)next?.();
+  };
   const showTopics=()=>{
     actions.innerHTML='<p class="admin-action-prompt">请选择咨询事项</p><div class="admin-topic-buttons"></div>';
     const choices=actions.querySelector('.admin-topic-buttons');
@@ -24,11 +40,9 @@ function renderAdminContact(host){
       button.onclick=()=>{
         appendMessage('visitor',label);
         if(answer==='registration'){
-          appendMessage('admin','当前业务繁忙。办理居民登记，请先输入对应的管理员编号。');
-          showCodeForm();
+          deliver(['当前业务繁忙。','办理居民登记，请先输入对应的管理员编号。'],showCodeForm);
         }else{
-          appendMessage('admin',answer);
-          showTopics();
+          deliver([answer],showTopics);
         }
       };
       choices.appendChild(button);
@@ -42,13 +56,10 @@ function renderAdminContact(host){
       const value=form.elements.code.value.trim();
       appendMessage('visitor',value);
       if(value!=='48270619'){
-        appendMessage('admin','编号暂未匹配，请核对后重新输入。');
-        form.elements.code.select();
+        deliver(['编号暂未匹配，请核对后重新输入。'],showCodeForm);
         return;
       }
-      appendMessage('admin','居民登记用于补全或更正纪念馆中的居民资料。请按照已掌握的记录填写；暂时无法确认的内容可注明待核实。');
-      appendMessage('admin','这次居民登记，您需要办理什么？');
-      showRegistrationChoices();
+      deliver(['居民登记用于补全或更正纪念馆中的居民资料。请按照已掌握的记录填写；暂时无法确认的内容可注明待核实。','这次居民登记，您需要办理什么？'],showRegistrationChoices);
     };
     form.elements.code.focus();
   };
@@ -58,8 +69,7 @@ function renderAdminContact(host){
       const button=document.createElement('button');button.type='button';button.textContent=label;
       button.onclick=()=>{
         appendMessage('visitor',label);
-        appendMessage('admin',kind==='missing'?'请填写缺失的居民信息。场域与居民编号如尚未确定，可在备注中说明；提交后还需核对资料。':'请填写现有记录与需要更正的内容，并在备注中说明依据；提交后还需核对资料。');
-        showRegistrationForm(kind);
+        deliver([kind==='missing'?'请填写缺失的居民信息。':'请填写现有记录与需要更正的内容。',kind==='missing'?'场域与居民编号如尚未确定，可在备注中说明；资料仍需核对。':'请在备注中说明更正依据；资料仍需核对。'],()=>showRegistrationForm(kind));
       };
       actions.querySelector('.admin-topic-buttons').appendChild(button);
     }
@@ -74,11 +84,9 @@ function renderAdminContact(host){
       const entry={kind,createdAt:new Date().toISOString(),...Object.fromEntries(new FormData(form))};
       try{const saved=JSON.parse(localStorage.getItem('memorial-registration-drafts')||'[]');localStorage.setItem('memorial-registration-drafts',JSON.stringify([entry,...saved].slice(0,10)))}catch(_){}
       appendMessage('visitor',kind==='missing'?'提交信息缺失表':'提交信息勘误表');
-      appendMessage('admin','登记资料已保存为本机草稿，后续仍需管理员核对。');
       host.classList.remove('has-form');
-      showTopics();
+      deliver(['登记资料已保存为本机草稿，后续仍需管理员核对。'],showTopics);
     };
   };
-  appendMessage('admin','您好，您想咨询什么问题？');
-  showTopics();
+  deliver(['您好，您想咨询什么问题？'],showTopics);
 }
