@@ -110,7 +110,7 @@ function renderAdminContact(host){
   };
   const showRegistrationForm=(kind,residentName)=>{
     host.classList.add('has-form');
-    actions.innerHTML=`<form class="admin-registration-form"><h3>${kind==='missing'?'居民信息补全':'居民信息勘误'}</h3><div class="admin-registration-fields"><label>姓名<input name="residentName" autocomplete="off" required></label><label>性别<select name="gender" required><option value="">请选择</option><option value="女">女</option><option value="男">男</option><option value="其他">其他</option></select></label><label>居民编号<input name="residentCode" autocomplete="off" required></label><div class="admin-form-section">亲属关系 <small>父亲或母亲至少填写一位</small></div><label>父亲<input name="father" autocomplete="off"></label><label class="admin-checkbox-label" data-parent-resident="father" hidden>父亲是否为桃原市居民<input type="checkbox" name="fatherIsTaoyuanResident" value="是"></label><label>母亲<input name="mother" autocomplete="off"></label><label class="admin-checkbox-label" data-parent-resident="mother" hidden>母亲是否为桃原市居民<input type="checkbox" name="motherIsTaoyuanResident" value="是"></label><div class="admin-field-row"><span>与父亲／母亲关系</span><div class="admin-relation-choices" role="group" aria-label="与父亲或母亲关系"><button type="button" data-relation="女儿" aria-pressed="false">女儿</button><button type="button" data-relation="儿子" aria-pressed="false">儿子</button><button type="button" data-relation="其他" aria-pressed="false">其他</button><input type="hidden" name="parentRelation"></div></div><div class="admin-field-row"><span>迁入时间</span><div class="admin-date-picker"><div class="admin-date-input-wrap"><input name="moveInDate" type="text" inputmode="numeric" autocomplete="off" placeholder="例如 2013 / 11 / 03"><button type="button" class="admin-calendar-toggle" aria-label="打开日期选择" aria-expanded="false">▦</button></div><div class="admin-calendar-panel" hidden><div class="admin-calendar-header"><button type="button" data-month-step="-1" aria-label="上个月">‹</button><input class="admin-calendar-year" type="number" min="1900" max="2100" aria-label="年份"><span>年</span><input class="admin-calendar-month" type="number" min="1" max="12" aria-label="月份"><span>月</span><button type="button" data-month-step="1" aria-label="下个月">›</button></div><div class="admin-calendar-weekdays"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div><div class="admin-calendar-days"></div></div></div></div>${kind==='missing'?'':'<label class="wide">更正内容与依据<textarea name="notes" rows="3" required></textarea></label>'}</div><button type="button">保存登记</button></form>`;
+    actions.innerHTML=`<form class="admin-registration-form"><h3>${kind==='missing'?'居民信息补全':'居民信息勘误'}</h3><div class="admin-registration-fields"><label>姓名<input name="residentName" autocomplete="off" required></label><label>性别<select name="gender" required><option value="">请选择</option><option value="女">女</option><option value="男">男</option><option value="其他">其他</option></select></label><label>居民编号<input name="residentCode" autocomplete="off" required></label><div class="admin-form-section">亲属关系 <small>父亲或母亲至少填写一位</small></div><label>父亲<input name="father" autocomplete="off"></label><label class="admin-checkbox-label" data-parent-resident="father" hidden>父亲是否为桃原市居民<input type="checkbox" name="fatherIsTaoyuanResident" value="是"></label><label>母亲<input name="mother" autocomplete="off"></label><label class="admin-checkbox-label" data-parent-resident="mother" hidden>母亲是否为桃原市居民<input type="checkbox" name="motherIsTaoyuanResident" value="是"></label><div class="admin-field-row"><span>与父亲／母亲关系</span><div class="admin-relation-select"><button type="button" class="admin-relation-trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="adminRelationOptions"><span>请选择</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 6 5 5 5-5"/></svg></button><div class="admin-relation-menu" id="adminRelationOptions" role="listbox" aria-label="与父亲或母亲关系" hidden><button type="button" role="option" data-relation="女儿" aria-selected="false">女儿</button><button type="button" role="option" data-relation="儿子" aria-selected="false">儿子</button><button type="button" role="option" data-relation="其他" aria-selected="false">其他</button></div><input type="hidden" name="parentRelation"></div></div><div class="admin-field-row"><span>迁入时间</span><div class="admin-date-picker"><div class="admin-date-input-wrap"><input name="moveInDate" type="text" inputmode="numeric" autocomplete="off" placeholder="年 / 月 / 日"><button type="button" class="admin-calendar-toggle" aria-label="打开日历" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M7 14h2M12 14h2M17 14h1M7 18h2M12 18h2"/></svg></button></div><div class="admin-calendar-panel" hidden><div class="admin-calendar-header"><button type="button" data-month-step="-1" aria-label="上个月">‹</button><div class="admin-calendar-title"><button type="button" class="admin-calendar-year-toggle" aria-label="选择年份"></button><strong class="admin-calendar-month-label"></strong></div><button type="button" data-month-step="1" aria-label="下个月">›</button></div><div class="admin-calendar-year-panel" hidden><div class="admin-calendar-decade"><button type="button" data-decade-step="-1" aria-label="上十年">‹</button><span></span><button type="button" data-decade-step="1" aria-label="下十年">›</button></div><div class="admin-calendar-years"></div></div><div class="admin-calendar-month-panel"><div class="admin-calendar-weekdays"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div><div class="admin-calendar-days"></div></div></div></div></div>${kind==='missing'?'':'<label class="wide">更正内容与依据<textarea name="notes" rows="3" required></textarea></label>'}</div><button type="button">保存登记</button></form>`;
     requestAnimationFrame(()=>{log.scrollTop=log.scrollHeight});
     const form=actions.querySelector('form');
     form.elements.residentName.value=residentName;
@@ -124,17 +124,41 @@ function renderAdminContact(host){
     father.addEventListener('input',()=>syncParentResident(father,'father'));
     mother.addEventListener('input',()=>syncParentResident(mother,'mother'));
     const relation=form.elements.parentRelation;
+    const relationTrigger=form.querySelector('.admin-relation-trigger');
+    const relationMenu=form.querySelector('.admin-relation-menu');
+    const closeRelationMenu=()=>{relationMenu.hidden=true;relationTrigger.setAttribute('aria-expanded','false')};
+    relationTrigger.onclick=()=>{
+      relationMenu.hidden=!relationMenu.hidden;
+      relationTrigger.setAttribute('aria-expanded',String(!relationMenu.hidden));
+      if(!relationMenu.hidden)(relationMenu.querySelector('[aria-selected="true"]')||relationMenu.querySelector('[data-relation]'))?.focus();
+    };
     form.querySelectorAll('[data-relation]').forEach(button=>button.onclick=()=>{
       relation.value=button.dataset.relation;
-      form.querySelectorAll('[data-relation]').forEach(choice=>choice.setAttribute('aria-pressed',String(choice===button)));
+      relationTrigger.querySelector('span').textContent=relation.value;
+      form.querySelectorAll('[data-relation]').forEach(choice=>choice.setAttribute('aria-selected',String(choice===button)));
+      closeRelationMenu();relationTrigger.focus();
+    });
+    relationTrigger.addEventListener('keydown',event=>{
+      if(event.key==='ArrowDown'||event.key==='Enter'||event.key===' '){event.preventDefault();relationMenu.hidden=false;relationTrigger.setAttribute('aria-expanded','true');(relationMenu.querySelector('[aria-selected="true"]')||relationMenu.querySelector('[data-relation]'))?.focus()}
+    });
+    relationMenu.addEventListener('keydown',event=>{
+      const options=[...relationMenu.querySelectorAll('[data-relation]')];
+      const index=options.indexOf(document.activeElement);
+      if(event.key==='Escape'){closeRelationMenu();relationTrigger.focus()}
+      else if(event.key==='ArrowDown'||event.key==='ArrowUp'){event.preventDefault();options[(index+(event.key==='ArrowDown'?1:options.length-1))%options.length].focus()}
     });
     const dateInput=form.elements.moveInDate;
     const calendar=form.querySelector('.admin-calendar-panel');
     const calendarToggle=form.querySelector('.admin-calendar-toggle');
-    const yearInput=form.querySelector('.admin-calendar-year');
-    const monthInput=form.querySelector('.admin-calendar-month');
+    const yearToggle=form.querySelector('.admin-calendar-year-toggle');
+    const monthLabel=form.querySelector('.admin-calendar-month-label');
+    const yearPanel=form.querySelector('.admin-calendar-year-panel');
+    const monthPanel=form.querySelector('.admin-calendar-month-panel');
+    const decadeLabel=form.querySelector('.admin-calendar-decade span');
+    const yearChoices=form.querySelector('.admin-calendar-years');
     const days=form.querySelector('.admin-calendar-days');
     let calendarYear=new Date().getFullYear(),calendarMonth=new Date().getMonth()+1;
+    let decadeStart=Math.floor(calendarYear/10)*10;
     const parseDate=()=>{
       const match=dateInput.value.trim().match(/^(\d{4})\s*[-/.年]\s*(\d{1,2})\s*[-/.月]\s*(\d{1,2})(?:日)?$/);
       if(!match)return null;
@@ -144,7 +168,7 @@ function renderAdminContact(host){
     };
     const formatDate=({year,month,day})=>`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
     const renderCalendar=()=>{
-      yearInput.value=calendarYear;monthInput.value=calendarMonth;
+      yearToggle.textContent=`${calendarYear}年`;monthLabel.textContent=`${calendarMonth}月`;
       days.replaceChildren();
       const leading=(new Date(calendarYear,calendarMonth-1,1).getDay()+6)%7;
       for(let i=0;i<leading;i++)days.appendChild(document.createElement('span'));
@@ -158,21 +182,27 @@ function renderAdminContact(host){
         days.appendChild(button);
       }
     };
+    const renderYears=()=>{
+      decadeLabel.textContent=`${decadeStart}—${decadeStart+9}`;
+      yearChoices.replaceChildren();
+      for(let year=decadeStart;year<decadeStart+10;year++){
+        const button=document.createElement('button');button.type='button';button.textContent=year;
+        if(year===calendarYear)button.setAttribute('aria-current','date');
+        button.onclick=()=>{calendarYear=year;yearPanel.hidden=true;monthPanel.hidden=false;renderCalendar()};
+        yearChoices.appendChild(button);
+      }
+    };
     calendarToggle.onclick=()=>{
       calendar.hidden=!calendar.hidden;
       calendarToggle.setAttribute('aria-expanded',String(!calendar.hidden));
-      if(!calendar.hidden){const selected=parseDate();if(selected){calendarYear=selected.year;calendarMonth=selected.month}renderCalendar()}
+      if(!calendar.hidden){const selected=parseDate();if(selected){calendarYear=selected.year;calendarMonth=selected.month}yearPanel.hidden=true;monthPanel.hidden=false;renderCalendar()}
     };
+    yearToggle.onclick=()=>{yearPanel.hidden=!yearPanel.hidden;monthPanel.hidden=!yearPanel.hidden;decadeStart=Math.floor(calendarYear/10)*10;if(!yearPanel.hidden)renderYears()};
+    form.querySelectorAll('[data-decade-step]').forEach(button=>button.onclick=()=>{decadeStart+=Number(button.dataset.decadeStep)*10;renderYears()});
     form.querySelectorAll('[data-month-step]').forEach(button=>button.onclick=()=>{
       const date=new Date(calendarYear,calendarMonth-1+Number(button.dataset.monthStep),1);
-      calendarYear=date.getFullYear();calendarMonth=date.getMonth()+1;renderCalendar();
+      calendarYear=date.getFullYear();calendarMonth=date.getMonth()+1;yearPanel.hidden=true;monthPanel.hidden=false;renderCalendar();
     });
-    const updateCalendarMonth=()=>{
-      const year=Number(yearInput.value),month=Number(monthInput.value);
-      if(year>=1900&&year<=2100&&month>=1&&month<=12){calendarYear=year;calendarMonth=month;renderCalendar()}
-    };
-    yearInput.addEventListener('change',updateCalendarMonth);
-    monthInput.addEventListener('change',updateCalendarMonth);
     dateInput.addEventListener('blur',()=>{const selected=parseDate();if(selected)dateInput.value=formatDate(selected)});
     calendar.addEventListener('keydown',event=>{if(event.key==='Escape'){calendar.hidden=true;calendarToggle.setAttribute('aria-expanded','false');calendarToggle.focus()}});
     form.onsubmit=event=>event.preventDefault();
