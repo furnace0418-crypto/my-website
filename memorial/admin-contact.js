@@ -69,7 +69,22 @@ function renderAdminContact(host){
       const button=document.createElement('button');button.type='button';button.textContent=label;
       button.onclick=()=>{
         appendMessage('visitor',label);
-        deliver([kind==='missing'?'请填写待登记居民的基本资料与亲属信息。':'请填写需要勘误的居民资料。','父亲或母亲信息至少填写一位；不确定的其他内容可以暂时留空。'],()=>showRegistrationForm(kind));
+        deliver(['在继续登记前，请问您与陈珍珍是什么关系？'],()=>showRelationshipChoices(kind));
+      };
+      actions.querySelector('.admin-topic-buttons').appendChild(button);
+    }
+  };
+  const showRelationshipChoices=kind=>{
+    actions.innerHTML='<p class="admin-action-prompt">请选择您与陈珍珍的关系</p><div class="admin-topic-buttons"></div>';
+    for(const label of ['家属','朋友','同学','其他']){
+      const button=document.createElement('button');button.type='button';button.textContent=label;
+      button.onclick=()=>{
+        appendMessage('visitor',label);
+        if(label==='家属'){
+          deliver([kind==='missing'?'请填写待登记居民的基本资料与亲属信息。':'请填写需要勘误的居民资料。','父亲或母亲信息至少填写一位；不确定的其他内容可以暂时留空。'],()=>showRegistrationForm(kind));
+        }else{
+          deliver(['抱歉，居民登记目前仅供家属办理。请重新选择需要咨询的服务。'],showTopics);
+        }
       };
       actions.querySelector('.admin-topic-buttons').appendChild(button);
     }
