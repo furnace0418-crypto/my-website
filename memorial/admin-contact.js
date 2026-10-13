@@ -1,4 +1,11 @@
+let adminChatSession=null;
 function renderAdminContact(host){
+  if(adminChatSession){
+    host.replaceWith(adminChatSession);
+    requestAnimationFrame(()=>{const log=adminChatSession.querySelector('.admin-chat-log');log.scrollTop=log.scrollHeight});
+    return;
+  }
+  adminChatSession=host;
   const avatar='<span class="admin-avatar" aria-hidden="true"><svg viewBox="0 0 40 40" focusable="false"><circle cx="20" cy="14" r="7"/><path d="M7 35c.6-8 5.3-13 13-13s12.4 5 13 13"/></svg></span>';
   const topics=[
     ['居民登记','registration'],
@@ -25,12 +32,11 @@ function renderAdminContact(host){
       log.appendChild(typing);
       log.scrollTop=log.scrollHeight;
       await new Promise(resolve=>setTimeout(resolve,650));
-      if(!host.isConnected)return;
       typing.remove();
       appendMessage('admin',message);
       await new Promise(resolve=>setTimeout(resolve,180));
     }
-    if(host.isConnected)next?.();
+    next?.();
   };
   const showTopics=()=>{
     actions.innerHTML='<p class="admin-action-prompt">请选择咨询事项</p><div class="admin-topic-buttons"></div>';
