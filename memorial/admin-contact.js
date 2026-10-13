@@ -76,7 +76,7 @@ function renderAdminContact(host){
   };
   const showRegistrationForm=kind=>{
     host.classList.add('has-form');
-    actions.innerHTML=`<form class="admin-registration-form"><h3>${kind==='missing'?'居民信息补全':'居民信息勘误'}</h3><div class="admin-registration-fields"><label>姓名<input name="residentName" autocomplete="off" required></label><label>性别<select name="gender" required><option value="">请选择</option><option value="女">女</option><option value="男">男</option><option value="其他">其他</option></select></label><label>居民编号<input name="residentCode" autocomplete="off" required></label><div class="admin-form-section">亲属关系 <small>父亲或母亲至少填写一位</small></div><label>父亲<input name="father" autocomplete="off"></label><label class="admin-checkbox-label" data-parent-resident="father" hidden>父亲是否为桃原市居民<input type="checkbox" name="fatherIsTaoyuanResident" value="是"></label><label>母亲<input name="mother" autocomplete="off"></label><label class="admin-checkbox-label" data-parent-resident="mother" hidden>母亲是否为桃原市居民<input type="checkbox" name="motherIsTaoyuanResident" value="是"></label><label>与父亲／母亲关系<select name="parentRelation" required><option value="">请选择</option><option value="女儿">女儿</option><option value="儿子">儿子</option><option value="其他">其他</option></select></label><label>迁入时间<input name="moveInDate" type="date" required></label>${kind==='missing'?'':'<label class="wide">更正内容与依据<textarea name="notes" rows="3" required></textarea></label>'}</div><button type="submit">保存登记</button></form>`;
+    actions.innerHTML=`<form class="admin-registration-form"><h3>${kind==='missing'?'居民信息补全':'居民信息勘误'}</h3><div class="admin-registration-fields"><label>姓名<input name="residentName" autocomplete="off" required></label><label>性别<select name="gender" required><option value="">请选择</option><option value="女">女</option><option value="男">男</option><option value="其他">其他</option></select></label><label>居民编号<input name="residentCode" autocomplete="off" required></label><div class="admin-form-section">亲属关系 <small>父亲或母亲至少填写一位</small></div><label>父亲<input name="father" autocomplete="off"></label><label class="admin-checkbox-label" data-parent-resident="father" hidden>父亲是否为桃原市居民<input type="checkbox" name="fatherIsTaoyuanResident" value="是"></label><label>母亲<input name="mother" autocomplete="off"></label><label class="admin-checkbox-label" data-parent-resident="mother" hidden>母亲是否为桃原市居民<input type="checkbox" name="motherIsTaoyuanResident" value="是"></label><label>与父亲／母亲关系<select name="parentRelation" required><option value="">请选择</option><option value="女儿">女儿</option><option value="儿子">儿子</option><option value="其他">其他</option></select></label><label>迁入时间<input name="moveInDate" type="date" required></label>${kind==='missing'?'':'<label class="wide">更正内容与依据<textarea name="notes" rows="3" required></textarea></label>'}</div><button type="button">保存登记</button></form>`;
     requestAnimationFrame(()=>{log.scrollTop=log.scrollHeight});
     const form=actions.querySelector('form');
     const father=form.elements.father;
@@ -86,27 +86,9 @@ function renderAdminContact(host){
       row.hidden=!input.value.trim();
       if(row.hidden)row.querySelector('input').checked=false;
     };
-    const validateParent=()=>{
-      const missing=!father.value.trim()&&!mother.value.trim();
-      father.setCustomValidity(missing?'父亲或母亲至少填写一位':'');
-      return !missing;
-    };
-    father.addEventListener('input',()=>{validateParent();syncParentResident(father,'father')});
-    mother.addEventListener('input',()=>{validateParent();syncParentResident(mother,'mother')});
-    form.onsubmit=event=>{
-      event.preventDefault();
-      if(!validateParent()){father.reportValidity();return}
-      const entry=Object.fromEntries(new FormData(form));
-      appendMessage('visitor','保存登记');
-      const matches=entry.residentName.trim()==='陈珍珍'&&entry.gender==='女'&&entry.residentCode.trim().toUpperCase()==='TYF03262620240912'&&!father.value.trim()&&mother.value.trim()==='张文华'&&entry.parentRelation==='女儿'&&entry.motherIsTaoyuanResident==='是'&&entry.moveInDate==='2013-11-03';
-      if(!matches){
-        deliver(['信息有误。请核对后重新填写。'],()=>actions.appendChild(form));
-        return;
-      }
-      try{localStorage.setItem('chen-zhenzhen-registration-updated','1')}catch(_){}
-      host.classList.remove('has-form');
-      deliver(['信息已更新。'],()=>{actions.innerHTML='<a class="admin-result-link" href="#hall/chen-zhenzhen">跳转查看</a>'});
-    };
+    father.addEventListener('input',()=>syncParentResident(father,'father'));
+    mother.addEventListener('input',()=>syncParentResident(mother,'mother'));
+    form.onsubmit=event=>event.preventDefault();
   };
   deliver(['您好，您想咨询什么问题？'],showTopics);
 }
