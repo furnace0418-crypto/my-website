@@ -46,6 +46,47 @@ if(navigation?.type==='reload'||(!navigation&&performance.navigation?.type===1))
   history.replaceState(null,'',location.pathname+location.search+'#home');
 }
 let pendingBrowseQuery='';
+const nameSearchHistory=[];
+function rememberNameSearch(name){
+  const query=name.trim();
+  if(!query)return;
+  const existing=nameSearchHistory.indexOf(query);
+  if(existing!==-1)nameSearchHistory.splice(existing,1);
+  nameSearchHistory.unshift(query);
+  if(nameSearchHistory.length>8)nameSearchHistory.length=8;
+}
+function attachNameSearchHistory(form){
+  const input=form.querySelector('input');
+  form.autocomplete='off';
+  input.autocomplete='off';
+  const panel=document.createElement('div');
+  panel.className='name-search-history';
+  panel.hidden=true;
+  form.appendChild(panel);
+  const render=()=>{
+    const query=input.value.trim();
+    const matches=nameSearchHistory.filter(name=>!query||name.includes(query));
+    panel.hidden=!matches.length;
+    if(panel.hidden){panel.replaceChildren();return}
+    const header=document.createElement('div');header.className='name-search-history-head';
+    const title=document.createElement('span');title.textContent='最近搜索';
+    const clear=document.createElement('button');clear.type='button';clear.className='name-search-history-clear';clear.textContent='清空';
+    clear.onclick=()=>{nameSearchHistory.length=0;render();input.focus()};
+    header.append(title,clear);panel.replaceChildren(header);
+    for(const name of matches){
+      const row=document.createElement('div');row.className='name-search-history-row';
+      const choose=document.createElement('button');choose.type='button';choose.className='name-search-history-choose';choose.textContent=name;
+      choose.onclick=()=>{input.value=name;panel.hidden=true;form.requestSubmit()};
+      const remove=document.createElement('button');remove.type='button';remove.className='name-search-history-remove';remove.setAttribute('aria-label',`删除${name}的搜索记录`);remove.textContent='×';
+      remove.onclick=()=>{nameSearchHistory.splice(nameSearchHistory.indexOf(name),1);render();input.focus()};
+      row.append(choose,remove);panel.appendChild(row);
+    }
+  };
+  input.addEventListener('focus',render);
+  input.addEventListener('input',render);
+  input.addEventListener('keydown',event=>{if(event.key==='Escape')panel.hidden=true});
+  form.addEventListener('focusout',()=>setTimeout(()=>{if(!form.contains(document.activeElement))panel.hidden=true},0));
+}
 let inviteAccessGranted=false;
 let inviteTransitionPending=false;
 const saved=()=>JSON.parse(localStorage.getItem('memorial-halls')||'[]');
@@ -381,6 +422,7 @@ function route(){
   else simple(({help:'帮助中心',agreement:'用户协议',privacy:'隐私政策'})[page]||'页面不存在');
   applyOfferingIcons();
   decoratePortalFrames();
+  app.querySelectorAll('.hero-search, #hallSearchForm').forEach(attachNameSearchHistory);
   scrollTo(0,0);
   showChenRegistrationNotice();
 }
@@ -397,6 +439,8 @@ document.addEventListener('submit',e=>{
     return;
   }
   error.hidden=true;
+  rememberNameSearch(query);
+  form.querySelector('.name-search-history')?.setAttribute('hidden','');
   if(form.classList.contains('hero-search')){
     e.preventDefault();e.stopImmediatePropagation();
     pendingBrowseQuery=query;
