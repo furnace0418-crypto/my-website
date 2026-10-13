@@ -47,6 +47,7 @@ if(navigation?.type==='reload'||(!navigation&&performance.navigation?.type===1))
 }
 let pendingBrowseQuery='';
 let inviteAccessGranted=false;
+let inviteTransitionPending=false;
 const saved=()=>JSON.parse(localStorage.getItem('memorial-halls')||'[]');
 const previousAccount=JSON.parse(localStorage.getItem('memorial-account')||'null');
 if(previousAccount&&previousAccount.phone!=='123456'&&!localStorage.getItem('memorial-registered-account'))localStorage.setItem('memorial-registered-account',JSON.stringify(previousAccount));
@@ -182,11 +183,14 @@ function toggleInviteTheme(){
   setTimeout(()=>{document.body.classList.remove('theme-glitch');fx.remove()},1550);
 }
 function activateInviteAccess(){
+  if(inviteTransitionPending)return;
+  inviteTransitionPending=true;
   inviteAccessGranted=true;
   localStorage.setItem('memorial-invite-theme','1');
   inviteVideoDelayUntil=performance.now()+2350;
   inviteAudioContext?.resume().catch(()=>{});
   setTimeout(()=>{playInviteGlitchSound();playInviteEntryFx();applyInviteTheme();if(location.hash==='#home')route();else location.hash='#home'},950);
+  setTimeout(()=>inviteTransitionPending=false,2400);
 }
 function showInviteVerification(){
   document.querySelector('.invite-prompt.invite-recheck')?.remove();
@@ -198,7 +202,8 @@ function showInviteVerification(){
   const close=()=>prompt.remove();
   prompt.querySelector('.invite-close').onclick=close;
   prompt.querySelector('.invite-skip').onclick=close;
-  prompt.querySelector('.invite-confirm').onclick=()=>{if(code.value.trim()!=='123456'){error.textContent='邀请码无效，请核对后重新输入。';code.focus();return}close();activateInviteAccess()};
+  const confirm=prompt.querySelector('.invite-confirm');
+  confirm.onclick=()=>{if(inviteTransitionPending||confirm.disabled)return;if(code.value.trim()!=='123456'){error.textContent='邀请码无效，请核对后重新输入。';code.focus();return}confirm.disabled=true;close();activateInviteAccess()};
   prompt.onclick=e=>{if(e.target===prompt)close()};
   code.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();prompt.querySelector('.invite-confirm').click()}};
   code.focus();
@@ -274,7 +279,8 @@ function login(){
   const currentUser=()=>JSON.parse(prompt.dataset.user);
   document.querySelector('.invite-skip').onclick=()=>finish(currentUser(),false);
   document.querySelector('.invite-close').onclick=()=>finish(currentUser(),false);
-  document.querySelector('.invite-confirm').onclick=()=>{if(code.value.trim()!=='123456'){error.textContent='邀请码无效，请核对后重新输入。';code.focus();return}finish(currentUser(),true)};
+  const confirm=prompt.querySelector('.invite-confirm');
+  confirm.onclick=()=>{if(inviteTransitionPending||confirm.disabled)return;if(code.value.trim()!=='123456'){error.textContent='邀请码无效，请核对后重新输入。';code.focus();return}confirm.disabled=true;prompt.hidden=true;finish(currentUser(),true)};
 }
 function browse(query=''){
   app.innerHTML=`<div class="page-shell"><h1 class="page-heading">浏览纪念馆</h1><form class="browse-tools" id="hallSearchForm"><svg class="browse-search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg><input class="search-input" id="hallSearch" placeholder="搜索逝者姓名"><button class="btn btn-gold" type="submit">搜索</button></form><div class="memorial-grid" id="hallGrid"></div></div>`;
