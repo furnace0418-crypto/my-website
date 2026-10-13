@@ -335,6 +335,10 @@ function zhenzhenMemorial(initialTab='story'){
   document.querySelector('.flower-confirm-close').onclick=closeFlowerConfirm;
   document.querySelector('.flower-confirm-ok').onclick=closeFlowerConfirm;
   flowerConfirm.onclick=e=>{if(e.target===flowerConfirm)closeFlowerConfirm()};
+  app.querySelectorAll('[data-life-tab="tributes"], [data-life-pane="tributes"] .tribute-heading h2').forEach(label=>label.textContent='福报记录');
+  app.querySelectorAll('[data-life-pane="tributes"] .tribute-list article').forEach(record=>{if(record.querySelector('b')?.textContent.includes('献花'))record.remove()});
+  app.querySelector('.life-flower')?.remove();
+  flowerConfirm.remove();
 }
 function hall(id,tab){if(id==='chen-zhenzhen'){zhenzhenMemorial(tab);return}if(id==='zhang-wenhua'){zhangwenhuaMemorial(tab);return}const h=halls().find(x=>x.id===id);if(!h){browse();return}app.innerHTML=`<div class="page-shell"><div class="panel"><div class="detail-head"><div class="portrait">☾</div><div><h1>${esc(h.name)}</h1><p>${esc(h.birth)} - ${esc(h.death)}　创建者: ${esc(h.creator)}</p><div class="rite-actions"><button data-rite="点烛">🕯 点烛</button><button data-rite="上香">♨ 上香</button><button data-rite="献花">🌿 献花</button></div></div></div><div class="detail-content"><h2>生平简介</h2><p class="bio">${esc(h.bio||'暂无生平简介')}</p><h2>祭祀记录</h2><div id="recordList"></div><form id="messageForm"><label class="field"><span>留下思念</span><textarea name="message" placeholder="写下想说的话" required></textarea></label><button class="btn" type="submit">发表留言</button></form></div></div></div>`;const list=document.querySelector('#recordList');function records(){list.innerHTML=h.records.length?h.records.map(r=>`<article class="record"><div class="record-top"><span><b>${esc(r.by)}</b>　${esc(r.type)}</span><time>${esc(r.at)}</time></div><p>${esc(r.text)}</p></article>`).join(''):'<p class="empty">尚无祭祀记录</p>'}records();function add(type,text){h.records.unshift({type,by:account()?.name||'访客',at:dateText(),text});if(h.id!=='demo'){localStorage.setItem('memorial-halls',JSON.stringify(saved().map(x=>x.id===h.id?h:x)))}records()}document.querySelectorAll('[data-rite]').forEach(b=>b.onclick=()=>{const t=b.dataset.rite;add(t,({点烛:'点燃了一支蜡烛，照亮前路',上香:'献上了一炷香，寄托哀思',献花:'献上了一束花，表达怀念'})[t])});document.querySelector('#messageForm').onsubmit=e=>{e.preventDefault();const f=e.currentTarget;add('留言',f.message.value.trim());f.reset()};}
 function simple(title){app.innerHTML=`<div class="page-shell simple-page"><h1 class="page-heading">${title}</h1><p>相关内容正在整理中。</p><a class="btn" href="#home">返回首页</a></div>`;}
@@ -425,9 +429,12 @@ function zhangwenhuaMemorial(initialTab='story'){
   if(initialTab!=='story')app.querySelector(`[data-life-tab="${initialTab}"]`)?.click();
   const notice=document.createElement('div');notice.className='offering-notice';notice.setAttribute('role','status');notice.textContent=offeringText(zhangOfferingState);notice.hidden=!zhangOfferingState.flower&&!zhangOfferingState.lamp;app.querySelector('.life-story').prepend(notice);
   const tributes=app.querySelector('.tribute-list');
-  if(zhangOfferingState.flower||zhangOfferingState.lamp)tributes.innerHTML=Object.entries(zhangOfferingState).filter(([,active])=>active).map(([type])=>`<article><div class="tribute-person"><span>普通用户</span><b>${type==='flower'?'✿ 献花':'♨ 点燃长明灯'}</b></div><time>今日</time></article>`).join('');
+  if(zhangOfferingState.lamp)tributes.innerHTML='<article><div class="tribute-person"><span>普通用户</span><b>♨ 点燃长明灯</b></div><time>今日</time></article>';
   const dialog=app.querySelector('.flower-confirm'),close=()=>dialog.hidden=true;
   app.querySelector('.life-flower').onclick=()=>{zhangOfferingState={...zhangOfferingState,flower:true};notice.textContent=offeringText(zhangOfferingState);notice.hidden=false;dialog.hidden=false;app.querySelector('.flower-confirm-ok').focus()};
   app.querySelector('.flower-confirm-close').onclick=close;app.querySelector('.flower-confirm-ok').onclick=close;dialog.onclick=e=>{if(e.target===dialog)close()};
+  app.querySelectorAll('[data-life-tab="tributes"], [data-life-pane="tributes"] .tribute-heading h2').forEach(label=>label.textContent='福报记录');
+  app.querySelector('.life-flower')?.remove();
+  dialog.remove();
 }
 addEventListener('hashchange',route);route();
