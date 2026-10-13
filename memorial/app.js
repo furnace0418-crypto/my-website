@@ -1,4 +1,38 @@
 const app=document.querySelector('#app');
+const fortuneVideoUrl=new URL('assets/invite-home-v2.mp4',document.baseURI).href;
+let fortuneVideoCachePromise;
+let fortuneVideoObjectUrl;
+function startFortuneVideoCache(){
+  if(!('caches' in window)||fortuneVideoCachePromise)return;
+  fortuneVideoCachePromise=(async()=>{
+    const cache=await caches.open('memorial-fortune-video-v2');
+    if(!await cache.match(fortuneVideoUrl)){
+      const response=await fetch(fortuneVideoUrl,{cache:'force-cache',priority:'low'});
+      if(!response.ok)throw new Error('Video download failed');
+      await cache.put(fortuneVideoUrl,response);
+    }
+    return cache;
+  })().catch(()=>null);
+}
+async function useCachedFortuneVideo(video){
+  if(!video)return;
+  if(!fortuneVideoCachePromise)startFortuneVideoCache();
+  const cache=await fortuneVideoCachePromise;
+  if(!cache)return;
+  try{
+    if(!fortuneVideoObjectUrl){
+      const response=await cache.match(fortuneVideoUrl);
+      if(!response)return;
+      fortuneVideoObjectUrl=URL.createObjectURL(await response.blob());
+    }
+    if(video.isConnected&&video.paused&&video.currentTime===0){
+      video.src=fortuneVideoObjectUrl;
+      video.load();
+    }
+  }catch(_){}
+}
+if(document.readyState==='complete')setTimeout(startFortuneVideoCache,400);
+else addEventListener('load',()=>setTimeout(startFortuneVideoCache,400),{once:true});
 const navigation=performance.getEntriesByType?.('navigation')?.[0];
 if(navigation?.type==='reload'||(!navigation&&performance.navigation?.type===1)){
   history.replaceState(null,'',location.pathname+location.search+'#home');
@@ -298,7 +332,7 @@ function zhenzhenMemorial(initialTab='story'){
 }
 function hall(id,tab){if(id==='chen-zhenzhen'){zhenzhenMemorial(tab);return}if(id==='zhang-wenhua'){zhangwenhuaMemorial(tab);return}const h=halls().find(x=>x.id===id);if(!h){browse();return}app.innerHTML=`<div class="page-shell"><div class="panel"><div class="detail-head"><div class="portrait">☾</div><div><h1>${esc(h.name)}</h1><p>${esc(h.birth)} - ${esc(h.death)}　创建者: ${esc(h.creator)}</p><div class="rite-actions"><button data-rite="点烛">🕯 点烛</button><button data-rite="上香">♨ 上香</button><button data-rite="献花">🌿 献花</button></div></div></div><div class="detail-content"><h2>生平简介</h2><p class="bio">${esc(h.bio||'暂无生平简介')}</p><h2>祭祀记录</h2><div id="recordList"></div><form id="messageForm"><label class="field"><span>留下思念</span><textarea name="message" placeholder="写下想说的话" required></textarea></label><button class="btn" type="submit">发表留言</button></form></div></div></div>`;const list=document.querySelector('#recordList');function records(){list.innerHTML=h.records.length?h.records.map(r=>`<article class="record"><div class="record-top"><span><b>${esc(r.by)}</b>　${esc(r.type)}</span><time>${esc(r.at)}</time></div><p>${esc(r.text)}</p></article>`).join(''):'<p class="empty">尚无祭祀记录</p>'}records();function add(type,text){h.records.unshift({type,by:account()?.name||'访客',at:dateText(),text});if(h.id!=='demo'){localStorage.setItem('memorial-halls',JSON.stringify(saved().map(x=>x.id===h.id?h:x)))}records()}document.querySelectorAll('[data-rite]').forEach(b=>b.onclick=()=>{const t=b.dataset.rite;add(t,({点烛:'点燃了一支蜡烛，照亮前路',上香:'献上了一炷香，寄托哀思',献花:'献上了一束花，表达怀念'})[t])});document.querySelector('#messageForm').onsubmit=e=>{e.preventDefault();const f=e.currentTarget;add('留言',f.message.value.trim());f.reset()};}
 function simple(title){app.innerHTML=`<div class="page-shell simple-page"><h1 class="page-heading">${title}</h1><p>相关内容正在整理中。</p><a class="btn" href="#home">返回首页</a></div>`;}
-function fortuneExplanation(){app.innerHTML=`<div class="page-shell fortune-page"><header><h1 class="page-heading">福报说明</h1></header><section class="fortune-body"><div class="fortune-copy fortune-copy-light"><p>然世间诸事，虽有顺逆得失，善念善行终有其归。</p><p>有人身处困厄，独力难支。若有人伸手相扶，使其得以渡过难关，此事，可谓善乎？</p><p>有人心怀怨憎，几欲伤人害己。若有人劝其止怒，引其回转，使恶念不再增长，此事，又可谓善乎？</p><p>一切众生，自久远以来，受贪、嗔、痴三毒所扰，常因执念而生烦恼，因烦恼而起争端。若能以慈心待人，以善意解怨，使众生少受一分苦，亦使自身少造一分业。</p><p>故扶其困，是善。解其忧，是慈。劝其止恶，是度。</p><p>善念既生，善行相续，久而积之，是为福报。</p></div><div class="fortune-copy fortune-copy-dark"><p>然世间诸事，并非皆有善恶之明界。</p><p>有人身受重苦，求生不得，求死不能。若有人代其断苦，使其不再受此身之刑，此事，可谓恶乎？</p><p>有人恶业深重，终日伤人造业。若任其存世，则恶业日增；若断其恶行，使其不再害人，此事，又可谓恶乎？</p><p>一切众生，自久远以来，受贪、嗔、痴三毒所缚，妄想颠倒，恶业轮转。众生困于火宅，却不知火宅为苦。</p><p>故止其苦，是救。止其恶，是度。断其业，是慈悲</p></div><div class="fortune-video"><video src="assets/invite-home-v2.mp4" controls preload="metadata" playsinline></video></div></section></div>`;}
+function fortuneExplanation(){app.innerHTML=`<div class="page-shell fortune-page"><header><h1 class="page-heading">福报说明</h1></header><section class="fortune-body"><div class="fortune-copy fortune-copy-light"><p>然世间诸事，虽有顺逆得失，善念善行终有其归。</p><p>有人身处困厄，独力难支。若有人伸手相扶，使其得以渡过难关，此事，可谓善乎？</p><p>有人心怀怨憎，几欲伤人害己。若有人劝其止怒，引其回转，使恶念不再增长，此事，又可谓善乎？</p><p>一切众生，自久远以来，受贪、嗔、痴三毒所扰，常因执念而生烦恼，因烦恼而起争端。若能以慈心待人，以善意解怨，使众生少受一分苦，亦使自身少造一分业。</p><p>故扶其困，是善。解其忧，是慈。劝其止恶，是度。</p><p>善念既生，善行相续，久而积之，是为福报。</p></div><div class="fortune-copy fortune-copy-dark"><p>然世间诸事，并非皆有善恶之明界。</p><p>有人身受重苦，求生不得，求死不能。若有人代其断苦，使其不再受此身之刑，此事，可谓恶乎？</p><p>有人恶业深重，终日伤人造业。若任其存世，则恶业日增；若断其恶行，使其不再害人，此事，又可谓恶乎？</p><p>一切众生，自久远以来，受贪、嗔、痴三毒所缚，妄想颠倒，恶业轮转。众生困于火宅，却不知火宅为苦。</p><p>故止其苦，是救。止其恶，是度。断其业，是慈悲</p></div><div class="fortune-video"><video src="assets/invite-home-v2.mp4" controls preload="none" playsinline></video></div></section></div>`;useCachedFortuneVideo(app.querySelector('.fortune-video video'));}
 function route(){
   rememberInviteVideo();applyInviteTheme();header();
   const hash=decodeURIComponent(location.hash.slice(1)||'home');
