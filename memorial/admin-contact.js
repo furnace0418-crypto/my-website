@@ -42,7 +42,7 @@ function renderAdminContact(host){
         if(answer==='registration'){
           deliver(['当前业务繁忙。','办理居民登记，请先输入对应的管理员编号。'],showCodeForm);
         }else{
-          deliver([answer],showTopics);
+          deliver(['当前业务繁忙。',answer],showTopics);
         }
       };
       choices.appendChild(button);
