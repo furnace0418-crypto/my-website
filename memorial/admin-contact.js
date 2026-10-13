@@ -69,19 +69,29 @@ function renderAdminContact(host){
       const button=document.createElement('button');button.type='button';button.textContent=label;
       button.onclick=()=>{
         appendMessage('visitor',label);
-        deliver([kind==='missing'?'请填写缺失的居民信息。':'请填写现有记录与需要更正的内容。',kind==='missing'?'场域与居民编号如尚未确定，可在备注中说明；资料仍需核对。':'请在备注中说明更正依据；资料仍需核对。'],()=>showRegistrationForm(kind));
+        deliver([kind==='missing'?'请填写待登记居民的基本资料与亲属信息。':'请填写需要勘误的居民资料。','父亲或母亲信息至少填写一位；不确定的其他内容可以暂时留空。'],()=>showRegistrationForm(kind));
       };
       actions.querySelector('.admin-topic-buttons').appendChild(button);
     }
   };
   const showRegistrationForm=kind=>{
     host.classList.add('has-form');
-    actions.innerHTML=`<form class="admin-registration-form"><h3>${kind==='missing'?'居民信息补全':'居民信息勘误'}</h3><div class="admin-registration-fields"><label>管理员编号<input name="administrator" value="48270619" readonly></label><label>场域编号<input name="areaCode" placeholder="如尚未确认，可填写待核实"></label><label>所在区域<select name="region"><option value="未确认">未确认</option><option value="A 级场域">A 级场域</option><option value="B 级场域">B 级场域</option><option value="C 级场域">C 级场域</option></select></label><label>待登记居民编号<input name="residentCode" placeholder="如尚未分配，可填写待核实"></label><label>居民姓名<input name="residentName" placeholder="如已知，请填写"></label><label>当前状态<select name="status"><option value="待核实">待核实</option><option value="稳定">稳定</option><option value="其他">其他</option></select></label><label>是否仍回应原姓名<select name="respondsToName"><option value="无法确认">无法确认</option><option value="是">是</option><option value="否">否</option></select></label><label class="wide">${kind==='missing'?'备注':'更正内容与依据'}<textarea name="notes" rows="4" placeholder="请说明已掌握的信息" required></textarea></label></div><p class="admin-form-hint">不确定的信息请注明待核实，资料仍需管理员核对。</p><button type="submit">保存登记草稿</button></form>`;
+    actions.innerHTML=`<form class="admin-registration-form"><h3>${kind==='missing'?'居民信息补全':'居民信息勘误'}</h3><div class="admin-registration-fields"><label>姓名<input name="residentName" autocomplete="off" required></label><label>性别<select name="gender" required><option value="">请选择</option><option value="女">女</option><option value="男">男</option><option value="其他">其他</option></select></label><label>居民编号<input name="residentCode" autocomplete="off" required></label><div class="admin-form-section">亲属关系 <small>父亲或母亲至少填写一位</small></div><label>父亲<input name="father" autocomplete="off"></label><label>母亲<input name="mother" autocomplete="off"></label><label>与父亲／母亲关系<select name="parentRelation" required><option value="">请选择</option><option value="女儿">女儿</option><option value="儿子">儿子</option><option value="其他">其他</option></select></label><label class="admin-checkbox-label">母亲是否为桃原市居民<input type="checkbox" name="motherIsTaoyuanResident" value="是"></label><label>迁入时间<input name="moveInDate" type="date" required></label><label class="wide">${kind==='missing'?'备注（选填）':'更正内容与依据'}<textarea name="notes" rows="3" placeholder="如有需要补充的信息，请填写" ${kind==='missing'?'':'required'}></textarea></label></div><p class="admin-form-hint">父亲或母亲至少填写一位；提交的信息会先保存为本机草稿。</p><button type="submit">保存登记草稿</button></form>`;
     requestAnimationFrame(()=>{log.scrollTop=log.scrollHeight});
     const form=actions.querySelector('form');
+    const father=form.elements.father;
+    const mother=form.elements.mother;
+    const validateParent=()=>{
+      const missing=!father.value.trim()&&!mother.value.trim();
+      father.setCustomValidity(missing?'父亲或母亲至少填写一位':'');
+      return !missing;
+    };
+    father.addEventListener('input',validateParent);
+    mother.addEventListener('input',validateParent);
     form.onsubmit=event=>{
       event.preventDefault();
-      const entry={kind,createdAt:new Date().toISOString(),...Object.fromEntries(new FormData(form))};
+      if(!validateParent()){father.reportValidity();return}
+      const entry={kind,administrator:'48270619',createdAt:new Date().toISOString(),motherIsTaoyuanResident:'否',...Object.fromEntries(new FormData(form))};
       try{const saved=JSON.parse(localStorage.getItem('memorial-registration-drafts')||'[]');localStorage.setItem('memorial-registration-drafts',JSON.stringify([entry,...saved].slice(0,10)))}catch(_){}
       appendMessage('visitor',kind==='missing'?'提交信息缺失表':'提交信息勘误表');
       host.classList.remove('has-form');
