@@ -69,19 +69,32 @@ function renderAdminContact(host){
       const button=document.createElement('button');button.type='button';button.textContent=label;
       button.onclick=()=>{
         appendMessage('visitor',label);
-        deliver(['在继续登记前，请问您与陈珍珍是什么关系？'],()=>showRelationshipChoices(kind));
+        deliver([kind==='missing'?'您要补全哪位居民的信息？请输入姓名。':'您要更正哪位居民的信息？请输入姓名。'],()=>showResidentNameForm(kind));
       };
       actions.querySelector('.admin-topic-buttons').appendChild(button);
     }
   };
-  const showRelationshipChoices=kind=>{
-    actions.innerHTML='<p class="admin-action-prompt">请选择您与陈珍珍的关系</p><div class="admin-topic-buttons"></div>';
+  const showResidentNameForm=kind=>{
+    actions.innerHTML='<form class="admin-code-form admin-name-form"><label for="adminResidentName">居民姓名</label><div><input id="adminResidentName" name="residentName" maxlength="30" autocomplete="off" placeholder="请输入居民姓名" required><button type="submit">下一步</button></div></form>';
+    const form=actions.querySelector('form');
+    form.onsubmit=event=>{
+      event.preventDefault();
+      const residentName=form.elements.residentName.value.trim();
+      if(!residentName)return;
+      appendMessage('visitor',residentName);
+      deliver([`在继续登记前，请问您与${residentName}是什么关系？`],()=>showRelationshipChoices(kind,residentName));
+    };
+    form.elements.residentName.focus();
+  };
+  const showRelationshipChoices=(kind,residentName)=>{
+    actions.innerHTML='<p class="admin-action-prompt"></p><div class="admin-topic-buttons"></div>';
+    actions.querySelector('.admin-action-prompt').textContent=`请选择您与${residentName}的关系`;
     for(const label of ['家属','朋友','同学','其他']){
       const button=document.createElement('button');button.type='button';button.textContent=label;
       button.onclick=()=>{
         appendMessage('visitor',label);
         if(label==='家属'){
-          deliver([kind==='missing'?'请填写待登记居民的基本资料与亲属信息。':'请填写需要勘误的居民资料。','父亲或母亲信息至少填写一位；不确定的其他内容可以暂时留空。'],()=>showRegistrationForm(kind));
+          deliver([kind==='missing'?'请填写待登记居民的基本资料与亲属信息。':'请填写需要勘误的居民资料。','父亲或母亲信息至少填写一位；不确定的其他内容可以暂时留空。'],()=>showRegistrationForm(kind,residentName));
         }else{
           deliver(['抱歉，居民登记目前仅供家属办理。请重新选择需要咨询的服务。'],showTopics);
         }
@@ -89,11 +102,12 @@ function renderAdminContact(host){
       actions.querySelector('.admin-topic-buttons').appendChild(button);
     }
   };
-  const showRegistrationForm=kind=>{
+  const showRegistrationForm=(kind,residentName)=>{
     host.classList.add('has-form');
     actions.innerHTML=`<form class="admin-registration-form"><h3>${kind==='missing'?'居民信息补全':'居民信息勘误'}</h3><div class="admin-registration-fields"><label>姓名<input name="residentName" autocomplete="off" required></label><label>性别<select name="gender" required><option value="">请选择</option><option value="女">女</option><option value="男">男</option><option value="其他">其他</option></select></label><label>居民编号<input name="residentCode" autocomplete="off" required></label><div class="admin-form-section">亲属关系 <small>父亲或母亲至少填写一位</small></div><label>父亲<input name="father" autocomplete="off"></label><label class="admin-checkbox-label" data-parent-resident="father" hidden>父亲是否为桃原市居民<input type="checkbox" name="fatherIsTaoyuanResident" value="是"></label><label>母亲<input name="mother" autocomplete="off"></label><label class="admin-checkbox-label" data-parent-resident="mother" hidden>母亲是否为桃原市居民<input type="checkbox" name="motherIsTaoyuanResident" value="是"></label><label>与父亲／母亲关系<select name="parentRelation" required><option value="">请选择</option><option value="女儿">女儿</option><option value="儿子">儿子</option><option value="其他">其他</option></select></label><label>迁入时间<input name="moveInDate" type="date" required></label>${kind==='missing'?'':'<label class="wide">更正内容与依据<textarea name="notes" rows="3" required></textarea></label>'}</div><button type="button">保存登记</button></form>`;
     requestAnimationFrame(()=>{log.scrollTop=log.scrollHeight});
     const form=actions.querySelector('form');
+    form.elements.residentName.value=residentName;
     const father=form.elements.father;
     const mother=form.elements.mother;
     const syncParentResident=(input,parent)=>{
