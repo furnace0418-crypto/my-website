@@ -324,6 +324,12 @@ function login(){
   const confirm=prompt.querySelector('.invite-confirm');
   confirm.onclick=()=>{if(inviteTransitionPending||confirm.disabled)return;if(code.value.trim()!=='123456'){error.textContent='邀请码无效，请核对后重新输入。';code.focus();return}confirm.disabled=true;prompt.hidden=true;finish(currentUser(),true)};
 }
+function createResidentRegistrationNote(){
+  const note=document.createElement('details');note.className='resident-note memorial-registration-note';
+  note.innerHTML='<summary><span class="resident-note-label">温馨提示</span><strong>居民登记补充说明</strong><span class="resident-note-toggle">查看详情</span></summary><div class="resident-note-body"><h3>居民登记补充说明</h3><p>根据现有居民登记资料，产生前往桃原市的意愿并不意味着最终一定能够完成迁入，死亡本身也不是判定居民资格的唯一条件。部分申请人在现实中死亡后，其登记状态仍长期处于“未完成”，相关纪念馆亦不会生成；只有完成完整迁入流程的人员，才会被正式纳入桃原市居民记录。</p><p>与此同时，在少数福报值较高的个案中，当事人在迁入前曾出现较为特殊的认知与影像记录，例如反复提到“另一个自己”、在镜面或影像中看见与自身相似的人，或认为“那边的自己已经开始生活”。此类现象通常出现在迁入流程后期，目前被视为高福报状态下可能出现的伴随反应。个别记录还显示，当事人所描述的“另一个自己”在性格、选择或行为上与本人并不完全一致，相关情况目前仍缺乏足够案例作进一步说明。</p></div>';
+  note.addEventListener('toggle',()=>note.querySelector('.resident-note-toggle').textContent=note.open?'收起详情':'查看详情');
+  return note;
+}
 function browse(query=''){
   app.innerHTML=`<div class="page-shell"><h1 class="page-heading">浏览纪念馆</h1><form class="browse-tools" id="hallSearchForm"><svg class="browse-search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg><input class="search-input" id="hallSearch" placeholder="搜索逝者姓名"><button class="btn btn-gold" type="submit">搜索</button></form><div class="memorial-grid" id="hallGrid"></div></div>`;
   const grid=app.querySelector('#hallGrid'),input=app.querySelector('#hallSearch');
@@ -331,16 +337,9 @@ function browse(query=''){
   pendingBrowseQuery='';
   function draw(){
     const q=input.value.trim();
-    app.querySelector('.resident-note')?.remove();
     if(!q){grid.innerHTML='<div class="empty">请输入故人姓名进行搜索</div>';return}
     const found=searchableHalls().filter(h=>h.name.includes(q));
     grid.innerHTML=found.length?found.map(h=>{const featured=['chen-zhenzhen','zhang-wenhua'].includes(h.id);const coverClass=h.id==='chen-zhenzhen'?' chen-cover':h.id==='zhang-wenhua'?' zhang-cover':'';return `<article class="memorial-card${featured?' featured-memorial':''}"><div class="memorial-cover${coverClass}">${featured?'':'☾'}</div><div class="memorial-card-body"><h2>${esc(h.name)}</h2><p>${esc(h.birth)} - ${esc(h.death)}</p><p>创建者: ${esc(h.creator)}</p><a class="btn btn-gold" href="#hall/${encodeURIComponent(h.id)}">${featured?'进入纪念馆':'❤ 进行祭祀'}</a></div></article>`}).join(''):'<div class="empty">没有找到相关纪念馆</div>';
-    if(document.body.classList.contains('invite-theme')&&found.some(h=>h.id==='chen-zhenzhen')){
-      const note=document.createElement('details');note.className='resident-note';
-      note.innerHTML='<summary><span class="resident-note-label">温馨提示</span><strong>居民登记补充说明</strong><span class="resident-note-toggle">查看详情</span></summary><div class="resident-note-body"><h3>居民登记补充说明</h3><p>根据现有居民登记资料，产生前往桃原市的意愿并不意味着最终一定能够完成迁入，死亡本身也不是判定居民资格的唯一条件。部分申请人在现实中死亡后，其登记状态仍长期处于“未完成”，相关纪念馆亦不会生成；只有完成完整迁入流程的人员，才会被正式纳入桃原市居民记录。</p><p>与此同时，在少数福报值较高的个案中，当事人在迁入前曾出现较为特殊的认知与影像记录，例如反复提到“另一个自己”、在镜面或影像中看见与自身相似的人，或认为“那边的自己已经开始生活”。此类现象通常出现在迁入流程后期，目前被视为高福报状态下可能出现的伴随反应。个别记录还显示，当事人所描述的“另一个自己”在性格、选择或行为上与本人并不完全一致，相关情况目前仍缺乏足够案例作进一步说明。</p></div>';
-      note.addEventListener('toggle',()=>note.querySelector('.resident-note-toggle').textContent=note.open?'收起详情':'查看详情');
-      grid.after(note);
-    }
   }
   app.querySelector('#hallSearchForm').onsubmit=e=>{e.preventDefault();draw()};
   draw();
@@ -380,6 +379,7 @@ function zhenzhenMemorial(initialTab='story'){
     app.querySelector('.life-portrait').src='assets/chen-zhenzhen-taoyuan.png?v=2';
     app.querySelector('.life-wish').textContent='祝陈女士在桃原市生活愉快';
     app.querySelector('.life-timeline').innerHTML=taoyuanTimeline.map(([title,body])=>`<article><i></i><h2>${esc(title)}</h2><p>${esc(body)}</p></article>`).join('');
+    app.querySelector('[data-life-pane="story"]').appendChild(createResidentRegistrationNote());
     const profileRows=app.querySelectorAll('.life-profile dl div');
     profileRows[3].querySelector('dt').textContent='安居';
     profileRows[4].querySelector('dt').textContent='登记地';
@@ -404,6 +404,7 @@ function zhenzhenMemorial(initialTab='story'){
   flowerConfirm.onclick=e=>{if(e.target===flowerConfirm)closeFlowerConfirm()};
   if(document.body.classList.contains('invite-theme')){
     app.querySelector('.life-flower')?.remove();
+    app.querySelector('.tribute-action')?.remove();
     flowerConfirm.remove();
   }
 }
@@ -507,6 +508,7 @@ function zhangwenhuaMemorial(initialTab='story'){
     app.querySelectorAll('[data-life-tab="tributes"], [data-life-pane="tributes"] .tribute-heading h2').forEach(label=>label.textContent='福报记录');
     tributes.querySelectorAll('article').forEach(record=>{if(record.querySelector('b')?.textContent.includes('献花'))record.remove()});
     app.querySelector('.life-flower')?.remove();
+    app.querySelector('.tribute-action')?.remove();
     dialog.remove();
   }
 }
