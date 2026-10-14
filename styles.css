@@ -1296,25 +1296,25 @@ button { font: inherit; }
 .yunyang-archive-issues button.active,.yunyang-archive-issues button:hover{background:#e1f0f8;box-shadow:inset 4px 0 #2879ac}
 .yunyang-archive-issues button strong{display:block;margin-bottom:5px;font:bold 19px SimSun}
 .yunyang-archive-issues button span{color:#6a8190;font:16px SimSun}
-.yunyang-archive-preview{min-width:0;padding:19px 22px 25px}
-.yunyang-archive-preview-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-bottom:12px;border-bottom:1px solid #d4e0e8;color:#254e6b;font:18px SimSun}
+.yunyang-archive-preview{min-width:0;padding:0}
+.yunyang-archive-preview-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 0;padding:18px 20px 12px;border-bottom:1px solid #d4e0e8;color:#254e6b;font:18px SimSun}
 .yunyang-archive-preview-head span{color:#667e8d;font-size:16px}
-.yunyang-archive-open{display:block;width:min(480px,100%);margin:20px auto 13px;padding:10px;border:1px solid #cbd8df;background:#f1f4f5;color:#286e9d;font:16px SimSun;cursor:zoom-in}
+.yunyang-archive-open{display:block;box-sizing:border-box;width:100%;margin:16px 0 0;padding:0;border:0;background:#f1f4f5;color:#286e9d;font:16px SimSun;cursor:zoom-in}
 .yunyang-archive-open:hover{border-color:#2c78ad;background:#eaf4fa}
-.yunyang-archive-open img{display:block;width:100%;height:auto;border:1px solid #d0ccc3}
-.yunyang-archive-open span{display:block;padding-top:8px}
-.yunyang-archive-preview h3{margin:10px 0 5px;color:#214665;font:bold 21px/1.5 SimSun}
-.yunyang-archive-preview p{margin:0;color:#70838f;font:16px SimSun}
+.yunyang-archive-open img{display:block;width:100%;height:auto;border:0}
+.yunyang-archive-open span{display:block;padding:9px 12px}
+.yunyang-archive-preview h3{margin:18px 20px 5px;color:#214665;font:bold 21px/1.5 SimSun}
+.yunyang-archive-preview p{margin:0 20px;color:#70838f;font:16px SimSun}
 .yunyang-archive-shield{position:absolute;inset:0;z-index:40;display:grid;place-items:center;padding:14px;background:rgba(18,32,41,.72)}
 .yunyang-archive-viewer{display:flex;flex-direction:column;width:min(100%,960px);height:100%;min-height:0;border:1px solid #adc2ce;background:#e8edf0}
 .yunyang-archive-viewer-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 12px;border-bottom:1px solid #adc2ce;background:#f4f8fa;color:#2b4e66;font:16px SimSun}
 .yunyang-archive-viewer-head strong{font-size:18px}
 .yunyang-archive-viewer-head span{margin-right:auto;color:#687f8e}
 .yunyang-archive-viewer-head button{padding:5px 11px;border:1px solid #9db9ca;background:#fff;color:#235d82;font:15px SimSun;cursor:pointer}
-.yunyang-archive-viewer-scroll{min-height:0;flex:1;overflow:auto;padding:17px;text-align:center}
+.yunyang-archive-viewer-scroll{min-height:0;flex:1;overflow:auto;padding:0;text-align:center}
 .yunyang-archive-viewer-scroll img{display:block;width:auto;max-width:100%;height:auto;margin:auto;box-shadow:0 3px 18px #27343c4d}
 .yunyang-archive-shield.zoomed .yunyang-archive-viewer-scroll img{max-width:none;width:1086px}
-@media(max-width:800px){.yunyang-archive-layout{grid-template-columns:1fr}.yunyang-archive-issues{border-right:0;border-bottom:1px solid #d4e0e8}.yunyang-archive-issues button{display:inline-block;width:50%;vertical-align:top}.yunyang-archive-preview{padding:15px}}
+@media(max-width:800px){.yunyang-archive-layout{grid-template-columns:1fr}.yunyang-archive-issues{border-right:0;border-bottom:1px solid #d4e0e8}.yunyang-archive-issues button{display:inline-block;width:50%;vertical-align:top}}
 .yunyang-article{width:min(100%,1100px);max-width:1100px;margin:20px auto 40px;padding:0 42px;color:#242b31;font:19px/2.05 SimSun,"Microsoft YaHei",sans-serif}
 .yunyang-article-navigation{gap:0;margin-bottom:28px;border-bottom:1px solid #dae3e8}
 .yunyang-article-back{padding:0 0 10px;color:#196894;font:18px SimSun}
