@@ -17,7 +17,7 @@ function playAdminNoticeAudio(){
       const tone=adminNoticeAudio.createOscillator(),volume=adminNoticeAudio.createGain();
       tone.type='sine';tone.frequency.value=frequency;
       volume.gain.setValueAtTime(.001,start+offset);
-      volume.gain.linearRampToValueAtTime(.045,start+offset+.025);
+      volume.gain.linearRampToValueAtTime(.08,start+offset+.025);
       volume.gain.exponentialRampToValueAtTime(.001,start+offset+.38);
       tone.connect(volume).connect(adminNoticeAudio.destination);
       tone.start(start+offset);tone.stop(start+offset+.4);
