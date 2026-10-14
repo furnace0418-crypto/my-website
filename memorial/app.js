@@ -374,7 +374,7 @@ function addPersonalArchive(name,residentNumber){
   const details=`<div class="personal-archive-details"><h2>个人信息留存</h2><p>以下内容依据纪念馆现有资料留存。</p><dl><div><dt>姓名</dt><dd>${esc(name)}</dd></div>${rows.map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl></div>`;
   if(!document.body.classList.contains('invite-theme')){
     pane.innerHTML=name==='陈珍珍'
-      ?'<div class="personal-archive-details"><h2>个人信息留存</h2><p>已留存的个人资料可下载至本地查看。</p><a class="personal-archive-folder" href="assets/chen-personal-archive.zip" download="陈珍珍-个人信息留存.zip" aria-label="下载陈珍珍个人信息留存资料，包含四张图片"><span class="personal-archive-folder-icon" aria-hidden="true"></span><span class="personal-archive-folder-copy"><strong>陈珍珍 · 个人资料</strong><small>文件夹　·　4 张图片</small></span><span class="personal-archive-folder-action">下载文件夹 ↓</span></a></div>'
+      ?'<div class="personal-archive-details"><a class="personal-archive-folder" href="assets/chen-personal-archive.zip" download="陈珍珍-个人信息留存.zip" aria-label="下载陈珍珍个人信息留存资料，包含四张图片"><span class="personal-archive-folder-icon" aria-hidden="true"></span><span class="personal-archive-folder-copy"><strong>陈珍珍 · 个人资料</strong><small>文件夹　·　4 张图片</small></span><span class="personal-archive-folder-action">下载文件夹 ↓</span></a></div>'
       :details;
   }
   else{
