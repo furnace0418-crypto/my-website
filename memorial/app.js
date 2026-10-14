@@ -345,6 +345,24 @@ function browse(query=''){
   draw();
 }
 function create(){if(!account()){location.hash='#register';return}app.innerHTML=`<div class="page-shell"><div class="panel form-panel"><div class="form-heading"><h1>创建纪念馆</h1><p>为逝者建立专属的记忆空间</p></div><form class="form-body" id="createForm"><label class="field"><span>逝者姓名</span><input name="name" required placeholder="请输入姓名"></label><label class="field"><span>出生日期</span><input name="birth" type="date" required></label><label class="field"><span>逝世日期</span><input name="death" type="date" required></label><label class="field"><span>生平简介</span><textarea name="bio" placeholder="记录值得珍藏的故事"></textarea></label><button class="btn" type="submit">创建纪念馆</button></form></div></div>`;document.querySelector('#createForm').onsubmit=e=>{e.preventDefault();const f=e.currentTarget,h={id:String(Date.now()),name:f.name.value.trim(),birth:f.birth.value,death:f.death.value,creator:account().name,bio:f.bio.value.trim(),records:[]};localStorage.setItem('memorial-halls',JSON.stringify([...saved(),h]));location.hash='#hall/'+h.id;};}
+function showChenMessageVision(){
+  document.querySelector('.chen-message-vision')?.remove();
+  const vision=document.createElement('div');
+  vision.className='chen-message-vision';
+  vision.setAttribute('aria-hidden','true');
+  const fragment=document.createDocumentFragment();
+  for(let i=0;i<156;i++){
+    const word=document.createElement('span');
+    const x=(i*37.7+(i%9)*4.3)%105-5;
+    const y=(i*19.3+Math.floor(i/9)*7.1)%108-4;
+    word.textContent='等等我';
+    word.style.cssText=`--x:${x.toFixed(1)}%;--y:${y.toFixed(1)}%;--size:${20+(i*23)%58}px;--delay:${(i%29)*26+Math.floor(i/29)*75}ms;--angle:${(i*13)%17-8}deg;--alpha:${(.34+(i%7)*.09).toFixed(2)}`;
+    fragment.append(word);
+  }
+  vision.append(fragment);
+  document.body.append(vision);
+  window.setTimeout(()=>vision.remove(),window.matchMedia('(prefers-reduced-motion: reduce)').matches?1100:2400);
+}
 function zhenzhenMemorial(initialTab='story'){
   const taoyuanTimeline=[
     ['2004年｜出生于云阳','陈珍珍出生于云阳市。童年时期主要与母亲张文华共同生活，性格开朗，喜欢拍照，也很喜欢小动物。'],
@@ -393,7 +411,7 @@ function zhenzhenMemorial(initialTab='story'){
     article.className='memorial-message';by.textContent=wish.by||'普通用户';message.textContent=wish.message||'';time.textContent=wish.at||'';
     article.append(by,message,time);messagePane.insertBefore(article,messagePane.children[1]);
   }
-  document.querySelectorAll('[data-life-tab]').forEach(button=>button.onclick=()=>{document.querySelectorAll('[data-life-tab]').forEach(item=>item.classList.toggle('active',item===button));document.querySelectorAll('[data-life-pane]').forEach(pane=>pane.classList.toggle('active',pane.dataset.lifePane===button.dataset.lifeTab));});
+  document.querySelectorAll('[data-life-tab]').forEach(button=>button.onclick=()=>{document.querySelectorAll('[data-life-tab]').forEach(item=>item.classList.toggle('active',item===button));document.querySelectorAll('[data-life-pane]').forEach(pane=>pane.classList.toggle('active',pane.dataset.lifePane===button.dataset.lifeTab));if(button.dataset.lifeTab==='messages')showChenMessageVision();});
   if(initialTab!=='story')document.querySelector(`[data-life-tab="${initialTab}"]`)?.click();
   const offeringNotice=document.createElement('div');offeringNotice.className='offering-notice';offeringNotice.setAttribute('role','status');offeringNotice.textContent=offeringText(offerings());offeringNotice.hidden=!offerings().flower&&!offerings().lamp;document.querySelector('.life-story').prepend(offeringNotice);
   const flowerConfirm=document.querySelector('.flower-confirm');
