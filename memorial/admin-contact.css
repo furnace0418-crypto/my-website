@@ -16,3 +16,12 @@
 .invite-theme .admin-registration-fields .admin-checkbox-label input{accent-color:#78251f}
 .invite-theme .admin-relation-menu button:hover,.invite-theme .admin-relation-menu button[aria-selected="true"]{color:#78251f}
 .invite-theme .chen-registration-dialog-icon{color:#78251f}.invite-theme .chen-registration-dialog-body h2{color:#78251f}.invite-theme .chen-registration-dialog-ok{background:#78251f}.invite-theme .chen-registration-complete-dialog button:focus-visible{outline-color:#78251f}
+.invite-theme .admin-contact-page{display:grid;place-items:center;min-height:630px;background:#101c1d;border-color:#394846}
+.admin-unavailable{width:min(540px,calc(100% - 40px));padding:48px 36px;text-align:center;border:1px solid #3a4947;background:#162425;color:#b9c4bf}
+.admin-unavailable-symbol{display:grid;place-items:center;width:48px;height:48px;margin:0 auto 22px;border:1px solid #78251f;border-radius:50%;color:#b65045;font:700 26px/1 Georgia,serif}
+.admin-unavailable-kicker{margin:0 0 10px;color:#a64b41;font-size:13px;letter-spacing:4px}
+.admin-unavailable h2{margin:0 0 18px;color:#e1e6e2;font:700 25px/1.4 STSong,SimSun,serif}
+.admin-unavailable>p:not(.admin-unavailable-kicker){margin:0;color:#a9b8b1;font-size:15px;line-height:1.8}
+.admin-unavailable-status{display:inline-block;margin-top:28px;padding:7px 16px;border:1px solid #46514e;color:#9ead9f;font-size:12px;letter-spacing:2px}
+@media(max-width:600px){.invite-theme .admin-contact-page{min-height:480px}.admin-unavailable{padding:38px 20px}}
+
