@@ -1271,8 +1271,10 @@ button { font: inherit; }
 .yunyang-interview-card span{color:#236e9a;font:17px SimSun}
 .yunyang-interview-card h3{margin:8px 0;color:#214665;font:bold 22px/1.45 SimSun;text-wrap:balance}
 .yunyang-interview-card p{margin:0 0 10px;color:#4c6474;font:18px/1.7 SimSun}
-.yunyang-interview-card small{display:block;margin-top:14px;color:#236e9a;font:17px SimSun}
-.yunyang-interview-card.access-denied::after{content:"无法访问访谈全文：临时用户配置文件未载入该栏目的访问凭据。";display:block;margin-top:12px;padding:10px 13px;border:1px solid #e4cd78;background:#fff9db;color:#795923;font:16px/1.5 SimSun}
+.yunyang-interview-card button{display:inline-block;margin-top:10px;padding:4px 0;border:0;background:transparent;color:#236e9a;font:17px SimSun;cursor:pointer}
+.yunyang-interview-card button:hover{text-decoration:underline}
+.yunyang-interview-card .yunyang-interview-denied{margin:12px 0 0;padding:10px 13px;border:1px solid #e4cd78;background:#fff9db;color:#795923;font:16px/1.5 SimSun}
+.yunyang-interview-denied[hidden]{display:none!important}
 .yunyang-article{width:min(100%,1100px);max-width:1100px;margin:20px auto 40px;padding:0 42px;color:#242b31;font:19px/2.05 SimSun,"Microsoft YaHei",sans-serif}
 .yunyang-article-navigation{gap:0;margin-bottom:28px;border-bottom:1px solid #dae3e8}
 .yunyang-article-back{padding:0 0 10px;color:#196894;font:18px SimSun}
