@@ -1305,15 +1305,16 @@ button { font: inherit; }
 .yunyang-archive-open span{display:block;padding:9px 12px}
 .yunyang-archive-preview h3{margin:18px 20px 5px;color:#214665;font:bold 21px/1.5 SimSun}
 .yunyang-archive-preview p{margin:0 20px;color:#70838f;font:16px SimSun}
-.yunyang-archive-shield{position:absolute;inset:0;z-index:40;display:grid;place-items:center;padding:14px;background:rgba(18,32,41,.72)}
-.yunyang-archive-viewer{display:flex;flex-direction:column;width:min(100%,960px);height:100%;min-height:0;border:1px solid #adc2ce;background:#e8edf0}
+.yunyang-archive-shield{position:absolute;inset:0;z-index:40;display:block;padding:0;background:#e8edf0}
+.yunyang-archive-viewer{display:flex;flex-direction:column;box-sizing:border-box;width:100%;height:100%;min-height:0;border:0;background:#e8edf0}
 .yunyang-archive-viewer-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 12px;border-bottom:1px solid #adc2ce;background:#f4f8fa;color:#2b4e66;font:16px SimSun}
 .yunyang-archive-viewer-head strong{font-size:18px}
 .yunyang-archive-viewer-head span{margin-right:auto;color:#687f8e}
 .yunyang-archive-viewer-head button{padding:5px 11px;border:1px solid #9db9ca;background:#fff;color:#235d82;font:15px SimSun;cursor:pointer}
 .yunyang-archive-viewer-scroll{min-height:0;flex:1;overflow:auto;padding:0;text-align:center}
-.yunyang-archive-viewer-scroll img{display:block;width:auto;max-width:100%;height:auto;margin:auto;box-shadow:0 3px 18px #27343c4d}
-.yunyang-archive-shield.zoomed .yunyang-archive-viewer-scroll img{max-width:none;width:1086px}
+.yunyang-archive-viewer-scroll img{display:block;width:100%;max-width:none;height:auto;margin:0;box-shadow:none;cursor:zoom-in}
+.yunyang-archive-shield.zoomed .yunyang-archive-viewer-scroll img{width:max(100%,1086px)}
+.yunyang-archive-shield.zoomed .yunyang-archive-viewer-scroll img{cursor:zoom-out}
 @media(max-width:800px){.yunyang-archive-layout{grid-template-columns:1fr}.yunyang-archive-issues{border-right:0;border-bottom:1px solid #d4e0e8}.yunyang-archive-issues button{display:inline-block;width:50%;vertical-align:top}}
 .yunyang-article{width:min(100%,1100px);max-width:1100px;margin:20px auto 40px;padding:0 42px;color:#242b31;font:19px/2.05 SimSun,"Microsoft YaHei",sans-serif}
 .yunyang-article-navigation{gap:0;margin-bottom:28px;border-bottom:1px solid #dae3e8}
