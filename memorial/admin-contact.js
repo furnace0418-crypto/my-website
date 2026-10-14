@@ -1,5 +1,5 @@
 let adminChatSession=null;
-window.memorialRegistrationState={chen:false};
+window.memorialRegistrationState={chen:localStorage.getItem('memorial-chen-registration-unlocked')==='1'};
 function renderAdminContact(host){
   if(adminChatSession){
     host.replaceWith(adminChatSession);
@@ -223,6 +223,7 @@ function renderAdminContact(host){
       feedback.hidden=false;
       if(!correct){feedback.textContent='信息有误，请核对后重试。';feedback.dataset.state='error';return}
       window.memorialRegistrationState.chen=true;
+      localStorage.setItem('memorial-chen-registration-unlocked','1');
       feedback.textContent='登记已受理。现在可以返回搜索，查看桃原市纪念馆。';
       feedback.dataset.state='success';
       saveButton.disabled=true;
