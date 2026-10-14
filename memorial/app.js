@@ -353,8 +353,8 @@ function showChenMessageVision(){
   const fragment=document.createDocumentFragment();
   for(let i=0;i<156;i++){
     const word=document.createElement('span');
-    const x=(i*37.7+(i%9)*4.3)%105-5;
-    const y=(i*19.3+Math.floor(i/9)*7.1)%108-4;
+    const x=((Math.sin(i*127.1+4.2)*43758.5453)%1+1)%1*110-5;
+    const y=((Math.sin(i*269.5+2.8)*24634.6345)%1+1)%1*112-6;
     word.textContent='等等我';
     word.style.cssText=`--x:${x.toFixed(1)}%;--y:${y.toFixed(1)}%;--size:${20+(i*23)%58}px;--delay:${(i%29)*26+Math.floor(i/29)*75}ms;--angle:${(i*13)%17-8}deg;--alpha:${(.34+(i%7)*.09).toFixed(2)}`;
     fragment.append(word);
