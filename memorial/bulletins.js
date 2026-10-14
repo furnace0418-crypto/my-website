@@ -63,7 +63,7 @@ function showAdminBusyDialog(){
   if(app.querySelector('.admin-busy-overlay'))return;
   const overlay=document.createElement('div');
   overlay.className='admin-busy-overlay';
-  overlay.innerHTML='<section class="admin-busy-dialog" role="dialog" aria-modal="true" aria-labelledby="admin-busy-title" aria-describedby="admin-busy-description"><button type="button" class="admin-busy-close" aria-label="关闭">×</button><p class="admin-busy-label">管理员服务</p><h2 id="admin-busy-title">当前业务繁忙</h2><p id="admin-busy-description">暂时无法接入管理员，请稍后再试。</p><button type="button" class="admin-busy-confirm">知道了</button></section>';
+  overlay.innerHTML='<section class="admin-busy-dialog" role="dialog" aria-modal="true" aria-labelledby="admin-busy-title" aria-describedby="admin-busy-description"><button type="button" class="admin-busy-close" aria-label="关闭">×</button><h2 id="admin-busy-title">当前业务繁忙</h2><p id="admin-busy-description">暂时无法接入管理员，请稍后再试。</p><button type="button" class="admin-busy-confirm">知道了</button></section>';
   app.append(overlay);
   const previousFocus=document.activeElement;
   const close=()=>{overlay.remove();document.removeEventListener('keydown',onKeydown);previousFocus?.focus?.()};
