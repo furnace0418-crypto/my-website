@@ -1,5 +1,6 @@
 let adminChatSession=null;
-window.memorialRegistrationState={chen:localStorage.getItem('memorial-chen-registration-unlocked')==='1'};
+localStorage.removeItem('memorial-chen-registration-unlocked');
+window.memorialRegistrationState={chen:false};
 function renderAdminContact(host){
   if(adminChatSession){
     host.replaceWith(adminChatSession);
@@ -225,12 +226,10 @@ function renderAdminContact(host){
         &&parseDate()?.year===2013&&parseDate()?.month===11&&parseDate()?.day===3;
       feedback.hidden=false;
       if(!correct){feedback.textContent='信息有误，请核对后重试。';feedback.dataset.state='error';return}
-      window.memorialRegistrationState.chen=true;
-      localStorage.setItem('memorial-chen-registration-unlocked','1');
-      feedback.textContent='登记信息已核验，相关居民纪念馆现已纳入检索范围。';
+      feedback.textContent='登记资料已接收，迁入登记仍待最终确认。';
       feedback.dataset.state='success';
       saveButton.disabled=true;
-      appendMessage('admin','登记已受理。陈珍珍的桃原市纪念馆现已开放检索。');
+      appendMessage('admin','登记资料已接收，当前状态为待确认。相关纪念馆暂未纳入检索范围。');
     };
     form.onsubmit=event=>event.preventDefault();
   };
