@@ -36,20 +36,42 @@ function wireHomeBulletins(){
 }
 
 function bulletinPage(id='launch'){
+  if(id==='contact'&&document.body.classList.contains('invite-theme')){
+    bulletinPage('launch');
+    showAdminBusyDialog();
+    return;
+  }
   const selected=memorialBulletins.find(item=>item.id===id)||memorialBulletins[0];
   const fortune=id==='fortune',contact=id==='contact';
   let fortuneBody;
   if(fortune){fortuneExplanation();fortuneBody=app.querySelector('.fortune-body')}
   app.innerHTML=`<div class="page-shell bulletin-page"><div class="bulletin-layout"><nav class="bulletin-sidebar" aria-label="资讯选择"><h2>研究会公告</h2>${memorialBulletins.map(item=>`<a href="#articles/${item.id}" ${!fortune&&!contact&&item.id===selected.id?'aria-current="page"':''}><span>${esc(item.title)}</span><time datetime="${item.date}">${item.date}</time></a>`).join('')}<h2 class="bulletin-subheading">纪念文化</h2><a href="#articles/fortune" ${fortune?'aria-current="page"':''}><span>福报说明</span><small>善念与善行</small></a><h2 class="bulletin-subheading">服务支持</h2><a href="#articles/contact" ${contact?'aria-current="page"':''}><span>联系管理员</span><small>咨询与反馈</small></a></nav><article class="bulletin-reader" aria-labelledby="bulletin-title"><header class="bulletin-article-header"><p>${fortune?'纪念文化':'研究会公告'}</p><h2 id="bulletin-title">${fortune?'福报说明':esc(selected.title)}</h2><div>福善文化研究会${fortune?'':`<span>发布于 <time datetime="${selected.date}">${selected.date.replaceAll('-','.')}</time></span>`}</div></header><div class="bulletin-article-body">${fortune?'':`<p class="bulletin-intro">${esc(selected.intro)}</p>${selected.sections.map(([title,body])=>`<section><h3>${esc(title)}</h3><p>${esc(body).replace("可联系管理员48270619","<strong>可联系管理员48270619</strong>")}</p></section>`).join('')}<footer class="bulletin-signature"><p>福善文化研究会</p><time datetime="${selected.date}">${selected.date.replaceAll('-','.')}</time></footer>`}</div></article></div></div>`;
   if(fortuneBody)app.querySelector('.bulletin-article-body').appendChild(fortuneBody);
+  if(document.body.classList.contains('invite-theme')){
+    app.querySelector('.bulletin-sidebar a[href="#articles/contact"]').onclick=event=>{
+      event.preventDefault();
+      showAdminBusyDialog();
+    };
+  }
   if(contact){
     app.querySelector('.bulletin-reader').classList.add('admin-contact-page');
-    if(document.body.classList.contains('invite-theme')){
-      app.querySelector('.bulletin-reader').innerHTML='<section class="admin-unavailable" aria-labelledby="bulletin-title"><div class="admin-unavailable-symbol" aria-hidden="true">!</div><p class="admin-unavailable-kicker">服务状态</p><h2 id="bulletin-title">联系管理员暂不可用</h2><p>当前咨询业务繁忙，暂无法接入管理员服务。请稍后再试。</p><span class="admin-unavailable-status">暂未开放接入</span></section>';
-    }else{
-      app.querySelector('.bulletin-reader').innerHTML='<h2 id="bulletin-title" class="visually-hidden">联系管理员</h2><div class="admin-chat" aria-label="管理员咨询"></div>';
-      renderAdminContact(app.querySelector('.admin-chat'));
-    }
+    app.querySelector('.bulletin-reader').innerHTML='<h2 id="bulletin-title" class="visually-hidden">联系管理员</h2><div class="admin-chat" aria-label="管理员咨询"></div>';
+    renderAdminContact(app.querySelector('.admin-chat'));
   }
+}
+function showAdminBusyDialog(){
+  if(app.querySelector('.admin-busy-overlay'))return;
+  const overlay=document.createElement('div');
+  overlay.className='admin-busy-overlay';
+  overlay.innerHTML='<section class="admin-busy-dialog" role="dialog" aria-modal="true" aria-labelledby="admin-busy-title" aria-describedby="admin-busy-description"><button type="button" class="admin-busy-close" aria-label="关闭">×</button><p class="admin-busy-label">管理员服务</p><h2 id="admin-busy-title">当前业务繁忙</h2><p id="admin-busy-description">暂时无法接入管理员，请稍后再试。</p><button type="button" class="admin-busy-confirm">知道了</button></section>';
+  app.append(overlay);
+  const previousFocus=document.activeElement;
+  const close=()=>{overlay.remove();document.removeEventListener('keydown',onKeydown);previousFocus?.focus?.()};
+  const onKeydown=event=>{if(event.key==='Escape')close()};
+  overlay.querySelector('.admin-busy-close').onclick=close;
+  overlay.querySelector('.admin-busy-confirm').onclick=close;
+  overlay.onclick=event=>{if(event.target===overlay)close()};
+  document.addEventListener('keydown',onKeydown);
+  overlay.querySelector('.admin-busy-confirm').focus();
 }
 
