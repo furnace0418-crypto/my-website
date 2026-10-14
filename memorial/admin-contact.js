@@ -13,10 +13,9 @@ function finishChenRegistration(){
   const toast=document.createElement('aside');
   toast.className='chen-registration-complete-toast';
   toast.setAttribute('role','status');
-  toast.innerHTML='<button type="button" aria-label="关闭通知">×</button><small>桃原市纪念馆</small><strong>居民登记已完成</strong><p>陈珍珍的纪念馆现已开放查询。</p>';
+  toast.innerHTML='<span class="chen-registration-toast-icon" aria-hidden="true">✓</span><div class="chen-registration-toast-copy"><small>登记结果通知</small><strong>居民登记已完成</strong><p>陈珍珍的纪念馆现已开放查询。</p></div><button type="button" aria-label="关闭通知">×</button>';
   toast.querySelector('button').onclick=()=>toast.remove();
   document.body.append(toast);
-  setTimeout(()=>toast.remove(),12000);
 }
 function scheduleChenRegistrationCompletion(){
   if(window.memorialRegistrationState.chen)return;
