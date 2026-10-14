@@ -19,9 +19,8 @@
 .admin-busy-overlay{position:fixed;inset:0;z-index:400;display:grid;place-items:center;padding:22px;background:#04090ac7;backdrop-filter:blur(3px)}
 .admin-busy-dialog{position:relative;width:min(430px,100%);padding:32px 34px 30px;border:1px solid #495553;background:#182627;box-shadow:0 22px 65px #0009;text-align:center}
 .admin-busy-close{position:absolute;right:13px;top:9px;border:0;background:transparent;color:#aebbb5;font:26px/1 Arial,sans-serif}
-.admin-busy-label{margin:0 0 17px;color:#aa5148;font-size:12px;letter-spacing:3px}
 .admin-busy-dialog h2{margin:0 0 12px;color:#e2e8e4;font:700 25px/1.4 STSong,SimSun,serif}
-.admin-busy-dialog>p:not(.admin-busy-label){margin:0;color:#acb9b4;font-size:15px;line-height:1.7}
+.admin-busy-dialog>p{margin:0;color:#acb9b4;font-size:15px;line-height:1.7}
 .admin-busy-confirm{min-width:116px;margin-top:26px;padding:10px 20px;border:1px solid #78251f;background:#78251f;color:#fff;font-size:14px}
 .admin-busy-dialog button:focus-visible{outline:2px solid #c37368;outline-offset:3px}
 @media(max-width:600px){.admin-busy-dialog{padding:28px 22px 26px}}
