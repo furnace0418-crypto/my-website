@@ -1,4 +1,5 @@
 let adminChatSession=null;
+window.memorialRegistrationState={chen:false};
 function renderAdminContact(host){
   if(adminChatSession){
     host.replaceWith(adminChatSession);
@@ -205,6 +206,28 @@ function renderAdminContact(host){
     });
     dateInput.addEventListener('blur',()=>{const selected=parseDate();if(selected)dateInput.value=formatDate(selected)});
     calendar.addEventListener('keydown',event=>{if(event.key==='Escape'){calendar.hidden=true;calendarToggle.setAttribute('aria-expanded','false');calendarToggle.focus()}});
+    const feedback=document.createElement('p');
+    feedback.className='admin-registration-feedback';feedback.setAttribute('role','status');feedback.hidden=true;
+    form.appendChild(feedback);
+    const saveButton=form.querySelector(':scope > button');
+    saveButton.onclick=()=>{
+      const correct=kind==='missing'
+        &&form.elements.residentName.value.trim()==='陈珍珍'
+        &&form.elements.gender.value==='女'
+        &&form.elements.residentCode.value.trim().toUpperCase()==='TYF03262620240912'
+        &&!father.value.trim()
+        &&mother.value.trim()==='张文华'
+        &&form.elements.motherIsTaoyuanResident.checked
+        &&relation.value==='女儿'
+        &&parseDate()?.year===2013&&parseDate()?.month===11&&parseDate()?.day===3;
+      feedback.hidden=false;
+      if(!correct){feedback.textContent='信息有误，请核对后重试。';feedback.dataset.state='error';return}
+      window.memorialRegistrationState.chen=true;
+      feedback.textContent='登记已受理。现在可以返回搜索，查看桃原市纪念馆。';
+      feedback.dataset.state='success';
+      saveButton.disabled=true;
+      appendMessage('admin','登记已受理。陈珍珍的桃原市纪念馆现已开放检索。');
+    };
     form.onsubmit=event=>event.preventDefault();
   };
   deliver(['您好，您想咨询什么问题？'],showTopics);
