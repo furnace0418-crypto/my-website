@@ -1,6 +1,31 @@
 let adminChatSession=null;
 localStorage.removeItem('memorial-chen-registration-unlocked');
-window.memorialRegistrationState={chen:false};
+const chenRegistrationDoneKey='memorial-chen-registration-complete';
+const chenRegistrationReadyKey='memorial-chen-registration-ready-at';
+window.memorialRegistrationState={chen:localStorage.getItem(chenRegistrationDoneKey)==='1'};
+let chenRegistrationTimer;
+function finishChenRegistration(){
+  if(window.memorialRegistrationState.chen)return;
+  localStorage.removeItem(chenRegistrationReadyKey);
+  localStorage.setItem(chenRegistrationDoneKey,'1');
+  window.memorialRegistrationState.chen=true;
+  document.querySelector('.chen-registration-complete-toast')?.remove();
+  const toast=document.createElement('aside');
+  toast.className='chen-registration-complete-toast';
+  toast.setAttribute('role','status');
+  toast.innerHTML='<button type="button" aria-label="关闭通知">×</button><small>桃原市纪念馆</small><strong>居民登记已完成</strong><p>陈珍珍的纪念馆现已开放查询。</p>';
+  toast.querySelector('button').onclick=()=>toast.remove();
+  document.body.append(toast);
+  setTimeout(()=>toast.remove(),12000);
+}
+function scheduleChenRegistrationCompletion(){
+  if(window.memorialRegistrationState.chen)return;
+  const readyAt=Number(localStorage.getItem(chenRegistrationReadyKey))||Date.now()+10000;
+  localStorage.setItem(chenRegistrationReadyKey,String(readyAt));
+  clearTimeout(chenRegistrationTimer);
+  chenRegistrationTimer=setTimeout(finishChenRegistration,Math.max(0,readyAt-Date.now()));
+}
+if(!window.memorialRegistrationState.chen&&localStorage.getItem(chenRegistrationReadyKey))scheduleChenRegistrationCompletion();
 function renderAdminContact(host){
   if(adminChatSession){
     host.replaceWith(adminChatSession);
@@ -118,6 +143,18 @@ function renderAdminContact(host){
     actions.innerHTML=`<form class="admin-registration-form"><h3>${kind==='missing'?'居民信息补全':'居民信息勘误'}</h3><div class="admin-registration-fields"><label>姓名<input name="residentName" autocomplete="off" required></label><label>性别<select name="gender" required><option value="">请选择</option><option value="女">女</option><option value="男">男</option><option value="其他">其他</option></select></label><label>居民编号<input name="residentCode" autocomplete="off" required></label><div class="admin-form-section">亲属关系 <small>父亲或母亲至少填写一位</small></div><label>父亲<input name="father" autocomplete="off"></label><label class="admin-checkbox-label" data-parent-resident="father" hidden>父亲是否为桃原市居民<input type="checkbox" name="fatherIsTaoyuanResident" value="是"></label><label>母亲<input name="mother" autocomplete="off"></label><label class="admin-checkbox-label" data-parent-resident="mother" hidden>母亲是否为桃原市居民<input type="checkbox" name="motherIsTaoyuanResident" value="是"></label><div class="admin-field-row"><span>与父亲／母亲关系</span><div class="admin-relation-select"><button type="button" class="admin-relation-trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="adminRelationOptions"><span>请选择</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 6 5 5 5-5"/></svg></button><div class="admin-relation-menu" id="adminRelationOptions" role="listbox" aria-label="与父亲或母亲关系" hidden><button type="button" role="option" data-relation="女儿" aria-selected="false">女儿</button><button type="button" role="option" data-relation="儿子" aria-selected="false">儿子</button><button type="button" role="option" data-relation="其他" aria-selected="false">其他</button></div><input type="hidden" name="parentRelation"></div></div><div class="admin-field-row"><span>迁入时间</span><div class="admin-date-picker"><div class="admin-date-input-wrap"><input name="moveInDate" type="text" inputmode="numeric" autocomplete="off" placeholder="年 / 月 / 日"><button type="button" class="admin-calendar-toggle" aria-label="打开日历" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M7 14h2M12 14h2M17 14h1M7 18h2M12 18h2"/></svg></button></div><div class="admin-calendar-panel" hidden><div class="admin-calendar-header"><button type="button" data-month-step="-1" aria-label="上个月">‹</button><div class="admin-calendar-title"><button type="button" class="admin-calendar-year-toggle" aria-label="选择年份"></button><strong class="admin-calendar-month-label"></strong></div><button type="button" data-month-step="1" aria-label="下个月">›</button></div><div class="admin-calendar-year-panel" hidden><div class="admin-calendar-decade"><button type="button" data-decade-step="-1" aria-label="上十年">‹</button><span></span><button type="button" data-decade-step="1" aria-label="下十年">›</button></div><div class="admin-calendar-years"></div></div><div class="admin-calendar-month-panel"><div class="admin-calendar-weekdays"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div><div class="admin-calendar-days"></div></div></div></div></div>${kind==='missing'?'':'<label class="wide">更正内容与依据<textarea name="notes" rows="3" required></textarea></label>'}</div><button type="button">保存登记</button></form>`;
     requestAnimationFrame(()=>{log.scrollTop=log.scrollHeight});
     const form=actions.querySelector('form');
+    const genderRow=document.createElement('div');
+    genderRow.className='admin-field-row';
+    genderRow.innerHTML='<span>性别</span><div class="admin-relation-select admin-gender-select"><button type="button" class="admin-relation-trigger admin-gender-trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="adminGenderOptions"><span>请选择</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 6 5 5 5-5"/></svg></button><div class="admin-relation-menu admin-gender-menu" id="adminGenderOptions" role="listbox" aria-label="性别" hidden><button type="button" role="option" data-gender="女" aria-selected="false">女</button><button type="button" role="option" data-gender="男" aria-selected="false">男</button><button type="button" role="option" data-gender="其他" aria-selected="false">其他</button></div><input type="hidden" name="gender"></div>';
+    form.elements.gender.closest('label').replaceWith(genderRow);
+    const gender=form.elements.gender;
+    const genderTrigger=genderRow.querySelector('.admin-gender-trigger');
+    const genderMenu=genderRow.querySelector('.admin-gender-menu');
+    const closeGenderMenu=()=>{genderMenu.hidden=true;genderTrigger.setAttribute('aria-expanded','false')};
+    genderTrigger.onclick=()=>{genderMenu.hidden=!genderMenu.hidden;genderTrigger.setAttribute('aria-expanded',String(!genderMenu.hidden));if(!genderMenu.hidden)(genderMenu.querySelector('[aria-selected="true"]')||genderMenu.querySelector('[data-gender]'))?.focus()};
+    genderRow.querySelectorAll('[data-gender]').forEach(button=>button.onclick=()=>{gender.value=button.dataset.gender;genderTrigger.querySelector('span').textContent=gender.value;genderRow.querySelectorAll('[data-gender]').forEach(choice=>choice.setAttribute('aria-selected',String(choice===button)));closeGenderMenu();genderTrigger.focus()});
+    genderTrigger.addEventListener('keydown',event=>{if(event.key==='ArrowDown'||event.key==='Enter'||event.key===' '){event.preventDefault();genderMenu.hidden=false;genderTrigger.setAttribute('aria-expanded','true');(genderMenu.querySelector('[aria-selected="true"]')||genderMenu.querySelector('[data-gender]'))?.focus()}});
+    genderMenu.addEventListener('keydown',event=>{const options=[...genderMenu.querySelectorAll('[data-gender]')],index=options.indexOf(document.activeElement);if(event.key==='Escape'){closeGenderMenu();genderTrigger.focus()}else if(event.key==='ArrowDown'||event.key==='ArrowUp'){event.preventDefault();options[(index+(event.key==='ArrowDown'?1:options.length-1))%options.length].focus()}});
     form.elements.residentName.value=residentName;
     const father=form.elements.father;
     const mother=form.elements.mother;
@@ -129,8 +166,8 @@ function renderAdminContact(host){
     father.addEventListener('input',()=>syncParentResident(father,'father'));
     mother.addEventListener('input',()=>syncParentResident(mother,'mother'));
     const relation=form.elements.parentRelation;
-    const relationTrigger=form.querySelector('.admin-relation-trigger');
-    const relationMenu=form.querySelector('.admin-relation-menu');
+    const relationTrigger=form.querySelector('.admin-relation-select:not(.admin-gender-select) .admin-relation-trigger');
+    const relationMenu=form.querySelector('.admin-relation-select:not(.admin-gender-select) .admin-relation-menu');
     const closeRelationMenu=()=>{relationMenu.hidden=true;relationTrigger.setAttribute('aria-expanded','false')};
     relationTrigger.onclick=()=>{
       relationMenu.hidden=!relationMenu.hidden;
@@ -226,10 +263,11 @@ function renderAdminContact(host){
         &&parseDate()?.year===2013&&parseDate()?.month===11&&parseDate()?.day===3;
       feedback.hidden=false;
       if(!correct){feedback.textContent='信息有误，请核对后重试。';feedback.dataset.state='error';return}
-      feedback.textContent='登记资料已接收，迁入登记仍待最终确认。';
+      feedback.textContent='登记资料已提交，正在核验，请稍候。';
       feedback.dataset.state='success';
       saveButton.disabled=true;
-      appendMessage('admin','登记资料已接收，当前状态为待确认。相关纪念馆暂未纳入检索范围。');
+      appendMessage('admin','登记资料已提交，正在核验，请稍候。');
+      scheduleChenRegistrationCompletion();
     };
     form.onsubmit=event=>event.preventDefault();
   };
