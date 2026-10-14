@@ -276,6 +276,13 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 .invite-theme .site-header nav a:hover:after,.invite-theme .site-header nav a[href="#home"]:after{background:var(--invite-accent)}
 .invite-theme .hero-search,.invite-theme .browse-tools .search-input,.invite-theme .offering-notice,.invite-theme .resident-note-label{border-color:var(--invite-accent)}
 .invite-theme .browse-tools .btn,.invite-theme .hero-search button{background:var(--invite-accent);border-color:var(--invite-accent);color:#fff}
+.portal-hero{overflow:visible;z-index:2}.portal-main{z-index:1}
+.hero-search .name-search-history button{border:0;border-radius:0;background:transparent;box-shadow:none;font-family:"Microsoft YaHei",sans-serif;letter-spacing:normal}
+.hero-search .name-search-history-clear{padding:3px 5px;color:#9a5143;font-size:13px}
+.hero-search .name-search-history-choose{padding:10px 17px;color:#50433c;font-size:16px;text-align:left}
+.hero-search .name-search-history-remove{width:42px;height:39px;color:#a18f82;font-size:22px}
+.invite-theme .hero-search .name-search-history-clear,.invite-theme .hero-search .name-search-history-remove{color:var(--invite-accent)}
+.invite-theme .hero-search .name-search-history-choose{color:#e2e8e4}
 .invite-theme .resident-note-label{color:var(--invite-accent)}
 .invite-entry-text{color:#78251f}
 .invite-theme .overview-frame .platform-intro,.invite-theme .service-panel .section-heading,.invite-theme .notice-panel .section-heading,.invite-theme .about-panel .section-heading{border-bottom-color:rgba(120,37,31,.48)}
