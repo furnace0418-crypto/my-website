@@ -363,6 +363,7 @@ function showChenMessageVision(){
   document.body.append(vision);
   window.setTimeout(()=>vision.remove(),window.matchMedia('(prefers-reduced-motion: reduce)').matches?1100:2400);
 }
+let chenMessageVisionShown=false;
 function zhenzhenMemorial(initialTab='story'){
   const taoyuanTimeline=[
     ['2004年｜出生于云阳','陈珍珍出生于云阳市。童年时期主要与母亲张文华共同生活，性格开朗，喜欢拍照，也很喜欢小动物。'],
@@ -411,7 +412,7 @@ function zhenzhenMemorial(initialTab='story'){
     article.className='memorial-message';by.textContent=wish.by||'普通用户';message.textContent=wish.message||'';time.textContent=wish.at||'';
     article.append(by,message,time);messagePane.insertBefore(article,messagePane.children[1]);
   }
-  document.querySelectorAll('[data-life-tab]').forEach(button=>button.onclick=()=>{document.querySelectorAll('[data-life-tab]').forEach(item=>item.classList.toggle('active',item===button));document.querySelectorAll('[data-life-pane]').forEach(pane=>pane.classList.toggle('active',pane.dataset.lifePane===button.dataset.lifeTab));if(button.dataset.lifeTab==='messages')showChenMessageVision();});
+  document.querySelectorAll('[data-life-tab]').forEach(button=>button.onclick=()=>{document.querySelectorAll('[data-life-tab]').forEach(item=>item.classList.toggle('active',item===button));document.querySelectorAll('[data-life-pane]').forEach(pane=>pane.classList.toggle('active',pane.dataset.lifePane===button.dataset.lifeTab));if(button.dataset.lifeTab==='messages'&&!chenMessageVisionShown){chenMessageVisionShown=true;showChenMessageVision()}});
   if(initialTab!=='story')document.querySelector(`[data-life-tab="${initialTab}"]`)?.click();
   const offeringNotice=document.createElement('div');offeringNotice.className='offering-notice';offeringNotice.setAttribute('role','status');offeringNotice.textContent=offeringText(offerings());offeringNotice.hidden=!offerings().flower&&!offerings().lamp;document.querySelector('.life-story').prepend(offeringNotice);
   const flowerConfirm=document.querySelector('.flower-confirm');
@@ -433,6 +434,7 @@ function route(){
   rememberInviteVideo();applyInviteTheme();header();
   const hash=decodeURIComponent(location.hash.slice(1)||'home');
   const [page,id,tab]=hash.split('/');
+  if(page==='hall'&&id==='chen-zhenzhen'&&document.body.classList.contains('invite-theme')&&!window.memorialRegistrationState?.chen){location.hash='#browse';return}
   if(!account()&&(page==='letters'||(page==='services'&&!['chen-zhenzhen','zhang-wenhua'].includes(id)))){location.hash='#login';return}
   if(page==='home'){home();wireHomeBulletins()}
   else if(page==='services'){
