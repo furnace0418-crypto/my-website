@@ -1,30 +1,54 @@
 let adminChatSession=null;
+let adminCompletionMessage=null;
+let adminNoticeAudio=null;
+function armAdminNoticeAudio(){
+  try{
+    const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+    if(!AudioContextClass)return;
+    adminNoticeAudio ||= new AudioContextClass();
+    adminNoticeAudio.resume().catch(()=>{});
+  }catch(_){}
+}
+function playAdminNoticeAudio(){
+  if(!adminNoticeAudio)return;
+  adminNoticeAudio.resume().then(()=>{
+    const start=adminNoticeAudio.currentTime;
+    for(const [frequency,offset] of [[660,0],[880,.16]]){
+      const tone=adminNoticeAudio.createOscillator(),volume=adminNoticeAudio.createGain();
+      tone.type='sine';tone.frequency.value=frequency;
+      volume.gain.setValueAtTime(.001,start+offset);
+      volume.gain.linearRampToValueAtTime(.045,start+offset+.025);
+      volume.gain.exponentialRampToValueAtTime(.001,start+offset+.38);
+      tone.connect(volume).connect(adminNoticeAudio.destination);
+      tone.start(start+offset);tone.stop(start+offset+.4);
+    }
+  }).catch(()=>{});
+}
 localStorage.removeItem('memorial-chen-registration-unlocked');
 const chenRegistrationDoneKey='memorial-chen-registration-complete';
 const chenRegistrationReadyKey='memorial-chen-registration-ready-at';
 window.memorialRegistrationState={chen:localStorage.getItem(chenRegistrationDoneKey)==='1'};
 let chenRegistrationTimer;
 function finishChenRegistration(){
-  if(window.memorialRegistrationState.chen)return;
   localStorage.removeItem(chenRegistrationReadyKey);
   localStorage.setItem(chenRegistrationDoneKey,'1');
   window.memorialRegistrationState.chen=true;
-  document.querySelector('.chen-registration-complete-toast')?.remove();
-  const toast=document.createElement('aside');
-  toast.className='chen-registration-complete-toast';
-  toast.setAttribute('role','status');
-  toast.innerHTML='<span class="chen-registration-toast-icon" aria-hidden="true">✓</span><div class="chen-registration-toast-copy"><small>登记结果通知</small><strong>居民登记已完成</strong><p>陈珍珍的纪念馆现已开放查询。</p></div><button type="button" aria-label="关闭通知">×</button>';
-  toast.querySelector('button').onclick=()=>toast.remove();
-  document.body.append(toast);
+  adminCompletionMessage?.('登记核验已完成。陈珍珍的纪念馆现已开放查询。');
+  playAdminNoticeAudio();
+  document.querySelector('.chen-registration-complete-dialog')?.remove();
+  const overlay=document.createElement('div');
+  overlay.className='chen-registration-complete-dialog';
+  overlay.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="chen-registration-complete-title"><div class="chen-registration-dialog-head"><span class="admin-avatar" aria-hidden="true"><svg viewBox="0 0 40 40" focusable="false"><circle cx="20" cy="14" r="7"/><path d="M7 35c.6-8 5.3-13 13-13s12.4 5 13 13"/></svg></span><span>管理员服务</span><button type="button" class="chen-registration-dialog-close" aria-label="关闭通知">×</button></div><div class="chen-registration-dialog-body"><span class="chen-registration-dialog-icon" aria-hidden="true">✓</span><h2 id="chen-registration-complete-title">居民登记已完成</h2><p>陈珍珍的纪念馆现已开放查询。</p><button type="button" class="chen-registration-dialog-ok">知道了</button></div></section>';
+  overlay.querySelectorAll('button').forEach(button=>button.onclick=()=>overlay.remove());
+  document.body.append(overlay);
+  overlay.querySelector('.chen-registration-dialog-ok').focus();
 }
-function scheduleChenRegistrationCompletion(){
-  if(window.memorialRegistrationState.chen)return;
-  const readyAt=Number(localStorage.getItem(chenRegistrationReadyKey))||Date.now()+10000;
+function scheduleChenRegistrationCompletion(readyAt=Date.now()+10000){
   localStorage.setItem(chenRegistrationReadyKey,String(readyAt));
   clearTimeout(chenRegistrationTimer);
   chenRegistrationTimer=setTimeout(finishChenRegistration,Math.max(0,readyAt-Date.now()));
 }
-if(!window.memorialRegistrationState.chen&&localStorage.getItem(chenRegistrationReadyKey))scheduleChenRegistrationCompletion();
+if(localStorage.getItem(chenRegistrationReadyKey))scheduleChenRegistrationCompletion(Number(localStorage.getItem(chenRegistrationReadyKey)));
 function renderAdminContact(host){
   if(adminChatSession){
     host.replaceWith(adminChatSession);
@@ -48,6 +72,7 @@ function renderAdminContact(host){
     const body=document.createElement('p');body.textContent=message;item.appendChild(body);row.appendChild(item);log.appendChild(row);
     log.scrollTop=log.scrollHeight;
   };
+  adminCompletionMessage=message=>appendMessage('admin',message);
   const actions=host.querySelector('.admin-chat-actions');
   const deliver=async(messages,next)=>{
     actions.replaceChildren();
@@ -265,7 +290,14 @@ function renderAdminContact(host){
       feedback.textContent='登记资料已提交，正在核验，请稍候。';
       feedback.dataset.state='success';
       saveButton.disabled=true;
-      appendMessage('admin','登记资料已提交，正在核验，请稍候。');
+      host.classList.remove('has-form');
+      actions.replaceChildren();
+      const summary=document.createElement('div');
+      summary.className='admin-chat-row from-visitor';
+      summary.innerHTML='<div class="admin-message admin-registration-summary"><small>已提交登记资料</small><strong>陈珍珍</strong><span>信息补全 · 待核验</span></div>';
+      log.append(summary);log.scrollTop=log.scrollHeight;
+      deliver(['已收到登记资料，正在核验，请稍后。']);
+      armAdminNoticeAudio();
       scheduleChenRegistrationCompletion();
     };
     form.onsubmit=event=>event.preventDefault();
