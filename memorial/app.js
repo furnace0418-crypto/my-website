@@ -364,6 +364,28 @@ function showChenMessageVision(){
   window.setTimeout(()=>vision.remove(),window.matchMedia('(prefers-reduced-motion: reduce)').matches?1100:2400);
 }
 let chenMessageVisionShown=false;
+function addPersonalArchive(name,residentNumber){
+  const tabs=app.querySelector('.life-tabs');
+  tabs.querySelector('span').outerHTML='<button class="personal-archive-tab" type="button" data-life-tab="personal">个人信息留存</button>';
+  const pane=document.createElement('div');
+  pane.className='life-pane personal-archive-pane';
+  pane.dataset.lifePane='personal';
+  const rows=[...app.querySelectorAll('.life-profile dl div')].map(row=>[row.querySelector('dt').textContent,row.querySelector('dd').textContent]);
+  const details=`<div class="personal-archive-details"><h2>个人信息留存</h2><p>以下内容依据纪念馆现有资料留存。</p><dl><div><dt>姓名</dt><dd>${esc(name)}</dd></div>${rows.map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl></div>`;
+  if(!document.body.classList.contains('invite-theme'))pane.innerHTML=details;
+  else{
+    pane.innerHTML='<div class="personal-archive-gate"><h2>个人信息留存</h2><p>请输入该居民的居民编号，验证后查看留存资料。</p><form><label for="personal-resident-number">居民编号</label><div class="personal-archive-entry"><input id="personal-resident-number" name="residentNumber" type="text" autocomplete="off" spellcheck="false" required><button type="submit">确认查看</button></div><p class="personal-archive-error" role="alert" hidden></p></form></div>';
+    pane.querySelector('form').onsubmit=event=>{
+      event.preventDefault();
+      const value=pane.querySelector('input').value.trim().toUpperCase();
+      if(residentNumber&&value===residentNumber){pane.innerHTML=details;return}
+      const error=pane.querySelector('.personal-archive-error');
+      error.textContent=residentNumber?'居民编号有误，请核对后重试。':'该居民的留存资料暂未开放查询。';
+      error.hidden=false;
+    };
+  }
+  app.querySelector('.life-story').append(pane);
+}
 function zhenzhenMemorial(initialTab='story'){
   const taoyuanTimeline=[
     ['2004年｜出生于云阳','陈珍珍出生于云阳市。童年时期主要与母亲张文华共同生活，性格开朗，喜欢拍照，也很喜欢小动物。'],
@@ -404,6 +426,7 @@ function zhenzhenMemorial(initialTab='story'){
     profileRows[4].querySelector('dt').textContent='登记地';
     profileRows[4].querySelector('dd').textContent='桃原市纪念馆';
   }
+  addPersonalArchive('陈珍珍','TYF03262620240912');
   addMemorialBackLink('陈珍珍');
   document.querySelector('.tribute-action').href='#services/chen-zhenzhen';
   const messagePane=document.querySelector('[data-life-pane="messages"]');
@@ -513,6 +536,7 @@ function zhangwenhuaMemorial(initialTab='story'){
     profileRows[4].querySelector('dt').textContent='登记地';
     profileRows[4].querySelector('dd').textContent='桃原市纪念馆';
   }
+  addPersonalArchive('张文华',null);
   addMemorialBackLink('张文华');
   const messagePane=app.querySelector('[data-life-pane="messages"]');
   try{for(const wish of JSON.parse(localStorage.getItem('zhang-wenhua-wishes')||'[]')){const article=document.createElement('article');article.className='memorial-message';const by=document.createElement('b'),body=document.createElement('p'),time=document.createElement('time');by.textContent=wish.by||'普通用户';body.textContent=wish.message||'';time.textContent=wish.at||'';article.append(by,body,time);messagePane.append(article)}}catch(_){}
@@ -533,3 +557,4 @@ function zhangwenhuaMemorial(initialTab='story'){
   }
 }
 addEventListener('hashchange',route);route();
+
