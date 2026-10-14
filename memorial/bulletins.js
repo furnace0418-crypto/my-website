@@ -44,7 +44,12 @@ function bulletinPage(id='launch'){
   if(fortuneBody)app.querySelector('.bulletin-article-body').appendChild(fortuneBody);
   if(contact){
     app.querySelector('.bulletin-reader').classList.add('admin-contact-page');
-    app.querySelector('.bulletin-reader').innerHTML='<h2 id="bulletin-title" class="visually-hidden">联系管理员</h2><div class="admin-chat" aria-label="管理员咨询"></div>';
-    renderAdminContact(app.querySelector('.admin-chat'));
+    if(document.body.classList.contains('invite-theme')){
+      app.querySelector('.bulletin-reader').innerHTML='<section class="admin-unavailable" aria-labelledby="bulletin-title"><div class="admin-unavailable-symbol" aria-hidden="true">!</div><p class="admin-unavailable-kicker">服务状态</p><h2 id="bulletin-title">联系管理员暂不可用</h2><p>当前咨询业务繁忙，暂无法接入管理员服务。请稍后再试。</p><span class="admin-unavailable-status">暂未开放接入</span></section>';
+    }else{
+      app.querySelector('.bulletin-reader').innerHTML='<h2 id="bulletin-title" class="visually-hidden">联系管理员</h2><div class="admin-chat" aria-label="管理员咨询"></div>';
+      renderAdminContact(app.querySelector('.admin-chat'));
+    }
   }
 }
+
