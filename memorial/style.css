@@ -259,3 +259,14 @@ body{min-height:100dvh;display:flex;flex-direction:column}#app{flex:1 0 auto}.si
 @keyframes chen-vision-word{0%{opacity:0;transform:translate(7px,-4px) rotate(var(--angle)) scale(1.5)}45%{opacity:var(--alpha)}70%{transform:translate(-3px,2px) rotate(var(--angle)) scale(.95)}100%{opacity:var(--alpha);transform:rotate(var(--angle)) scale(1)}}
 @keyframes chen-vision-curtain{0%{background:rgba(12,0,0,.15)}18%{background:rgba(12,0,0,.77)}80%{opacity:1}100%{opacity:0}}
 @media(prefers-reduced-motion:reduce){.chen-message-vision{animation:chen-vision-curtain 1.1s ease-out both}.chen-message-vision span{animation:none;opacity:var(--alpha);transform:rotate(var(--angle))}}
+
+/* 暗色主题统一使用注册按钮的深红强调色。 */
+body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
+.invite-theme .site-header nav a:hover,.invite-theme .header-account a:hover,.invite-theme .invite-hero-copy h1,.invite-theme .life-back-link,.invite-theme .fortune-record .fortune-verdict,.invite-theme .name-search-history-clear,.invite-theme .name-search-history-remove,.invite-theme .hero-search-error,.invite-theme .browse-search-error{color:var(--invite-accent)}
+.invite-theme .site-header nav a:hover:after,.invite-theme .site-header nav a[href="#home"]:after{background:var(--invite-accent)}
+.invite-theme .hero-search,.invite-theme .browse-tools .search-input,.invite-theme .offering-notice,.invite-theme .resident-note-label{border-color:var(--invite-accent)}
+.invite-theme .browse-tools .btn,.invite-theme .hero-search button{background:var(--invite-accent);border-color:var(--invite-accent);color:#fff}
+.invite-theme .resident-note-label{color:var(--invite-accent)}
+.invite-entry-text{color:#78251f}
+.invite-theme .overview-frame .platform-intro,.invite-theme .service-panel .section-heading,.invite-theme .notice-panel .section-heading,.invite-theme .about-panel .section-heading{border-bottom-color:rgba(120,37,31,.48)}
+.invite-theme .service-grid a{border-color:rgba(120,37,31,.48)}
