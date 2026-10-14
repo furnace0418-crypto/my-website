@@ -89,7 +89,10 @@ function renderAdminContact(host){
       const residentName=form.elements.residentName.value.trim();
       if(!residentName)return;
       appendMessage('visitor',residentName);
-      deliver([`在继续登记前，请问您与${residentName}是什么关系？`],()=>showRelationshipChoices(kind,residentName));
+      const replies=residentName==='陈珍珍'
+        ?['陈珍珍的迁入记录在最终确认时出现异常。系统判定显示，其现实中的死亡形式符合“意外终止”条件，但相关过程存在明显的人为干预痕迹。根据生前记录，她曾主动介入迁入进程，使部分条件提前达成。由于最终结果仍以非直接主动方式发生，该次迁入结果判定有效，但不符合常规流程，故列入异常记录。',`在继续登记前，请问您与${residentName}是什么关系？`]
+        :[`在继续登记前，请问您与${residentName}是什么关系？`];
+      deliver(replies,()=>showRelationshipChoices(kind,residentName));
     };
     form.elements.residentName.focus();
   };
@@ -224,7 +227,7 @@ function renderAdminContact(host){
       if(!correct){feedback.textContent='信息有误，请核对后重试。';feedback.dataset.state='error';return}
       window.memorialRegistrationState.chen=true;
       localStorage.setItem('memorial-chen-registration-unlocked','1');
-      feedback.textContent='登记已受理。现在可以返回搜索，查看桃原市纪念馆。';
+      feedback.textContent='登记信息已核验，相关居民纪念馆现已纳入检索范围。';
       feedback.dataset.state='success';
       saveButton.disabled=true;
       appendMessage('admin','登记已受理。陈珍珍的桃原市纪念馆现已开放检索。');
