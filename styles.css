@@ -1266,7 +1266,7 @@ button { font: inherit; }
 .yunyang-interviews h2{margin:0;color:#173f5c;font:bold 29px SimSun}
 .yunyang-interviews header p{color:#4b6c81;font:18px SimSun}
 .yunyang-interview-list{border:1px solid #bed4e2;border-top:0;background:#fff}
-.yunyang-interview-card{position:relative;margin:0;padding:22px 24px;border:0;border-bottom:1px solid #dce5ea;background:#fff;box-shadow:none}
+.yunyang-interview-card{position:relative;margin:0;padding:22px 24px;border:0;border-bottom:1px solid #dce5ea;background:#fff;box-shadow:none;cursor:pointer}
 .yunyang-interview-card:hover{border-color:#dce5ea;background:#f4f8fb}
 .yunyang-interview-card span{color:#236e9a;font:17px SimSun}
 .yunyang-interview-card h3{margin:8px 0;color:#214665;font:bold 22px/1.45 SimSun;text-wrap:balance}
@@ -1275,12 +1275,15 @@ button { font: inherit; }
 .yunyang-interview-card button:hover{text-decoration:underline}
 .yunyang-interview-card .yunyang-interview-denied{margin:12px 0 0;padding:10px 13px;border:1px solid #e4cd78;background:#fff9db;color:#795923;font:16px/1.5 SimSun}
 .yunyang-interview-denied[hidden]{display:none!important}
-.yunyang-interview-dialog{box-sizing:border-box;width:min(440px,calc(100vw - 36px));max-width:none;padding:26px 29px 23px;border:1px solid #7ca9c6;border-top:4px solid #2177ad;background:#fff;color:#294b63;box-shadow:0 16px 45px #0e2c4470;font:18px/1.7 SimSun,"Microsoft YaHei",sans-serif}
-.yunyang-interview-dialog::backdrop{background:rgba(21,45,63,.38)}
-.yunyang-interview-dialog h2{margin:0 0 13px;color:#145b8d;font:bold 24px/1.4 SimSun}
-.yunyang-interview-dialog p{margin:0 0 22px}
-.yunyang-interview-dialog button{display:block;min-width:104px;margin-left:auto;padding:8px 18px;border:1px solid #196894;background:#2177ad;color:#fff;font:17px SimSun;cursor:pointer}
-.yunyang-interview-dialog button:hover{background:#145b8d}
+.browser-window .window-content{position:relative}
+.yunyang-interview-shield{position:absolute;inset:0;z-index:30;display:grid;place-items:center;padding:18px;background:rgba(45,43,35,.34)}
+.yunyang-interview-dialog{box-sizing:border-box;width:min(480px,100%);padding:0 20px 20px;border:1px solid #d4ad28;background:#fffdf0;color:#5f5b4c;box-shadow:0 12px 32px #302d2070;font:18px/1.65 SimSun,"Microsoft YaHei",sans-serif}
+.yunyang-interview-dialog-head{display:flex;align-items:center;gap:15px;margin:0 -20px 20px;padding:8px 14px;border-bottom:1px solid #e1c45c;background:#fff8d9;color:#68645a;font-size:15px}
+.yunyang-interview-dialog-head strong{padding:3px 10px;background:#ffd11b;color:#2a2925;font:bold 17px SimSun}
+.yunyang-interview-dialog h2{margin:0 0 11px;color:#b12b22;font:bold 23px/1.4 SimSun}
+.yunyang-interview-dialog p{margin:0 0 20px;color:#b12b22}
+.yunyang-interview-dialog button{display:block;min-width:104px;margin-left:auto;padding:7px 17px;border:1px solid #bb9e3d;background:#fff3bb;color:#423a25;font:17px SimSun;cursor:pointer}
+.yunyang-interview-dialog button:hover{background:#ffe88d}
 .yunyang-article{width:min(100%,1100px);max-width:1100px;margin:20px auto 40px;padding:0 42px;color:#242b31;font:19px/2.05 SimSun,"Microsoft YaHei",sans-serif}
 .yunyang-article-navigation{gap:0;margin-bottom:28px;border-bottom:1px solid #dae3e8}
 .yunyang-article-back{padding:0 0 10px;color:#196894;font:18px SimSun}
