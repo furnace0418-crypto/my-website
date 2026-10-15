@@ -429,6 +429,7 @@ function changePasswordPage(){
   const user=account();
   if(!user||user.accountId==='123456'){location.hash='#login';return}
   app.innerHTML=`<div class="page-shell"><div class="panel form-panel"><div class="form-heading"><h1>修改密码</h1><p>昵称 <span id="securityAccount"></span></p></div><form class="form-body" id="changePasswordForm"><div class="message" id="formMessage" hidden></div><label class="field"><span>当前密码</span><input name="current" type="password" autocomplete="current-password" required></label><label class="field"><span>新密码</span><input name="password" type="password" autocomplete="new-password" placeholder="至少 8 位" required></label><label class="field"><span>确认新密码</span><input name="confirm" type="password" autocomplete="new-password" required></label><button class="btn" type="submit">保存新密码</button></form></div></div>`;
+  app.querySelector('.page-shell').insertAdjacentHTML('afterbegin','<a class="page-return-me" href="#me">← 返回我的</a>');
   app.querySelector('#securityAccount').textContent=user.name;
   app.querySelector('#changePasswordForm').onsubmit=async e=>{
     e.preventDefault();
@@ -496,17 +497,18 @@ function create(section='details',hallId=''){
     const own=saved().filter(h=>ownsHall(h,account()));
     if(!hallId){
       if(own.length===1){location.hash='#create/lantern/'+encodeURIComponent(own[0].id);return}
-      app.innerHTML='<div class="page-shell create-page"><div class="create-page-head"><h1>定制长明灯</h1><p>请选择要绑定的纪念馆</p></div><div class="my-main"><div class="my-hall-list" id="lampHallList"></div></div></div>';
+      app.innerHTML='<div class="page-shell create-page"><a class="page-return-me" href="#me">← 返回我的</a><div class="create-page-head"><h1>定制长明灯</h1><p>请选择要绑定的纪念馆</p></div><div class="my-main"><div class="my-hall-list" id="lampHallList"></div></div></div>';
       const list=app.querySelector('#lampHallList');
       if(!own.length)list.innerHTML='<div class="my-empty"><strong>先创建纪念馆</strong><p>每座纪念馆拥有自己独立的长明灯。</p><a class="btn" href="#create">创建纪念馆</a></div>';
       else own.forEach(h=>{const link=document.createElement('a');link.className='my-hall-item lamp-hall-choice';link.href='#create/lantern/'+encodeURIComponent(h.id);link.textContent=h.name+'　›';list.append(link)});
       return;
     }
     const hall=own.find(h=>h.id===hallId);if(!hall){location.hash='#me';return}
-    app.innerHTML=`<div class="create-lantern-fullscreen"><iframe class="create-lantern-frame" title="${esc(hall.name)}的长明灯" src="lantern.html?memorial=${encodeURIComponent(hall.id)}&v=4" allow="fullscreen"></iframe><a class="create-lantern-back" href="#hall/${encodeURIComponent(hall.id)}">‹ 返回${esc(hall.name)}的纪念馆</a></div>`;
+    app.innerHTML=`<div class="create-lantern-fullscreen"><iframe class="create-lantern-frame" title="${esc(hall.name)}的长明灯" src="lantern.html?memorial=${encodeURIComponent(hall.id)}&v=4" allow="fullscreen"></iframe><a class="create-lantern-back" href="#me">‹ 返回我的</a></div>`;
     return;
   }
   app.innerHTML=`<div class="page-shell create-page"><div class="create-page-head"><h1>创建纪念馆</h1><p>为逝者建立专属的记忆空间</p></div><div class="create-sections" role="tablist" aria-label="创建纪念馆栏目"><a role="tab" aria-selected="${!lamp}" href="#create">基本资料</a><a role="tab" aria-selected="${lamp}" href="#create/lantern">定制长明灯</a></div><div class="create-section-body">${lamp?'<iframe class="create-lantern-frame" title="定制长明灯" src="lantern.html?v=2" loading="lazy" allow="fullscreen"></iframe>':'<form class="form-body create-form" id="createForm"><label class="field"><span>逝者姓名</span><input name="name" required placeholder="请输入姓名"></label><label class="field"><span>出生日期</span><input name="birth" type="date" required></label><label class="field"><span>逝世日期</span><input name="death" type="date" required></label><label class="field"><span>生平简介</span><textarea name="bio" placeholder="记录值得珍藏的故事"></textarea></label><button class="btn" type="submit">创建纪念馆</button></form>'}</div></div>`;
+  app.querySelector('.create-page').insertAdjacentHTML('afterbegin','<a class="page-return-me" href="#me">← 返回我的</a>');
   window.createDatePickerAbort?.abort();window.createDatePickerAbort=new AbortController();
   app.querySelectorAll('#createForm input[type="date"]').forEach(wireCreateDatePicker);
   document.querySelector('#createForm').onsubmit=e=>{e.preventDefault();const f=e.currentTarget;if(!f.birth.value||!f.death.value)return;const h={id:String(Date.now()),name:f.name.value.trim(),birth:f.birth.value,death:f.death.value,creator:account().name,creatorId:account().accountId,bio:f.bio.value.trim(),records:[]};localStorage.setItem('memorial-halls',JSON.stringify([...saved(),h]));location.hash='#hall/'+h.id;};
@@ -524,6 +526,7 @@ function editHall(id){
   const saveButton=form.querySelector('button[type="submit"]');saveButton.textContent='保存修改';
   const actions=document.createElement('div');actions.className='create-edit-actions';saveButton.before(actions);actions.append(saveButton);
   actions.insertAdjacentHTML('beforeend','<a class="create-edit-cancel" href="#me">返回我的</a>');
+  const lampPanel=document.createElement('section');lampPanel.className='edit-lamp-panel';lampPanel.innerHTML='<div><h2>长明灯</h2><p>这盏灯与当前纪念馆绑定</p></div><a href="#create/lantern/'+encodeURIComponent(hall.id)+'">继续定制长明灯 ›</a>';app.querySelector('.create-section-body').append(lampPanel);
   form.onsubmit=event=>{event.preventDefault();if(!form.reportValidity())return;const updated={...hall,name:form.elements.name.value.trim(),birth:form.elements.birth.value,death:form.elements.death.value,bio:form.elements.bio.value.trim()};localStorage.setItem('memorial-halls',JSON.stringify(saved().map(item=>item.id===id?updated:item)));location.hash='#me'};
 }
 function myPage(){
@@ -546,7 +549,7 @@ function myPage(){
   }
   if(document.body.classList.contains('invite-theme')){app.querySelector('.my-section-title .btn').remove();list.innerHTML='<div class="my-empty"><strong>特邀主题暂不展示自建纪念馆</strong><p>切回普通主题后可继续查看。</p></div>';return}
   if(!own.length){app.querySelector('.my-section-title .btn').remove();list.innerHTML='<div class="my-empty"><strong>还没有创建纪念馆</strong><p>建立一处纪念空间，保存关于故人的故事。</p><a class="btn" href="#create">＋ 创建纪念馆</a></div>';return}
-  own.forEach(h=>{const item=document.createElement('div');item.className='my-hall-item';const info=document.createElement('a');info.className='my-hall-info';info.href='#hall/'+encodeURIComponent(h.id);const title=document.createElement('strong');title.textContent=h.name;const meta=document.createElement('small');meta.textContent=[h.birth,h.death].filter(Boolean).join(' — ');info.append(title,meta);const actions=document.createElement('div');actions.className='my-hall-actions';const enter=document.createElement('a');enter.href=info.href;enter.textContent='进入';const lamp=document.createElement('a');lamp.href='#create/lantern/'+encodeURIComponent(h.id);lamp.textContent=localStorage.getItem(`annian-glass-lamp-hall-v1-${h.id}`)?'继续定制长明灯':'定制长明灯';const edit=document.createElement('a');edit.href='#manage/'+encodeURIComponent(h.id);edit.textContent='编辑';const remove=document.createElement('button');remove.type='button';remove.textContent='删除';remove.onclick=()=>confirmHallDeletion(h);actions.append(enter,lamp,edit,remove);item.append(info,actions);list.append(item)});
+  own.forEach(h=>{const item=document.createElement('div');item.className='my-hall-item';const info=document.createElement('a');info.className='my-hall-info';info.href='#hall/'+encodeURIComponent(h.id);const title=document.createElement('strong');title.textContent=h.name;const meta=document.createElement('small');meta.textContent=[h.birth,h.death].filter(Boolean).join(' — ');info.append(title,meta);const actions=document.createElement('div');actions.className='my-hall-actions';const enter=document.createElement('a');enter.href=info.href;enter.textContent='进入';const edit=document.createElement('a');edit.href='#manage/'+encodeURIComponent(h.id);edit.textContent='编辑';const remove=document.createElement('button');remove.type='button';remove.textContent='删除';remove.onclick=()=>confirmHallDeletion(h);actions.append(enter,edit,remove);item.append(info,actions);list.append(item)});
 }
 function confirmHallDeletion(hall){
   const user=account();if(!ownsHall(hall,user))return;
@@ -678,7 +681,8 @@ function customHall(id,initialTab='story'){
   app.innerHTML=`<div class="life-memorial-shell custom-life-shell"><aside class="life-profile"><div class="custom-life-portrait"><img src="assets/person-placeholder.svg?v=3" alt=""></div><h1>${esc(h.name)}</h1><p class="life-dates">${esc(h.birth)}　—　${esc(h.death)}</p><p class="life-wish">愿记忆与思念长存。</p><dl><div><dt>出生</dt><dd>${esc(h.birth)}</dd></div><div><dt>离世</dt><dd>${esc(h.death)}</dd></div><div><dt>创建者</dt><dd>${esc(h.creator)}</dd></div></dl><button class="life-flower" type="button">✿　献花</button></aside><section class="life-story"><nav class="life-tabs" aria-label="纪念馆栏目"><button class="active" data-life-tab="story">过往记事</button><button data-life-tab="tributes">祭奠记录</button><button data-life-tab="messages">留言板</button><span>／ 生者记忆 · 让爱延续 ／</span></nav><div class="life-pane active" data-life-pane="story"><div class="life-timeline"><article><i></i><h2>生平简介</h2><p>${esc(h.bio||'暂无生平简介')}</p></article></div></div><div class="life-pane" data-life-pane="tributes"><div class="tribute-heading"><h2>祭奠记录</h2></div><div class="tribute-list custom-tribute-list"></div><a class="tribute-action" href="#services/${encodeURIComponent(id)}">前往祭奠</a></div><div class="life-pane" data-life-pane="messages"><div class="tribute-heading"><h2>留言板</h2></div><div class="custom-message-list"></div><form class="custom-message-form"><label class="field"><span>留下思念</span><textarea name="message" placeholder="写下想说的话" required></textarea></label><button class="btn" type="submit">发表留言</button></form></div></section></div><div class="flower-confirm" hidden><section role="dialog" aria-modal="true"><button class="flower-confirm-close" type="button" aria-label="关闭">×</button><div class="flower-confirm-icon">✿</div><h2>已献花</h2><p>愿这一束花承载思念，长伴安眠。</p><button class="flower-confirm-ok" type="button">确定</button></section></div>`;
   const dates=app.querySelector('.life-dates');dates.classList.add('custom-life-dates');
   const birth=document.createElement('time'),death=document.createElement('span');birth.textContent=h.birth||'';death.textContent=`— ${h.death||''}`;dates.replaceChildren(birth,death);
-  addMemorialBackLink(h.name);addPersonalArchive(h.name,null);
+  if(ownsHall(h,account())){const back=document.createElement('a');back.className='life-back-link';back.href='#me';back.textContent='← 返回我的';app.querySelector('.life-profile').prepend(back)}else addMemorialBackLink(h.name);
+  addPersonalArchive(h.name,null);
   const render=()=>{const rites=h.records.filter(item=>item.type!=='留言'),messages=h.records.filter(item=>item.type==='留言');app.querySelector('.custom-tribute-list').innerHTML=rites.length?rites.map(item=>`<article class="memorial-message"><b>${esc(item.by)}</b><time>${esc(item.at)}</time><p>${esc(item.text)}</p></article>`).join(''):'<p class="empty">尚无祭奠记录</p>';app.querySelector('.custom-message-list').innerHTML=messages.length?messages.map(item=>`<article class="memorial-message"><b>${esc(item.by)}</b><time>${esc(item.at)}</time><p>${esc(item.text)}</p></article>`).join(''):'<p class="empty">暂无留言</p>'};
   const add=(type,message)=>{h.records??=[];h.records.unshift({type,by:account()?.name||'访客',at:dateText(),text:message});localStorage.setItem('memorial-halls',JSON.stringify(saved().map(item=>item.id===h.id?h:item)));render()};render();
   app.querySelectorAll('[data-life-tab]').forEach(button=>button.onclick=()=>{app.querySelectorAll('[data-life-tab]').forEach(item=>item.classList.toggle('active',item===button));app.querySelectorAll('[data-life-pane]').forEach(pane=>pane.classList.toggle('active',pane.dataset.lifePane===button.dataset.lifeTab))});
@@ -699,8 +703,8 @@ function route(){
   else if(page==='services'&&!id){location.hash='#create/lantern';return}
   else if(page==='services'){
     if(document.body.classList.contains('invite-theme')&&saved().some(h=>h.id===id)){location.hash='#browse';return}
-    const source=['chen-zhenzhen','zhang-wenhua'].includes(id)||saved().some(h=>h.id===id)?`lantern.html?memorial=${encodeURIComponent(id)}&v=4`:'lantern.html?v=4';
-    app.innerHTML=`<iframe title="云祭服务 · 定制长明灯" src="${source}" style="display:block;width:100%;height:1250px;border:0" allow="fullscreen"></iframe>`;
+    const custom=saved().find(h=>h.id===id),source=['chen-zhenzhen','zhang-wenhua'].includes(id)||custom?`lantern.html?memorial=${encodeURIComponent(id)}&v=4`:'lantern.html?v=4';
+    app.innerHTML=custom?`<div class="create-lantern-fullscreen"><iframe class="create-lantern-frame" title="${esc(custom.name)}的长明灯" src="${source}" allow="fullscreen"></iframe><a class="create-lantern-back" href="${ownsHall(custom,account())?'#me':'#browse'}">‹ ${ownsHall(custom,account())?'返回我的':'返回浏览'}</a></div>`:`<iframe title="云祭服务 · 定制长明灯" src="${source}" style="display:block;width:100%;height:1250px;border:0" allow="fullscreen"></iframe>`;
   }
   else if(page==='articles')bulletinPage(id);
   else if(page==='register')register();

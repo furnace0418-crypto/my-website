@@ -559,3 +559,13 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 .my-legacy-lamp select{margin-left:10px;padding:7px 10px;border:1px solid #d8c8ba;background:#fff;color:inherit;font:inherit}
 .my-legacy-lamp button{padding:9px 15px;border:1px solid #9b5148;border-radius:5px;background:#9b5148;color:#fff;font:inherit;cursor:pointer}
 @media(max-width:700px){.my-legacy-lamp{flex-direction:column;align-items:stretch}.my-legacy-lamp select{display:block;width:100%;margin:8px 0 0}}
+.page-return-me{display:inline-flex;align-items:center;margin:0 0 18px;color:#795c4d;font-size:16px}
+.page-return-me:hover{color:#9b5148;text-decoration:underline;text-underline-offset:4px}
+.edit-lamp-panel{display:flex;align-items:center;justify-content:space-between;gap:20px;max-width:650px;margin:28px auto 0;padding:22px 24px;border:1px solid #e4d6ca;border-radius:7px;background:#fcf8f3}
+.edit-lamp-panel h2{margin:0 0 6px;color:#503b32;font:700 22px SimSun,serif}
+.edit-lamp-panel p{margin:0;color:#8c7b70;font-size:14px}
+.edit-lamp-panel a{flex:none;padding:10px 15px;border:1px solid #d4bfb2;border-radius:5px;background:#fffdfa;color:#795647;font-size:16px}
+.edit-lamp-panel a:hover{background:#f4ebe4}
+.invite-theme .edit-lamp-panel{background:#203031;border-color:#50605a}
+.invite-theme .edit-lamp-panel h2,.invite-theme .edit-lamp-panel a{color:#d7ded9}
+@media(max-width:600px){.edit-lamp-panel{align-items:stretch;flex-direction:column}.edit-lamp-panel a{text-align:center}}
