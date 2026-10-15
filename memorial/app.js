@@ -118,17 +118,7 @@ async function saveUserAvatar(id,file){
     return true;
   }catch(_){return false}finally{URL.revokeObjectURL(objectUrl)}
 }
-const loginHistoryKey='memorial-login-history';
-function recentLoginAccounts(){
-  try{
-    const entries=JSON.parse(localStorage.getItem(loginHistoryKey)||'[]');
-    return Array.isArray(entries)?entries.filter(id=>typeof id==='string'&&id.length<=32).slice(0,5):[];
-  }catch(_){return[]}
-}
-function rememberLoginAccount(id){
-  if(!id)return;
-  localStorage.setItem(loginHistoryKey,JSON.stringify([id,...recentLoginAccounts().filter(entry=>entry!==id)].slice(0,5)));
-}
+localStorage.removeItem('memorial-login-history');
 const applyInviteTheme=()=>document.body.classList.toggle('invite-theme',localStorage.getItem('memorial-invite-theme')==='1');
 applyInviteTheme();
 const inviteVideoState={paused:false,muted:false,volume:.75,currentTime:0};
@@ -344,7 +334,6 @@ function register(){
       const user=await window.memorialLocalAuth.create(nickname,password);
       if(avatarInput.files[0])await saveUserAvatar(user.accountId,avatarInput.files[0]);
       localStorage.setItem('memorial-account',JSON.stringify(user));
-      rememberLoginAccount(user.accountId);
       header();
       showEntryInvitePrompt();
     }catch(error){message.textContent=error.message==='昵称已被使用，请换一个昵称'?error.message:'注册失败，请检查浏览器是否允许本地存储后重试。';message.hidden=false;submit.disabled=false}
@@ -371,55 +360,13 @@ function playInviteEntryFx(){
   setTimeout(()=>{clearInterval(timer);fx.remove()},1400);
 }
 function login(){
-  app.innerHTML=`<div class="page-shell"><div class="panel form-panel"><div class="form-heading"><h1>用户登录</h1><p>回到安念堂，继续珍藏记忆</p></div><form class="form-body" id="loginForm"><div class="message" id="formMessage" hidden></div><label class="field"><span>昵称</span><input name="nickname" autocomplete="username" placeholder="请输入昵称" required></label><label class="field"><span>密码</span><input name="password" type="password" autocomplete="current-password" placeholder="请输入密码" required></label><button class="btn" type="submit">登录</button><p class="fine-print">还没有账号？ <a href="#register">立即注册</a></p></form></div></div>`;
+  app.innerHTML=`<div class="page-shell"><div class="panel form-panel"><div class="form-heading"><h1>用户登录</h1><p>回到安念堂，继续珍藏记忆</p></div><form class="form-body" id="loginForm" autocomplete="off"><div class="message" id="formMessage" hidden></div><label class="field"><span>昵称</span><input name="nickname" autocomplete="off" spellcheck="false" placeholder="请输入昵称" required></label><label class="field"><span>密码</span><input name="password" type="password" autocomplete="off" placeholder="请输入密码" required></label><button class="btn" type="submit">登录</button><p class="fine-print">还没有账号？ <a href="#register">立即注册</a></p></form></div></div>`;
   const form=document.querySelector('#loginForm');
-  const accountInput=form.elements.namedItem('nickname');
   const forgot=document.createElement('p');
   forgot.className='fine-print login-forgot';
   forgot.innerHTML='<button type="button">忘记密码？</button><span hidden>若已退出且不记得密码，请重新注册。</span>';
   form.querySelector('.fine-print').before(forgot);
   forgot.querySelector('button').onclick=()=>{forgot.querySelector('span').hidden=!forgot.querySelector('span').hidden};
-  const picker=document.createElement('div');
-  picker.className='login-nickname-picker';
-  const nicknameField=accountInput.closest('.field');
-  nicknameField.before(picker);
-  picker.append(nicknameField);
-  const toggle=document.createElement('button');
-  toggle.type='button';toggle.className='login-history-toggle';toggle.setAttribute('aria-label','展开最近登录的昵称');toggle.setAttribute('aria-expanded','false');
-  const history=document.createElement('div');
-  history.className='login-account-history';history.hidden=true;
-  picker.append(toggle,history);
-  const closeHistory=()=>{history.hidden=true;toggle.setAttribute('aria-expanded','false')};
-  toggle.onclick=()=>{history.hidden=!history.hidden;toggle.setAttribute('aria-expanded',String(!history.hidden))};
-  document.addEventListener('pointerdown',function closeOnOutside(event){if(!picker.isConnected){document.removeEventListener('pointerdown',closeOnOutside);return}if(!picker.contains(event.target))closeHistory()});
-  const renderLoginHistory=()=>{
-    const ids=recentLoginAccounts();
-    history.replaceChildren();
-    toggle.hidden=!ids.length;
-    if(!ids.length)closeHistory();
-    if(!ids.length)return;
-    const title=document.createElement('p');
-    title.textContent='最近登录';
-    history.append(title);
-    const list=document.createElement('div');
-    list.className='login-account-list';
-    history.append(list);
-    for(const id of ids){
-      const item=document.createElement('button');
-      item.className='login-account-item';
-      item.type='button';
-      const savedProfile=window.memorialLocalAuth.profile(id);
-      const portrait=document.createElement('span');portrait.className='login-history-avatar';
-      const source=avatarFor(id);
-      if(source){const image=document.createElement('img');image.src=source;image.alt='';portrait.append(image)}
-      const label=document.createElement('span');label.className='login-history-name';label.textContent=savedProfile.name;
-      const arrow=document.createElement('span');arrow.className='login-history-arrow';arrow.setAttribute('aria-hidden','true');
-      item.append(portrait,label,arrow);
-      item.onclick=()=>{accountInput.value=savedProfile.name;closeHistory();form.elements.namedItem('password').focus()};
-      list.append(item);
-    }
-  };
-  renderLoginHistory();
   form.onsubmit=async e=>{
     e.preventDefault();
     const f=e.currentTarget,nickname=field(f,'nickname').trim(),password=field(f,'password');
@@ -427,10 +374,8 @@ function login(){
     message.hidden=true;submit.disabled=true;
     try{
       let user=await window.memorialLocalAuth.verify(nickname,password);
-      if(!user&&await window.memorialGateVerify('guest',{nickname,password}))user={name:'特邀访客',accountId:'guest-invite',guest:true};
       if(!user){message.hidden=false;message.textContent='昵称或密码不正确';return}
       localStorage.setItem('memorial-account',JSON.stringify(user));
-      rememberLoginAccount(user.accountId||user.phone);
       header();
       showEntryInvitePrompt();
     }catch(_){message.hidden=false;message.textContent='登录失败，请稍后重试。'}
