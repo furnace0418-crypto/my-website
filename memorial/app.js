@@ -91,11 +91,21 @@ let inviteAccessGranted=false;
 let inviteTransitionPending=false;
 const saved=()=>JSON.parse(localStorage.getItem('memorial-halls')||'[]');
 const previousAccount=JSON.parse(localStorage.getItem('memorial-account')||'null');
-if(previousAccount&&previousAccount.phone!=='123456'&&!localStorage.getItem('memorial-registered-account'))localStorage.setItem('memorial-registered-account',JSON.stringify(previousAccount));
+if(previousAccount?.password&&previousAccount.phone!=='123456'&&!localStorage.getItem('memorial-registered-account'))localStorage.setItem('memorial-registered-account',JSON.stringify(previousAccount));
 localStorage.removeItem('memorial-account');
 localStorage.removeItem('memorial-invite-theme');
 const account=()=>JSON.parse(localStorage.getItem('memorial-account')||'null');
-const registeredAccount=()=>JSON.parse(localStorage.getItem('memorial-registered-account')||'null');
+const loginHistoryKey='memorial-login-history';
+function recentLoginAccounts(){
+  try{
+    const entries=JSON.parse(localStorage.getItem(loginHistoryKey)||'[]');
+    return Array.isArray(entries)?entries.filter(id=>typeof id==='string'&&id.length<=32).slice(0,5):[];
+  }catch(_){return[]}
+}
+function rememberLoginAccount(id){
+  if(!id)return;
+  localStorage.setItem(loginHistoryKey,JSON.stringify([id,...recentLoginAccounts().filter(entry=>entry!==id)].slice(0,5)));
+}
 const applyInviteTheme=()=>document.body.classList.toggle('invite-theme',localStorage.getItem('memorial-invite-theme')==='1');
 applyInviteTheme();
 const inviteVideoState={paused:false,muted:false,volume:.75,currentTime:0};
@@ -252,41 +262,49 @@ function showInviteVerification(){
   code.focus();
 }
 function header(){
-  const user=account(),name=document.querySelector('#accountName'),exit=document.querySelector('#exitLink'),login=document.querySelector('.account-login'),articlesLink=document.querySelector('#articlesLink');
+  const user=account(),name=document.querySelector('#accountName'),exit=document.querySelector('#exitLink'),security=document.querySelector('#changePasswordLink'),registerLink=document.querySelector('.account-register'),login=document.querySelector('.account-login'),articlesLink=document.querySelector('#articlesLink');
   const signedIn=Boolean(user),darkTheme=document.body.classList.contains('invite-theme');
   if(name)name.textContent=signedIn?(darkTheme?'特邀访客':'普通用户'):'登录';
   if(exit)exit.hidden=!user;
+  if(registerLink)registerLink.hidden=signedIn;
+  if(security)security.hidden=!user||user.accountId==='123456';
   if(articlesLink)articlesLink.textContent='资讯';
   if(login){login.href=signedIn?'#':'#login';login.title=signedIn?(darkTheme?'切换至普通用户主题':inviteAccessGranted?'切换至特邀访客主题':'验证特邀访问权限'):'';login.onclick=signedIn?(event=>{event.preventDefault();if(darkTheme||inviteAccessGranted)toggleInviteTheme();else showInviteVerification()}):null;}
 }
 function home(){app.innerHTML=`<section class="invite-hero-copy"><h1>欢迎来到桃原市</h1><p>安念堂由福善文化研究会发起，致力于保存城市记忆，传承生命故事，<br>让每一份思念都有安放之地。</p><form class="hero-search" action="#browse"><span>⌕</span><input aria-label="搜索逝者" placeholder="输入姓名，追忆故人"><button type="submit">搜索</button><small class="hero-search-error" hidden></small></form></section><section class="portal-hero"><div class="portal-hero-inner"><h1>为逝者留名，为思念留处</h1><p>安念堂由福善文化研究会发起，致力于保存城市记忆，传承生命故事，<br>让每一份思念都有安放之地。</p><form class="hero-search" action="#browse"><span>⌕</span><input aria-label="搜索逝者" placeholder="输入姓名，追忆故人"><button type="submit">搜索</button><small class="hero-search-error" hidden></small></form></div></section><section class="portal-main"><div class="platform-intro section-heading"><h2><span>︽</span> 平台简介 <span>︾</span></h2><p>安念堂是面向社会的公益性网络纪念平台。<br>我们以数字化的方式，保存逝者生平事迹，传承家族记忆，倡导文明祭祀，弘扬中华优秀传统文化，<br>让思念跨越时空，让记忆生生不息。</p></div><div class="values portal-values"><article class="value-card"><div class="value-icon"><img src="assets/value-civilized-rites.png" alt=""></div><div><h3>文明祭祀</h3><p>摒弃传统祭祀的陋习，用绿色环保的方式寄托哀思，减少资源消耗和环境污染。</p></div></article><article class="value-card"><div class="value-icon"><img src="assets/value-across-time.png" alt=""></div><div><h3>跨越时空</h3><p>无论身在何处，都能随时缅怀逝者，打破地域限制，让思念不再受距离阻隔。</p></div></article><article class="value-card"><div class="value-icon"><img src="assets/value-memory-legacy.png" alt=""></div><div><h3>记忆传承</h3><p>记录逝者生平事迹，构建家族记忆档案，让后人能够了解先辈故事。</p></div></article></div><div class="portal-lower"><section class="service-panel"><div class="section-heading"><h2><span>︽</span> 服务介绍 <span>︾</span></h2><p>以科技传递思念，用文化守护记忆</p></div><div class="service-grid"><a href="#create"><b>⌂</b><strong>创建纪念馆</strong><span>为逝者建立一处永恒的纪念空间</span></a><a href="#browse"><b>❀</b><strong>网上献花</strong><span>以花寄情，遥表思念</span></a><a href="#services"><b>♨</b><strong>点亮长明灯</strong><span>一盏微光，长照思念</span></a><a href="#letters"><b>▤</b><strong>留言寄思</strong><span>写下你想对他说的话</span></a><a href="#letters"><b>✉</b><strong>时空信箱</strong><span>给逝去的亲人写一封信</span></a></div></section><aside class="notice-panel"><div class="section-heading"><h2><span>︽</span> 研究会公告 <span>︾</span></h2><p>发布公益纪念项目动态与文明祭祀倡议</p></div><ul><li><span>关于安念堂公益纪念平台正式上线的公告</span><time>2024-04-01</time></li><li><span>清明节网络祭祀倡议书</span><time>2024-03-28</time></li><li><span>关于纪念馆内容审核与管理的说明</span><time>2024-02-15</time></li><li><span>福善文化研究会2024年工作计划</span><time>2024-01-20</time></li></ul></aside></div><section class="about-panel"><div class="section-heading"><h2><span>︽</span> 关于我们 <span>︾</span></h2><p>让城市记住每一个平凡而珍贵的生命</p></div><div class="about-copy"><p>安念堂是福善文化研究会发起的公益纪念项目。我们关注生命故事的保存与家族记忆的传承，希望借助温和、庄重的数字方式，为每一份思念提供长久安放的空间。</p><p>平台倡导文明、节俭、绿色的纪念方式，并持续整理地方人物故事、家庭影像与口述资料，让普通人的生命经历也能被认真记录、被后人看见。</p></div></section></section>`;document.querySelectorAll('.hero-search').forEach(form=>form.onsubmit=e=>{e.preventDefault();const q=e.currentTarget.querySelector('input').value.trim(),error=e.currentTarget.querySelector('.hero-search-error');if(!q){error.textContent='请输入要搜索的姓名';error.hidden=false;return}const found=searchableHalls().filter(h=>h.name.includes(q));if(!found.length){error.textContent='未找到相关纪念馆';error.hidden=false;return}error.hidden=true;pendingBrowseQuery=q;location.hash='#browse'});}
 function register(){
-  app.innerHTML=`<div class="page-shell"><div class="panel form-panel"><div class="form-heading"><h1>用户注册</h1><p>创建账号，开启云端缅怀之旅</p></div><form class="form-body" id="registerForm"><div class="message" id="formMessage" hidden></div><label class="field"><span>账号</span><input name="accountId" autocomplete="username" placeholder="请输入账号" required></label><label class="field"><span>密码</span><input name="password" type="password" inputmode="numeric" autocomplete="new-password" placeholder="请输入六位数字密码" minlength="6" maxlength="6" pattern="[0-9]{6}" title="请输入六位数字密码" required></label><label class="field"><span>确认密码</span><input name="confirm" type="password" inputmode="numeric" autocomplete="new-password" placeholder="请再次输入六位数字密码" minlength="6" maxlength="6" pattern="[0-9]{6}" title="请输入六位数字密码" required></label><label class="check"><input type="checkbox" name="terms" required>我已阅读并同意用户协议和隐私政策</label><button class="btn" type="submit">注册</button><p class="fine-print">已有账号？ <a href="#login">立即登录</a></p></form></div></div>`;
+  app.innerHTML=`<div class="page-shell"><div class="panel form-panel"><div class="form-heading"><h1>用户注册</h1><p>只需设置密码，系统将为你分配账号</p></div><form class="form-body" id="registerForm"><div class="message" id="formMessage" hidden></div><label class="field"><span>设置密码</span><input name="password" type="password" autocomplete="new-password" placeholder="至少 8 位" minlength="8" required></label><label class="field"><span>确认密码</span><input name="confirm" type="password" autocomplete="new-password" placeholder="请再次输入密码" minlength="8" required></label><p class="local-account-note">账号仅保存在当前浏览器；换设备或清除浏览器数据后无法登录。</p><label class="check"><input type="checkbox" name="terms" required>我已阅读并同意用户协议和隐私政策</label><button class="btn" type="submit">注册</button><p class="fine-print">已有账号？ <a href="#login">立即登录</a></p></form></div></div>`;
   const registerForm=document.querySelector('#registerForm');
   registerForm.noValidate=true;
   const fieldHint=input=>{
     const hint=document.createElement('div');
     hint.className='message field-hint';hint.setAttribute('role','alert');hint.hidden=true;
     input.closest('.field').after(hint);
-    input.addEventListener('input',()=>{if(/^[0-9]{6}$/.test(input.value))hint.hidden=true});
+    input.addEventListener('input',()=>{hint.hidden=true});
     return hint;
   };
   const passwordHint=fieldHint(registerForm.elements.namedItem('password'));
   const confirmHint=fieldHint(registerForm.elements.namedItem('confirm'));
-  registerForm.onsubmit=e=>{
+  registerForm.onsubmit=async e=>{
     e.preventDefault();
     const form=e.currentTarget,message=document.querySelector('#formMessage');
-    const accountId=field(form,'accountId').trim(),password=field(form,'password'),confirm=field(form,'confirm');
+    const password=field(form,'password'),confirm=field(form,'confirm');
     message.hidden=true;passwordHint.hidden=true;confirmHint.hidden=true;
-    if(!accountId){message.textContent='请输入账号';message.hidden=false;form.elements.namedItem('accountId').focus();return}
-    if(!/^[0-9]{6}$/.test(password)){passwordHint.textContent='请输入六位数字密码';passwordHint.hidden=false;form.elements.namedItem('password').focus();return}
-    if(!/^[0-9]{6}$/.test(confirm)){confirmHint.textContent='请再次输入六位数字密码';confirmHint.hidden=false;form.elements.namedItem('confirm').focus();return}
+    if(password.length<8||password.length>128){passwordHint.textContent='密码需为 8 至 128 位';passwordHint.hidden=false;form.elements.namedItem('password').focus();return}
+    if(confirm.length<8){confirmHint.textContent='请再次输入密码';confirmHint.hidden=false;form.elements.namedItem('confirm').focus();return}
     if(password!==confirm){confirmHint.textContent='两次密码输入不一致';confirmHint.hidden=false;form.elements.namedItem('confirm').focus();return}
     if(!form.elements.namedItem('terms').checked){message.textContent='请先阅读并同意用户协议和隐私政策';message.hidden=false;return}
-    const user={name:accountId,accountId,password};
-    localStorage.setItem('memorial-registered-account',JSON.stringify(user));
-    localStorage.setItem('memorial-account',JSON.stringify(user));
-    header();location.hash='#home';
+    const submit=form.querySelector('[type="submit"]');
+    submit.disabled=true;
+    try{
+      const user=await window.memorialLocalAuth.create(password);
+      localStorage.setItem('memorial-account',JSON.stringify(user));
+      rememberLoginAccount(user.accountId);
+      header();
+      app.innerHTML=`<div class="page-shell"><div class="panel form-panel"><div class="form-heading"><h1>注册成功</h1><p>请记下你的账号</p></div><div class="form-body account-created"><p>系统已分配账号</p><strong id="createdAccount"></strong><p class="local-account-note">账号和密码仅在当前浏览器有效。请妥善保存账号；忘记密码且已退出后，需要重新注册。</p><button class="btn" id="copyAccount" type="button">复制账号</button><a class="btn btn-outline" href="#home">进入安念堂</a></div></div></div>`;
+      app.querySelector('#createdAccount').textContent=user.accountId;
+      app.querySelector('#copyAccount').onclick=async()=>{try{await navigator.clipboard.writeText(user.accountId);app.querySelector('#copyAccount').textContent='已复制'}catch(_){app.querySelector('#copyAccount').textContent='复制失败，请手动记录'}};
+    }catch(_){message.textContent='注册失败，请检查浏览器是否允许本地存储后重试。';message.hidden=false;submit.disabled=false}
   };
 }
 function playInviteGlitchSound(){
@@ -312,18 +330,86 @@ function playInviteEntryFx(){
 function login(){
   app.innerHTML=`<div class="page-shell"><div class="panel form-panel"><div class="form-heading"><h1>用户登录</h1><p>回到安念堂，继续珍藏记忆</p></div><form class="form-body" id="loginForm"><div class="message" id="formMessage" hidden></div><label class="field"><span>账号</span><input name="accountId" autocomplete="username" placeholder="请输入账号" required></label><label class="field"><span>密码</span><input name="password" type="password" autocomplete="current-password" placeholder="请输入密码" required></label><button class="btn" type="submit">登录</button><p class="fine-print">还没有账号？ <a href="#register">立即注册</a></p></form></div></div><div class="invite-prompt" hidden><section role="dialog" aria-modal="true" aria-labelledby="invite-title"><button class="invite-close" type="button" aria-label="关闭">×</button><h2 id="invite-title">你有邀请码吗？</h2><p>邀请码不是必填，没有邀请码也可以正常使用安念堂。</p><label><span>邀请码</span><input id="inviteCode" inputmode="numeric" maxlength="6" placeholder="请输入邀请码"></label><small id="inviteError" role="alert"></small><div><button class="invite-skip" type="button">没有邀请码，继续使用</button><button class="invite-confirm" type="button">确认邀请码</button></div></section></div>`;
   const form=document.querySelector('#loginForm'),prompt=document.querySelector('.invite-prompt'),code=document.querySelector('#inviteCode'),error=document.querySelector('#inviteError');
+  const accountInput=form.elements.namedItem('accountId');
+  const forgot=document.createElement('p');
+  forgot.className='fine-print login-forgot';
+  forgot.innerHTML='<button type="button">忘记密码？</button><span hidden>为保护账号，不能仅凭账号或名称重设密码。若已退出且不记得密码，请重新注册账号。</span>';
+  form.querySelector('.fine-print').before(forgot);
+  forgot.querySelector('button').onclick=()=>{forgot.querySelector('span').hidden=!forgot.querySelector('span').hidden};
+  const history=document.createElement('div');
+  history.className='login-account-history';
+  accountInput.closest('.field').after(history);
+  const renderLoginHistory=()=>{
+    const ids=recentLoginAccounts();
+    history.replaceChildren();
+    history.hidden=!ids.length;
+    if(!ids.length)return;
+    const title=document.createElement('p');
+    title.textContent='此设备登录过的账号';
+    history.append(title);
+    for(const id of ids){
+      const item=document.createElement('div');
+      item.className='login-account-item';
+      const choose=document.createElement('button');
+      choose.type='button';
+      choose.textContent=id;
+      choose.onclick=()=>{accountInput.value=id;form.elements.namedItem('password').focus()};
+      const remove=document.createElement('button');
+      remove.type='button';
+      remove.className='login-account-remove';
+      remove.textContent='×';
+      remove.setAttribute('aria-label',`移除账号 ${id}`);
+      remove.onclick=()=>{localStorage.setItem(loginHistoryKey,JSON.stringify(recentLoginAccounts().filter(entry=>entry!==id)));renderLoginHistory()};
+      item.append(choose,remove);
+      history.append(item);
+    }
+  };
+  renderLoginHistory();
   prompt.querySelector('h2').textContent='特邀访问权限验证';
   prompt.querySelector('p').textContent='该邀请码用于验证特邀访客身份。完成验证后，可进入特邀主题并访问相应内容；如暂不验证，仍可继续使用普通用户功能。';
   prompt.querySelector('label span').textContent='特邀邀请码';
   prompt.querySelector('.invite-skip').textContent='暂不验证';
   prompt.querySelector('.invite-confirm').textContent='验证并进入';
-  const finish=(user,invited)=>{localStorage.setItem('memorial-account',JSON.stringify(user));if(!invited){inviteAccessGranted=false;localStorage.removeItem('memorial-invite-theme');applyInviteTheme();header();location.hash='#home';return}activateInviteAccess();};
-  form.onsubmit=e=>{e.preventDefault();const f=e.currentTarget,u=registeredAccount(),accountId=field(f,'accountId').trim(),password=field(f,'password'),special=accountId==='123456'&&password==='123456',valid=special||(u&&accountId===(u.accountId||u.phone)&&password===u.password);if(!valid){const m=document.querySelector('#formMessage');m.hidden=false;m.textContent='账号或密码不正确';return}if(!special){finish(u,false);return}const user={name:'特邀访客',accountId:'123456',phone:'123456',password:'123456'};prompt.hidden=false;prompt.dataset.user=JSON.stringify(user);code.focus();};
+  const finish=(user,invited)=>{localStorage.setItem('memorial-account',JSON.stringify(user));rememberLoginAccount(user.accountId||user.phone);if(!invited){inviteAccessGranted=false;localStorage.removeItem('memorial-invite-theme');applyInviteTheme();header();location.hash='#home';return}activateInviteAccess();};
+  form.onsubmit=async e=>{
+    e.preventDefault();
+    const f=e.currentTarget,accountId=field(f,'accountId').trim(),password=field(f,'password');
+    const message=f.querySelector('#formMessage'),submit=f.querySelector('[type="submit"]');
+    message.hidden=true;submit.disabled=true;
+    try{
+      const special=accountId==='123456'&&password==='123456';
+      const user=special?{name:'特邀访客',accountId:'123456',phone:'123456'}:await window.memorialLocalAuth.verify(accountId,password);
+      if(!user){message.hidden=false;message.textContent='账号或密码不正确';return}
+      if(!special){finish(user,false);return}
+      prompt.hidden=false;prompt.dataset.user=JSON.stringify(user);code.focus();
+    }catch(_){message.hidden=false;message.textContent='登录失败，请稍后重试。'}
+    finally{submit.disabled=false}
+  };
   const currentUser=()=>JSON.parse(prompt.dataset.user);
   document.querySelector('.invite-skip').onclick=()=>finish(currentUser(),false);
   document.querySelector('.invite-close').onclick=()=>finish(currentUser(),false);
   const confirm=prompt.querySelector('.invite-confirm');
   confirm.onclick=()=>{if(inviteTransitionPending||confirm.disabled)return;if(code.value.trim()!=='123456'){error.textContent='邀请码无效，请核对后重新输入。';code.focus();return}confirm.disabled=true;prompt.hidden=true;finish(currentUser(),true)};
+}
+function changePasswordPage(){
+  const user=account();
+  if(!user||user.accountId==='123456'){location.hash='#login';return}
+  app.innerHTML=`<div class="page-shell"><div class="panel form-panel"><div class="form-heading"><h1>修改密码</h1><p>账号 <span id="securityAccount"></span></p></div><form class="form-body" id="changePasswordForm"><div class="message" id="formMessage" hidden></div><label class="field"><span>当前密码</span><input name="current" type="password" autocomplete="current-password" required></label><label class="field"><span>新密码</span><input name="password" type="password" autocomplete="new-password" placeholder="至少 8 位" required></label><label class="field"><span>确认新密码</span><input name="confirm" type="password" autocomplete="new-password" required></label><button class="btn" type="submit">保存新密码</button></form></div></div>`;
+  app.querySelector('#securityAccount').textContent=user.accountId;
+  app.querySelector('#changePasswordForm').onsubmit=async e=>{
+    e.preventDefault();
+    const form=e.currentTarget,message=form.querySelector('#formMessage'),submit=form.querySelector('[type="submit"]');
+    const current=field(form,'current'),password=field(form,'password'),confirm=field(form,'confirm');
+    message.hidden=false;message.classList.remove('ok');
+    if(password.length<8||password.length>128){message.textContent='新密码需为 8 至 128 位';return}
+    if(password!==confirm){message.textContent='两次新密码输入不一致';return}
+    submit.disabled=true;
+    try{
+      if(!await window.memorialLocalAuth.changePassword(user.accountId,current,password)){message.textContent='当前密码不正确';return}
+      form.reset();message.textContent='密码已更新，下次登录请使用新密码。';message.classList.add('ok');
+    }catch(_){message.textContent='修改失败，请稍后重试。'}
+    finally{submit.disabled=false}
+  };
 }
 function createResidentRegistrationNote(){
   const note=document.createElement('details');note.className='resident-note memorial-registration-note';
@@ -472,6 +558,7 @@ function route(){
   else if(page==='articles')bulletinPage(id);
   else if(page==='register')register();
   else if(page==='login')login();
+  else if(page==='change-password')changePasswordPage();
   else if(page==='browse')browse(id);
   else if(page==='create')create();
   else if(page==='hall')hall(id,tab);

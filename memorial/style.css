@@ -248,6 +248,28 @@ body.theme-glitch{overflow:hidden}
 body{min-height:100dvh;display:flex;flex-direction:column}#app{flex:1 0 auto}.site-footer{flex:none}.hero-search{position:relative;overflow:visible}.hero-search button{border-radius:0 6px 6px 0}.hero-search-error{position:absolute;top:calc(100% + 7px);left:0;right:0;color:#96312b;font:14px/1.4 "Microsoft YaHei",sans-serif;text-align:center;text-shadow:0 1px 0 #fff;background:#fffdf9e8;border-radius:4px;padding:4px 8px}.invite-theme .hero-search-error{color:#d9b1ad;background:#071012e8;text-shadow:none}.memorial-grid>.empty{grid-column:1/-1;width:100%;min-height:150px;display:grid;place-items:center;padding:30px}.browse-tools{position:relative;width:min(760px,100%);height:62px;margin:0 auto 28px;gap:0}.browse-search-icon{position:absolute;z-index:1;left:22px;top:18px;width:27px;height:27px;fill:none;stroke:#46565a;stroke-width:2;stroke-linecap:round;pointer-events:none}.browse-tools .search-input{height:62px;padding:0 22px 0 68px;border:1px solid #a94439;border-right:0;border-radius:11px 0 0 11px;font-size:21px;box-shadow:0 7px 19px #51392d12}.browse-tools .search-input::placeholder{color:#858585}.browse-tools .btn{min-width:122px;height:62px;padding:0 24px;border-radius:0 11px 11px 0;background:#8f2e29;font:21px STKaiti,KaiTi,serif;box-shadow:0 7px 19px #51392d12}.fortune-page{max-width:1160px;margin-bottom:58px}.fortune-body{width:min(1040px,100%);margin:0 auto;border:1px solid #d8d1c6;background:#fff;box-shadow:0 12px 34px #00000018;overflow:hidden}.fortune-copy{width:100%;margin:0;padding:26px 38px 25px;background:transparent;border:0;border-bottom:1px solid #ded8cf;box-shadow:none}.fortune-copy-light{border-bottom:0}.fortune-copy p{margin:0 0 10px;color:#55504b;font:17px/1.75 STKaiti,KaiTi,serif;letter-spacing:.7px}.fortune-copy p:last-child{margin-bottom:0}.fortune-copy-dark{display:none}.fortune-video{display:none;width:100%;margin:0;padding:10px;background:#191919;border:0;box-shadow:none}.fortune-video video{display:block;width:100%;height:auto;background:#000}.invite-theme .fortune-body{background:#0d1819e8;border-color:#3f4847;box-shadow:0 13px 38px #0008}.invite-theme .fortune-copy-light{display:none}.invite-theme .fortune-copy-dark{display:block;background:transparent;border-color:#3f4847;box-shadow:none}.invite-theme .fortune-copy p{color:var(--invite-gray)}.invite-theme .fortune-video{display:block;background:#0a1011;border-color:#4a5151;box-shadow:none}@media(max-width:720px){.browse-tools{height:54px}.browse-tools .search-input,.browse-tools .btn{height:54px;font-size:17px}.browse-tools .search-input{padding-left:54px}.browse-tools .btn{min-width:88px;padding:0 15px}.browse-search-icon{left:17px;top:15px;width:25px;height:25px}.fortune-copy{padding:20px 19px}.fortune-copy p{font-size:16px;line-height:1.7}.fortune-video{padding:5px}}
 .browse-search-error{position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:2;padding:5px 8px;border-radius:4px;background:#fffdf9;color:#96312b;text-align:center;font:14px/1.4 "Microsoft YaHei",sans-serif;box-shadow:0 2px 8px #0002}
 .form-body .field-hint{margin:-9px 0 18px;font-size:16px}
+.login-account-history{margin:-8px 0 22px;padding:12px 14px;border:1px solid #d9d3ca;border-radius:4px;background:#f8f6f2}
+.login-account-history p{margin:0 0 9px;color:#756e66;font-size:14px}
+.login-account-item{display:flex;align-items:center;gap:8px}
+.login-account-item+ .login-account-item{margin-top:6px}
+.login-account-item button{border:0;background:transparent;color:inherit;padding:5px 8px;text-align:left}
+.login-account-item button:first-child{flex:1}
+.login-account-item button:first-child:hover{text-decoration:underline}
+.login-account-item .login-account-remove{font-size:20px;line-height:1;color:#8b8178}
+.login-account-item .login-account-remove:hover{color:#78251f}
+.login-forgot{margin:13px 0 0;font-size:14px}
+.login-forgot button{border:0;background:transparent;color:#78251f;cursor:pointer;padding:0;text-decoration:underline}
+.login-forgot span{display:block;margin-top:9px;line-height:1.6;color:#756e66}
+.local-account-note{margin:0 0 20px;color:#766f68;font-size:14px;line-height:1.65}
+.account-created{text-align:center}
+.account-created>p:first-child{margin:0;color:#766f68}
+.account-created strong{display:block;margin:12px 0 20px;font-size:32px;letter-spacing:3px;color:#78251f}
+.account-created .btn{width:100%;margin-top:10px}
+.header-account .account-security{background:rgba(255,255,255,.6);color:#78251f}
+.header-account .account-security:hover{background:#f1e8e6;color:#63201b}
+.invite-theme .login-account-history{background:#172526;border-color:#46504e}
+.invite-theme .login-account-history p,.invite-theme .login-account-item,.invite-theme .login-forgot span,.invite-theme .local-account-note,.invite-theme .account-created>p:first-child{color:#bac4bf}
+.invite-theme .login-forgot button,.invite-theme .account-created strong{color:#bd4b43}
 .invite-theme .portal-main .ornate-frame{--ornate-line:rgba(109,42,42,.38);border-color:transparent}
 .invite-theme .ornate-frame-corner{background-image:url("assets/frame-corner-dark.svg?v=1")}
 .invite-theme .overview-frame{background-color:#0e1a1bd9;box-shadow:0 8px 24px #0004}
