@@ -416,12 +416,12 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 .account-avatar,.my-avatar,.avatar-preview,.login-history-avatar{background:#f3ebe3 url("assets/default-avatar.svg?v=3") center/cover no-repeat}
 .avatar-upload{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;width:max-content;margin:0 auto 27px;padding:0;border:0;background:transparent;color:#604a3d}
 .avatar-upload:hover{background:transparent}
-.avatar-upload .avatar-preview{width:92px;height:92px;border:1px solid #a86a62;box-shadow:none;position:relative}
-.avatar-upload .avatar-preview:after{content:'+';position:absolute;right:0;bottom:0;width:25px;height:25px;display:grid;place-items:center;border:2px solid #fff;border-radius:50%;background:#78251f;color:#fff;font:20px/1 Arial,sans-serif}
+.avatar-upload .avatar-preview{width:92px;height:92px;border:0;box-shadow:none;position:relative}
+.avatar-upload .avatar-preview:after{content:none}
 .avatar-upload strong{font-size:16px;font-weight:600;margin:0}
-.avatar-upload:hover .avatar-preview{border-color:#78251f;box-shadow:0 0 0 2px #78251f1f}
+.avatar-upload:hover .avatar-preview{filter:brightness(.97)}
 .avatar-upload:focus-within{outline:0}
-.avatar-upload:focus-within .avatar-preview{box-shadow:0 0 0 3px #78251f3d}
+.avatar-upload:focus-within .avatar-preview{box-shadow:0 0 0 2px #aaa39b}
 .account-avatar img,.my-avatar img,.avatar-preview img,.login-history-avatar img{display:block;width:100%;height:100%;object-fit:cover}
 
 /* 最近登录：默认折叠，展开后以头像和昵称选择账号。 */
