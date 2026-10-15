@@ -627,3 +627,5 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 .hall-photo-add{min-width:132px;background:#fcf9f5}
 .hall-photo-title{font-size:19px;font-weight:600}
 @media(max-width:600px){.edit-page .create-form>.field:nth-child(4){grid-column:1/-1}}
+.invite-theme .notice-panel li{border-bottom-color:rgba(120,37,31,.48)}
+.invite-theme .notice-panel li:before{color:rgba(120,37,31,.48)}
