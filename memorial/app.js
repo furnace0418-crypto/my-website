@@ -100,7 +100,7 @@ function wireHallPhotos(form){
   return {load(id){photos=hallPhotos(id).slice(0,1);render()},save(id){try{if(photos.length)localStorage.setItem(hallPhotoKey(id),JSON.stringify(photos));else localStorage.removeItem(hallPhotoKey(id));return true}catch{message.textContent='照片存储空间不足，请更换图片后重试';return false}}};
 }
 const previousAccount=JSON.parse(localStorage.getItem('memorial-account')||'null');
-if(previousAccount?.password&&previousAccount.phone!=='123456'&&!localStorage.getItem('memorial-registered-account'))localStorage.setItem('memorial-registered-account',JSON.stringify(previousAccount));
+if(previousAccount?.password&&previousAccount.accountId!=='guest-invite'&&!localStorage.getItem('memorial-registered-account'))localStorage.setItem('memorial-registered-account',JSON.stringify(previousAccount));
 localStorage.removeItem('memorial-account');
 localStorage.removeItem('memorial-invite-theme');
 const account=()=>JSON.parse(localStorage.getItem('memorial-account')||'null');
@@ -280,7 +280,7 @@ function showInviteVerification(){
   prompt.querySelector('.invite-close').onclick=close;
   prompt.querySelector('.invite-skip').onclick=close;
   const confirm=prompt.querySelector('.invite-confirm');
-  confirm.onclick=()=>{if(inviteTransitionPending||confirm.disabled)return;if(code.value.trim()!=='123456'){error.textContent='邀请码无效，请核对后重新输入。';code.focus();return}confirm.disabled=true;close();activateInviteAccess()};
+  confirm.onclick=async()=>{if(inviteTransitionPending||confirm.disabled)return;confirm.disabled=true;try{if(!await window.memorialGateVerify('invite',{code:code.value})){error.textContent='邀请码无效，请核对后重新输入。';code.focus();return}close();activateInviteAccess()}catch(_){error.textContent='验证暂时不可用，请稍后重试。'}finally{confirm.disabled=false}};
   prompt.onclick=e=>{if(e.target===prompt)close()};
   code.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();prompt.querySelector('.invite-confirm').click()}};
   code.focus();
@@ -308,7 +308,7 @@ function showEntryInvitePrompt(){
   const ordinary=()=>{prompt.remove();inviteAccessGranted=false;localStorage.removeItem('memorial-invite-theme');applyInviteTheme();header();if(location.hash==='#home')route();else location.hash='#home'};
   prompt.querySelector('.invite-close').onclick=ordinary;
   prompt.querySelector('.invite-skip').onclick=ordinary;
-  prompt.querySelector('.invite-confirm').onclick=()=>{if(code.value.trim()!=='123456'){error.textContent='邀请码无效，请核对后重新输入。';code.focus();return}prompt.remove();activateInviteAccess()};
+  prompt.querySelector('.invite-confirm').onclick=async()=>{const button=prompt.querySelector('.invite-confirm');if(button.disabled)return;button.disabled=true;try{if(!await window.memorialGateVerify('invite',{code:code.value})){error.textContent='邀请码无效，请核对后重新输入。';code.focus();return}prompt.remove();activateInviteAccess()}catch(_){error.textContent='验证暂时不可用，请稍后重试。'}finally{button.disabled=false}};
   code.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();prompt.querySelector('.invite-confirm').click()}};
   prompt.onclick=e=>{if(e.target===prompt)ordinary()};
   code.focus();
@@ -424,8 +424,8 @@ function login(){
     const message=f.querySelector('#formMessage'),submit=f.querySelector('[type="submit"]');
     message.hidden=true;submit.disabled=true;
     try{
-      const special=nickname==='123456'&&password==='123456';
-      const user=special?{name:'特邀访客',accountId:'123456',phone:'123456'}:await window.memorialLocalAuth.verify(nickname,password);
+      let user=await window.memorialLocalAuth.verify(nickname,password);
+      if(!user&&await window.memorialGateVerify('guest',{nickname,password}))user={name:'特邀访客',accountId:'guest-invite',guest:true};
       if(!user){message.hidden=false;message.textContent='昵称或密码不正确';return}
       localStorage.setItem('memorial-account',JSON.stringify(user));
       rememberLoginAccount(user.accountId||user.phone);
@@ -437,7 +437,7 @@ function login(){
 }
 function changePasswordPage(){
   const user=account();
-  if(!user||user.accountId==='123456'){location.hash='#login';return}
+  if(!user||user.guest){location.hash='#login';return}
   app.innerHTML=`<div class="page-shell"><div class="panel form-panel"><div class="form-heading"><h1>修改密码</h1><p>昵称 <span id="securityAccount"></span></p></div><form class="form-body" id="changePasswordForm"><div class="message" id="formMessage" hidden></div><label class="field"><span>当前密码</span><input name="current" type="password" autocomplete="current-password" required></label><label class="field"><span>新密码</span><input name="password" type="password" autocomplete="new-password" placeholder="至少 8 位" required></label><label class="field"><span>确认新密码</span><input name="confirm" type="password" autocomplete="new-password" required></label><button class="btn" type="submit">保存新密码</button></form></div></div>`;
   app.querySelector('.page-shell').insertAdjacentHTML('afterbegin','<a class="page-return-me" href="#me">← 返回我的</a>');
   app.querySelector('#securityAccount').textContent=user.name;
@@ -595,7 +595,7 @@ function showChenMessageVision(){
   window.setTimeout(()=>vision.remove(),window.matchMedia('(prefers-reduced-motion: reduce)').matches?1100:2400);
 }
 let chenMessageVisionShown=false;
-function addPersonalArchive(name,residentNumber){
+function addPersonalArchive(name){
   const tabs=app.querySelector('.life-tabs');
   tabs.querySelector('span').outerHTML='<button class="personal-archive-tab" type="button" data-life-tab="personal">个人信息留存</button>';
   const pane=document.createElement('div');
@@ -616,12 +616,17 @@ function addPersonalArchive(name,residentNumber){
   }
   else{
     pane.innerHTML='<div class="personal-archive-gate"><h2>个人信息留存</h2><p>请输入该居民的居民编号，验证后查看留存资料。</p><form><label for="personal-resident-number">居民编号</label><div class="personal-archive-entry"><input id="personal-resident-number" name="residentNumber" type="text" autocomplete="off" spellcheck="false" required><button type="submit">确认查看</button></div><p class="personal-archive-error" role="alert" hidden></p></form></div>';
-    pane.querySelector('form').onsubmit=event=>{
+    pane.querySelector('form').onsubmit=async event=>{
       event.preventDefault();
       const value=pane.querySelector('input').value.trim().toUpperCase();
-      if(residentNumber&&value===residentNumber){pane.innerHTML=unlockedFiles;return}
       const error=pane.querySelector('.personal-archive-error');
-      error.textContent=residentNumber?'居民编号有误，请核对后重试。':'该居民的留存资料暂未开放查询。';
+      const button=pane.querySelector('button[type="submit"]');
+      button.disabled=true;
+      try{
+        if(await window.memorialGateVerify('archive',{code:value})){pane.innerHTML=unlockedFiles;return}
+        error.textContent='居民编号有误，请核对后重试。';
+      }catch(_){error.textContent='验证暂时不可用，请稍后重试。'}
+      finally{button.disabled=false}
       error.hidden=false;
     };
   }
@@ -678,7 +683,7 @@ function zhenzhenMemorial(initialTab='story'){
     profileRows[4].querySelector('dt').textContent='登记地';
     profileRows[4].querySelector('dd').textContent='桃原市纪念馆';
   }
-  addPersonalArchive('陈珍珍','TYF03262620240912');
+  addPersonalArchive('陈珍珍');
   addMemorialBackLink('陈珍珍');
   document.querySelector('.tribute-action').href='#services/chen-zhenzhen';
   const messagePane=document.querySelector('[data-life-pane="messages"]');
@@ -795,12 +800,14 @@ function zhangwenhuaMemorial(initialTab='story'){
   ];
   const timeline=[
     ['1976年｜出生于云阳','张文华出生于云阳周边农村。年轻时家境普通，很早便开始帮家里分担生活压力。'],
-    ['年轻时期｜离开家乡','成年后，张文华与好友郑秀琴一同离开农村来到云阳市，希望通过工作改变原本的生活。两人随后进入同一家工厂，平日里彼此照应，关系一直很好。'],
-    ['工厂时期｜第一次听说桃原市','在工厂宿舍生活期间，一位年长的阿姨曾多次向她们提起“桃原市”，称只要多做好事、积累福报，将来便有机会去往一个没有贫穷和痛苦的地方。张文华起初只把这些话当作长辈的安慰，并没有真正放在心上。'],
-    ['工厂事故后｜各自开始生活','后来，那位阿姨在工厂的一次事故中去世。事故发生后，两人都曾再次想起她关于桃原市的说法，但并没有继续追究。离开工厂后，张文华逐渐成家，郑秀琴则在云阳市经营起一家服装店，两人仍一直保持联系。'],
-    ['成家以后｜家庭与牵挂','张文华先后有了陈珍珍和郑愿。由于当时的家庭状况，郑愿幼年被送到一位故友的家庭中抚养。张文华一直牵挂着他，也会偶尔带陈珍珍去看望。'],
-    ['生活变化后｜旧事再次被提起','郑秀琴的服装店后来因经营不善倒闭，生活陷入低谷。那段时间，她重新提起年轻时听说的“桃原市”，并开始认真相信通过积累福报能够去往那里。张文华虽然起初并不认同，但随着郑秀琴多次提起，也渐渐重新想起工厂时期的往事。'],
-    ['2013年｜离世','张文华于云阳市家中离世，享年37岁']
+    ['年轻时期｜离开家乡','成年后，张文华与好友郑秀琴一同离开农村来到云阳市，希望通过工作改变原本的生活。两人随后进入同一家服装厂，平日彼此照应，关系一直很好。'],
+    ['工厂时期｜第一次听说桃原市','在工厂宿舍生活期间，一位年长女工曾多次向她们提起“桃原市”，称只要多做好事、积累福报，将来便有机会去往一个没有贫穷和痛苦的地方。张文华起初只把这些话当作长辈的安慰，并没有真正放在心上。'],
+    ['工厂时期｜经历风波','工作期间，厂内接连发生了一些异常事件。1998年，一名与她们相熟的女工在设备事故中意外去世。此后，郑秀琴又陆续发现部分年轻女工遭到不当对待，并开始私下帮助工友、向外反映情况。这段经历给两人都留下了很深的影响。'],
+    ['离开工厂｜各自开始生活','经历那段时期后，两人后来陆续离开工厂。张文华逐渐建立自己的家庭，郑秀琴则留在云阳市经营一家服装店。虽然生活方向不同，两人仍一直保持联系。'],
+    ['成家以后｜家庭与牵挂','张文华后来有了陈珍珍和郑愿。由于当时的家庭状况，她将年幼的郑愿托付给好友郑秀琴照料。张文华一直牵挂着他，也会偶尔带陈珍珍前去看望。陈珍珍与郑愿也因此从小保持着亲近的姐弟关系。'],
+    ['生活低谷｜桃原市再次被提起','郑秀琴的服装店后来因经营不善陷入困境。生活跌入低谷后，她重新提起年轻时在工厂听说的“桃原市”，并开始认真相信只要积累足够的福报，就能前往那里。张文华起初并不认同，但随着郑秀琴反复提起，她也逐渐重新想起工厂时期那些已经被遗忘的往事。'],
+    ['2008年后｜故友离世','郑秀琴离世后，张文华一直对她最后一段时间的状态难以释怀。曾经被两人当作安慰故事的“桃原市”，也从此成为她始终无法完全忘记的一件事。'],
+    ['2013年｜离世','2013年，张文华于云阳市家中离世，享年37岁。']
   ];
   app.innerHTML=`<div class="life-memorial-shell"><aside class="life-profile"><img class="life-portrait" src="assets/zhang-wenhua-portrait.png" alt="张文华"><h1>张文华</h1><p class="life-dates">1976.08.17　—　2013.11.03</p><p class="life-wish">愿记忆与思念长存。</p><dl><div><dt>性别</dt><dd>女</dd></div><div><dt>出生</dt><dd>1976年8月17日</dd></div><div><dt>籍贯</dt><dd>云阳</dd></div><div><dt>离世</dt><dd>2013年11月3日</dd></div><div><dt>安葬地</dt><dd>未注明</dd></div></dl><button class="life-flower" type="button">✿　献花</button></aside><section class="life-story"><nav class="life-tabs" aria-label="纪念馆栏目"><button class="active" data-life-tab="story">过往记事</button><button data-life-tab="tributes">祭奠记录</button><button data-life-tab="messages">留言板</button><span>／ 生者记忆 · 让爱延续 ／</span></nav><div class="life-pane active" data-life-pane="story"><div class="life-timeline">${timeline.map(([title,body])=>`<article><i></i><h2>${esc(title)}</h2><p>${esc(body)}</p></article>`).join('')}</div></div><div class="life-pane" data-life-pane="tributes"><div class="tribute-heading"><h2>祭奠记录</h2><p>每一次到访，都让思念有了回声。</p></div><div class="tribute-list"></div><a class="tribute-action" href="#services/zhang-wenhua">前往祭奠</a></div><div class="life-pane" data-life-pane="messages"><div class="tribute-heading"><h2>留言板</h2><p>那些没有说完的话，仍可以在这里轻轻写下。</p></div></div></section></div><div class="flower-confirm" hidden><section role="dialog" aria-modal="true" aria-labelledby="flower-confirm-title"><button class="flower-confirm-close" type="button" aria-label="关闭">×</button><div class="flower-confirm-icon">✿</div><h2 id="flower-confirm-title">已献花</h2><p>愿这一束花承载思念，长伴她安眠。</p><button class="flower-confirm-ok" type="button">确定</button></section></div>`;
   app.querySelector('.life-profile dl div:last-child dd').textContent='云阳市纪念馆';
@@ -839,12 +846,12 @@ function zhengxiuqinMemorial(initialTab='story'){
     ['1975年｜出生于云阳','郑秀琴出生于云阳周边农村。家境普通，年轻时便离开家乡来到云阳市谋生，希望靠自己的工作改善生活。'],
     ['年轻时期｜与张文华一同进厂','来到云阳市后，郑秀琴与好友张文华进入同一家服装厂工作。两人住在工厂宿舍，平日彼此照应，关系一直十分亲近。'],
     ['工厂时期｜第一次听说桃原市','在宿舍生活期间，一位年长女工曾多次向她们提起“桃原市”，称那里没有贫穷和痛苦，只要多做好事、积累福报，将来便有机会前往。郑秀琴起初只把这些话当作长辈的安慰，并没有真正相信。'],
-    ['工厂时期｜经历风波','工作期间，郑秀琴逐渐察觉厂内部分年轻女工遭到不当对待，并曾私下帮助工友、匿名向有关部门反映情况。那段经历给她留下了很深的影响。此后不久，厂内又发生严重设备事故，一名与她们相熟的女工意外去世。'],
+    ['工厂时期｜经历风波','工作期间，郑秀琴逐渐察觉厂内部分年轻女工遭到不当对待。1998年，厂内又发生严重设备事故，一名与她们相熟的女工意外去世。此后，随着她了解到越来越多异常情况，郑秀琴开始私下帮助部分工友，并最终匿名向有关部门反映相关问题。这段经历给她留下了很深的影响。'],
     ['离开工厂｜经营服装店','离开工厂后，郑秀琴留在云阳市生活，并凭借多年积累开了一家小服装店。生意最好的几年里，生活逐渐稳定，她与张文华也一直保持往来。'],
-    ['此后｜接下郑愿的生活','故友由于家庭情况，将幼年的郑愿送到郑秀琴家中抚养。郑秀琴一直把他当作自家孩子照顾。'],
+    ['郑愿幼年｜承担照料','由于家庭情况，好友张文华将年幼的郑愿托付给郑秀琴照料。郑秀琴一直把他当作自家孩子照顾，郑愿也因此在她家生活过一段时间。'],
     ['事业受挫｜生活重新陷入低谷','后来，郑秀琴的服装店因经营不善逐渐陷入困境，最终停业，并留下了一些债务和尚未结清的员工工资。此后她靠零工维持生活，同时一点点偿还欠款。即便生活并不宽裕，她仍会参与一些志愿活动，也会尽力帮助比自己更困难的人。'],
     ['低谷时期｜重新想起桃原市','生活陷入低谷后，郑秀琴再次想起年轻时在工厂听过的“桃原市”。与过去不同的是，她开始认真相信，只要持续积累福报，或许真的能够去往一个没有痛苦、可以重新开始的地方。她也曾向身边人提起，自己正在完成一件“必须做完的事”。'],
-    ['2008年｜离世','2008年5月12日，郑秀琴于云阳市城南区一处出租屋内离世。']
+    ['2008年｜离世','2008年5月12日，郑秀琴于云阳市城南区一处出租屋内离世，年仅33岁。']
   ];
   const taoyuanTimeline=[
     ['1975年｜出生于云阳','郑秀琴出生于云阳周边农村。家境普通，年轻时便离开家乡来到云阳市生活，希望通过工作让自己的日子慢慢稳定下来。'],

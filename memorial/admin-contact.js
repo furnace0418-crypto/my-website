@@ -104,11 +104,16 @@ function renderAdminContact(host){
   const showCodeForm=()=>{
     actions.innerHTML='<form class="admin-code-form"><label for="adminContactCode">管理员编号</label><div><input id="adminContactCode" name="code" inputmode="numeric" maxlength="8" autocomplete="off" placeholder="输入八位编号" required><button type="submit">确认编号</button></div></form>';
     const form=actions.querySelector('form');
-    form.onsubmit=event=>{
+    form.onsubmit=async event=>{
       event.preventDefault();
       const value=form.elements.code.value.trim();
       appendMessage('visitor',value);
-      if(value!=='48270619'){
+      const button=form.querySelector('button[type="submit"]');
+      button.disabled=true;
+      let valid=false;
+      try{valid=await window.memorialGateVerify('admin',{code:value})}
+      catch(_){deliver(['验证暂时不可用，请稍后重试。'],showCodeForm);return}
+      if(!valid){
         deliver(['编号暂未匹配，请核对后重新输入。'],showCodeForm);
         return;
       }
@@ -271,21 +276,27 @@ function renderAdminContact(host){
     feedback.className='admin-registration-feedback';feedback.setAttribute('role','status');feedback.hidden=true;
     form.appendChild(feedback);
     const saveButton=form.querySelector(':scope > button');
-    saveButton.onclick=()=>{
-      const correct=kind==='missing'
-        &&form.elements.residentName.value.trim()==='陈珍珍'
-        &&form.elements.gender.value==='女'
-        &&form.elements.residentCode.value.trim().toUpperCase()==='TYF03262620240912'
-        &&!father.value.trim()
-        &&mother.value.trim()==='张文华'
-        &&form.elements.motherIsTaoyuanResident.checked
-        &&relation.value==='女儿'
-        &&parseDate()?.year===2013&&parseDate()?.month===11&&parseDate()?.day===3;
+    saveButton.onclick=async()=>{
+      if(saveButton.disabled)return;
+      saveButton.disabled=true;
       feedback.hidden=false;
-      if(!correct){feedback.textContent='信息有误，请核对后重试。';feedback.dataset.state='error';return}
+      let correct=false;
+      try{
+        const date=parseDate();
+        correct=kind==='missing'&&await window.memorialGateVerify('registration',{
+          name:form.elements.residentName.value,
+          gender:form.elements.gender.value,
+          code:form.elements.residentCode.value,
+          father:father.value,
+          mother:mother.value,
+          motherIsTaoyuanResident:form.elements.motherIsTaoyuanResident.checked,
+          relation:relation.value,
+          year:date?.year,month:date?.month,day:date?.day
+        });
+      }catch(_){feedback.textContent='验证暂时不可用，请稍后重试。';feedback.dataset.state='error';saveButton.disabled=false;return}
+      if(!correct){feedback.textContent='信息有误，请核对后重试。';feedback.dataset.state='error';saveButton.disabled=false;return}
       feedback.textContent='登记资料已提交，正在核验，请稍候。';
       feedback.dataset.state='success';
-      saveButton.disabled=true;
       host.classList.remove('has-form');
       actions.replaceChildren();
       const summary=document.createElement('div');

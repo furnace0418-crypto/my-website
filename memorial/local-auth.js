@@ -24,7 +24,7 @@
     for(let attempt=0;attempt<100;attempt++){
       const random=crypto.getRandomValues(new Uint32Array(2));
       const id=String(1000000000+Number(((BigInt(random[0])<<32n)|BigInt(random[1]))%9000000000n));
-      if(id!=='123456'&&!existing[id])return id;
+      if(id!=='guest-invite'&&!existing[id])return id;
     }
     throw new Error('暂时无法生成账号，请重试。');
   }
