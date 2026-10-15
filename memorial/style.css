@@ -614,10 +614,10 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 .edit-page .page-return-me{margin:0 0 16px max(0px,calc((100% - 900px)/2))}
 .edit-page .create-section-body{margin-top:0}
 .edit-page .edit-lamp-panel{margin-top:8px;padding:19px 22px;border:1px solid #e1d1c3;border-radius:6px;background:#fcf8f4}
-.edit-page .edit-lamp-panel span{font-size:21px}
+.edit-page .edit-lamp-panel span{font-size:17px;font-weight:600}
 .hall-photo-item,.hall-photo-add{border-radius:50%}
 .empty-life-bio{display:flex;align-items:center;justify-content:center;min-height:250px;color:#77716a;font-size:18px;text-align:center}
-@media(max-width:600px){.edit-page .page-return-me{margin-left:0}.edit-page .edit-lamp-panel{gap:10px;padding:15px}.edit-page .edit-lamp-panel span{font-size:18px}}
+@media(max-width:600px){.edit-page .page-return-me{margin-left:0}.edit-page .edit-lamp-panel{gap:10px;padding:15px}.edit-page .edit-lamp-panel span{font-size:16px}}
 
 /* Memorial photo belongs at the start of the form, in a portrait frame. */
 .edit-page .create-form>.field:nth-child(4){grid-column:auto}
