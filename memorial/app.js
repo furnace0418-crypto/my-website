@@ -264,7 +264,7 @@ function showInviteVerification(){
 function header(){
   const user=account(),name=document.querySelector('#accountName'),exit=document.querySelector('#exitLink'),security=document.querySelector('#changePasswordLink'),registerLink=document.querySelector('.account-register'),login=document.querySelector('.account-login'),articlesLink=document.querySelector('#articlesLink');
   const signedIn=Boolean(user),darkTheme=document.body.classList.contains('invite-theme');
-  if(name)name.textContent=signedIn?(darkTheme?'特邀访客':'普通用户'):'登录';
+  if(name)name.textContent=signedIn?(darkTheme?'特邀访客':user.name||'普通用户'):'登录';
   if(exit)exit.hidden=!user;
   if(registerLink)registerLink.hidden=signedIn;
   if(security)security.hidden=!user||user.accountId==='123456';
@@ -273,7 +273,7 @@ function header(){
 }
 function home(){app.innerHTML=`<section class="invite-hero-copy"><h1>欢迎来到桃原市</h1><p>安念堂由福善文化研究会发起，致力于保存城市记忆，传承生命故事，<br>让每一份思念都有安放之地。</p><form class="hero-search" action="#browse"><span>⌕</span><input aria-label="搜索逝者" placeholder="输入姓名，追忆故人"><button type="submit">搜索</button><small class="hero-search-error" hidden></small></form></section><section class="portal-hero"><div class="portal-hero-inner"><h1>为逝者留名，为思念留处</h1><p>安念堂由福善文化研究会发起，致力于保存城市记忆，传承生命故事，<br>让每一份思念都有安放之地。</p><form class="hero-search" action="#browse"><span>⌕</span><input aria-label="搜索逝者" placeholder="输入姓名，追忆故人"><button type="submit">搜索</button><small class="hero-search-error" hidden></small></form></div></section><section class="portal-main"><div class="platform-intro section-heading"><h2><span>︽</span> 平台简介 <span>︾</span></h2><p>安念堂是面向社会的公益性网络纪念平台。<br>我们以数字化的方式，保存逝者生平事迹，传承家族记忆，倡导文明祭祀，弘扬中华优秀传统文化，<br>让思念跨越时空，让记忆生生不息。</p></div><div class="values portal-values"><article class="value-card"><div class="value-icon"><img src="assets/value-civilized-rites.png" alt=""></div><div><h3>文明祭祀</h3><p>摒弃传统祭祀的陋习，用绿色环保的方式寄托哀思，减少资源消耗和环境污染。</p></div></article><article class="value-card"><div class="value-icon"><img src="assets/value-across-time.png" alt=""></div><div><h3>跨越时空</h3><p>无论身在何处，都能随时缅怀逝者，打破地域限制，让思念不再受距离阻隔。</p></div></article><article class="value-card"><div class="value-icon"><img src="assets/value-memory-legacy.png" alt=""></div><div><h3>记忆传承</h3><p>记录逝者生平事迹，构建家族记忆档案，让后人能够了解先辈故事。</p></div></article></div><div class="portal-lower"><section class="service-panel"><div class="section-heading"><h2><span>︽</span> 服务介绍 <span>︾</span></h2><p>以科技传递思念，用文化守护记忆</p></div><div class="service-grid"><a href="#create"><b>⌂</b><strong>创建纪念馆</strong><span>为逝者建立一处永恒的纪念空间</span></a><a href="#browse"><b>❀</b><strong>网上献花</strong><span>以花寄情，遥表思念</span></a><a href="#services"><b>♨</b><strong>点亮长明灯</strong><span>一盏微光，长照思念</span></a><a href="#letters"><b>▤</b><strong>留言寄思</strong><span>写下你想对他说的话</span></a><a href="#letters"><b>✉</b><strong>时空信箱</strong><span>给逝去的亲人写一封信</span></a></div></section><aside class="notice-panel"><div class="section-heading"><h2><span>︽</span> 研究会公告 <span>︾</span></h2><p>发布公益纪念项目动态与文明祭祀倡议</p></div><ul><li><span>关于安念堂公益纪念平台正式上线的公告</span><time>2024-04-01</time></li><li><span>清明节网络祭祀倡议书</span><time>2024-03-28</time></li><li><span>关于纪念馆内容审核与管理的说明</span><time>2024-02-15</time></li><li><span>福善文化研究会2024年工作计划</span><time>2024-01-20</time></li></ul></aside></div><section class="about-panel"><div class="section-heading"><h2><span>︽</span> 关于我们 <span>︾</span></h2><p>让城市记住每一个平凡而珍贵的生命</p></div><div class="about-copy"><p>安念堂是福善文化研究会发起的公益纪念项目。我们关注生命故事的保存与家族记忆的传承，希望借助温和、庄重的数字方式，为每一份思念提供长久安放的空间。</p><p>平台倡导文明、节俭、绿色的纪念方式，并持续整理地方人物故事、家庭影像与口述资料，让普通人的生命经历也能被认真记录、被后人看见。</p></div></section></section>`;document.querySelectorAll('.hero-search').forEach(form=>form.onsubmit=e=>{e.preventDefault();const q=e.currentTarget.querySelector('input').value.trim(),error=e.currentTarget.querySelector('.hero-search-error');if(!q){error.textContent='请输入要搜索的姓名';error.hidden=false;return}const found=searchableHalls().filter(h=>h.name.includes(q));if(!found.length){error.textContent='未找到相关纪念馆';error.hidden=false;return}error.hidden=true;pendingBrowseQuery=q;location.hash='#browse'});}
 function register(){
-  app.innerHTML=`<div class="page-shell"><div class="panel form-panel"><div class="form-heading"><h1>用户注册</h1><p>只需设置密码，系统将为你分配账号</p></div><form class="form-body" id="registerForm"><div class="message" id="formMessage" hidden></div><label class="field"><span>设置密码</span><input name="password" type="password" autocomplete="new-password" placeholder="至少 8 位" minlength="8" required></label><label class="field"><span>确认密码</span><input name="confirm" type="password" autocomplete="new-password" placeholder="请再次输入密码" minlength="8" required></label><p class="local-account-note">账号仅保存在当前浏览器；换设备或清除浏览器数据后无法登录。</p><label class="check"><input type="checkbox" name="terms" required>我已阅读并同意用户协议和隐私政策</label><button class="btn" type="submit">注册</button><p class="fine-print">已有账号？ <a href="#login">立即登录</a></p></form></div></div>`;
+  app.innerHTML=`<div class="page-shell"><div class="panel form-panel"><div class="form-heading"><h1>用户注册</h1><p>填写昵称并设置密码，完成后领取账号</p></div><form class="form-body" id="registerForm"><div class="message" id="formMessage" hidden></div><label class="field"><span>昵称</span><input name="name" autocomplete="nickname" placeholder="填写一个你喜欢的名字，无需真实姓名" maxlength="24" required></label><label class="field"><span>设置密码</span><input name="password" type="password" autocomplete="new-password" placeholder="至少 8 位" minlength="8" required></label><label class="field"><span>确认密码</span><input name="confirm" type="password" autocomplete="new-password" placeholder="请再次输入密码" minlength="8" required></label><p class="local-account-note">昵称可以重复，登录请使用注册后分配的账号。账号仅保存在当前浏览器。</p><label class="check"><input type="checkbox" name="terms" required>我已阅读并同意用户协议和隐私政策</label><button class="btn" type="submit">注册并领取账号</button><p class="fine-print">已有账号？ <a href="#login">立即登录</a></p></form></div></div>`;
   const registerForm=document.querySelector('#registerForm');
   registerForm.noValidate=true;
   const fieldHint=input=>{
@@ -288,8 +288,9 @@ function register(){
   registerForm.onsubmit=async e=>{
     e.preventDefault();
     const form=e.currentTarget,message=document.querySelector('#formMessage');
-    const password=field(form,'password'),confirm=field(form,'confirm');
+    const nickname=field(form,'name').trim(),password=field(form,'password'),confirm=field(form,'confirm');
     message.hidden=true;passwordHint.hidden=true;confirmHint.hidden=true;
+    if(nickname.length<2||nickname.length>24){message.textContent='昵称需为 2 至 24 个字符';message.hidden=false;form.elements.namedItem('name').focus();return}
     if(password.length<8||password.length>128){passwordHint.textContent='密码需为 8 至 128 位';passwordHint.hidden=false;form.elements.namedItem('password').focus();return}
     if(confirm.length<8){confirmHint.textContent='请再次输入密码';confirmHint.hidden=false;form.elements.namedItem('confirm').focus();return}
     if(password!==confirm){confirmHint.textContent='两次密码输入不一致';confirmHint.hidden=false;form.elements.namedItem('confirm').focus();return}
@@ -297,11 +298,12 @@ function register(){
     const submit=form.querySelector('[type="submit"]');
     submit.disabled=true;
     try{
-      const user=await window.memorialLocalAuth.create(password);
+      const user=await window.memorialLocalAuth.create(nickname,password);
       localStorage.setItem('memorial-account',JSON.stringify(user));
       rememberLoginAccount(user.accountId);
       header();
-      app.innerHTML=`<div class="page-shell"><div class="panel form-panel"><div class="form-heading"><h1>注册成功</h1><p>请记下你的账号</p></div><div class="form-body account-created"><p>系统已分配账号</p><strong id="createdAccount"></strong><p class="local-account-note">账号和密码仅在当前浏览器有效。请妥善保存账号；忘记密码且已退出后，需要重新注册。</p><button class="btn" id="copyAccount" type="button">复制账号</button><a class="btn btn-outline" href="#home">进入安念堂</a></div></div></div>`;
+      app.innerHTML=`<div class="page-shell"><div class="panel form-panel"><div class="form-heading"><h1>注册成功</h1><p>这是你的安念堂账号</p></div><div class="form-body account-created"><p id="createdNickname"></p><strong id="createdAccount"></strong><p class="local-account-note">请记下这串账号，以后用它和密码登录。账号只保存在当前浏览器；清除浏览器数据后无法找回。</p><button class="btn" id="copyAccount" type="button">复制账号</button><a class="btn btn-outline" href="#home">进入安念堂</a></div></div></div>`;
+      app.querySelector('#createdNickname').textContent=`昵称：${user.name}`;
       app.querySelector('#createdAccount').textContent=user.accountId;
       app.querySelector('#copyAccount').onclick=async()=>{try{await navigator.clipboard.writeText(user.accountId);app.querySelector('#copyAccount').textContent='已复制'}catch(_){app.querySelector('#copyAccount').textContent='复制失败，请手动记录'}};
     }catch(_){message.textContent='注册失败，请检查浏览器是否允许本地存储后重试。';message.hidden=false;submit.disabled=false}
@@ -352,7 +354,8 @@ function login(){
       item.className='login-account-item';
       const choose=document.createElement('button');
       choose.type='button';
-      choose.textContent=id;
+      const savedProfile=window.memorialLocalAuth.profile(id);
+      choose.textContent=savedProfile.name===id?id:`${savedProfile.name} · ${id}`;
       choose.onclick=()=>{accountInput.value=id;form.elements.namedItem('password').focus()};
       const remove=document.createElement('button');
       remove.type='button';

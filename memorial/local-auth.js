@@ -16,9 +16,9 @@
     const material=await crypto.subtle.importKey('raw',encoder.encode(password),'PBKDF2',false,['deriveBits']);
     return hex(new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2',salt:bytes(salt),iterations:rounds,hash:'SHA-256'},material,256)));
   }
-  async function record(id,password){
+  async function record(id,name,password){
     const salt=hex(crypto.getRandomValues(new Uint8Array(16)));
-    return {accountId:id,name:id,salt,iterations,hash:await digest(password,salt)};
+    return {accountId:id,name,salt,iterations,hash:await digest(password,salt)};
   }
   function newId(existing){
     for(let attempt=0;attempt<100;attempt++){
@@ -28,12 +28,12 @@
     }
     throw new Error('暂时无法生成账号，请重试。');
   }
-  async function create(password){
+  async function create(name,password){
     const existing=users();
     const accountId=newId(existing);
-    existing[accountId]=await record(accountId,password);
+    existing[accountId]=await record(accountId,name,password);
     localStorage.setItem(key,JSON.stringify(existing));
-    return {accountId,name:accountId};
+    return {accountId,name};
   }
   async function verify(accountId,password){
     const existing=users();
@@ -45,7 +45,7 @@
     let legacy;
     try{legacy=JSON.parse(localStorage.getItem(legacyKey)||'null')}catch(_){legacy=null}
     if(legacy&&accountId===(legacy.accountId||legacy.phone)&&password===legacy.password){
-      existing[accountId]=await record(accountId,password);
+      existing[accountId]=await record(accountId,legacy.name||accountId,password);
       localStorage.setItem(key,JSON.stringify(existing));
       localStorage.removeItem(legacyKey);
       return {accountId,name:legacy.name||accountId};
@@ -55,9 +55,18 @@
   async function changePassword(accountId,oldPassword,newPassword){
     if(!await verify(accountId,oldPassword))return false;
     const existing=users();
-    existing[accountId]=await record(accountId,newPassword);
+    existing[accountId]=await record(accountId,existing[accountId].name||accountId,newPassword);
     localStorage.setItem(key,JSON.stringify(existing));
     return true;
   }
-  window.memorialLocalAuth={create,verify,changePassword};
+  function profile(accountId){
+    const user=users()[accountId];
+    if(user)return {accountId,name:user.name||accountId};
+    try{
+      const legacy=JSON.parse(localStorage.getItem(legacyKey)||'null');
+      if(legacy&&accountId===(legacy.accountId||legacy.phone))return {accountId,name:legacy.name||accountId};
+    }catch(_){}
+    return {accountId,name:accountId};
+  }
+  window.memorialLocalAuth={create,verify,changePassword,profile};
 })();
