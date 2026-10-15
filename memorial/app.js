@@ -498,20 +498,44 @@ function create(section='details'){
   app.innerHTML=`<div class="page-shell create-page"><div class="create-page-head"><h1>创建纪念馆</h1><p>为逝者建立专属的记忆空间</p></div><div class="create-sections" role="tablist" aria-label="创建纪念馆栏目"><a role="tab" aria-selected="${!lamp}" href="#create">基本资料</a><a role="tab" aria-selected="${lamp}" href="#create/lantern">定制长明灯</a></div><div class="create-section-body">${lamp?'<iframe class="create-lantern-frame" title="定制长明灯" src="lantern.html?v=2" loading="lazy" allow="fullscreen"></iframe>':'<form class="form-body create-form" id="createForm"><label class="field"><span>逝者姓名</span><input name="name" required placeholder="请输入姓名"></label><label class="field"><span>出生日期</span><input name="birth" type="date" required></label><label class="field"><span>逝世日期</span><input name="death" type="date" required></label><label class="field"><span>生平简介</span><textarea name="bio" placeholder="记录值得珍藏的故事"></textarea></label><button class="btn" type="submit">创建纪念馆</button></form>'}</div></div>`;
   window.createDatePickerAbort?.abort();window.createDatePickerAbort=new AbortController();
   app.querySelectorAll('#createForm input[type="date"]').forEach(wireCreateDatePicker);
-  document.querySelector('#createForm').onsubmit=e=>{e.preventDefault();const f=e.currentTarget;if(!f.birth.value||!f.death.value)return;const h={id:String(Date.now()),name:f.name.value.trim(),birth:f.birth.value,death:f.death.value,creator:account().name,bio:f.bio.value.trim(),records:[]};localStorage.setItem('memorial-halls',JSON.stringify([...saved(),h]));location.hash='#hall/'+h.id;};
+  document.querySelector('#createForm').onsubmit=e=>{e.preventDefault();const f=e.currentTarget;if(!f.birth.value||!f.death.value)return;const h={id:String(Date.now()),name:f.name.value.trim(),birth:f.birth.value,death:f.death.value,creator:account().name,creatorId:account().accountId,bio:f.bio.value.trim(),records:[]};localStorage.setItem('memorial-halls',JSON.stringify([...saved(),h]));location.hash='#hall/'+h.id;};
+}
+const ownsHall=(hall,user)=>Boolean(user&&(hall.creatorId?hall.creatorId===user.accountId:hall.creator===user.name));
+function editHall(id){
+  const user=account(),hall=saved().find(item=>item.id===id);
+  if(!hall||!ownsHall(hall,user)||document.body.classList.contains('invite-theme')){location.hash='#me';return}
+  create();
+  app.querySelector('.create-page-head h1').textContent='编辑纪念馆';
+  app.querySelector('.create-page-head p').textContent='更新纪念馆的基本资料';
+  app.querySelector('.create-sections').remove();
+  const form=app.querySelector('#createForm');
+  for(const key of ['name','birth','death','bio'])form.elements[key].value=hall[key]||'';
+  form.querySelector('button[type="submit"]').textContent='保存修改';
+  form.insertAdjacentHTML('beforeend','<a class="create-edit-cancel" href="#me">取消并返回</a>');
+  form.onsubmit=event=>{event.preventDefault();if(!form.reportValidity())return;const updated={...hall,name:form.elements.name.value.trim(),birth:form.elements.birth.value,death:form.elements.death.value,bio:form.elements.bio.value.trim()};localStorage.setItem('memorial-halls',JSON.stringify(saved().map(item=>item.id===id?updated:item)));location.hash='#me'};
 }
 function myPage(){
   const user=account();
   if(!user){app.innerHTML='<div class="page-shell my-page"><div class="my-welcome"><h1>我的</h1><p>登录后可查看你创建的纪念馆和账户设置。</p><div class="my-welcome-actions"><a class="btn" href="#login">登录</a><a class="btn btn-outline" href="#register">注册</a></div></div></div>';return}
-  const own=document.body.classList.contains('invite-theme')?[]:saved().filter(h=>h.creator===user.name);
+  const own=document.body.classList.contains('invite-theme')?[]:saved().filter(h=>ownsHall(h,user));
   app.innerHTML=`<div class="page-shell my-page"><div class="my-profile"><div class="my-avatar" aria-hidden="true"><img alt="" hidden></div><div><span class="my-eyebrow">我的安念堂</span><h1 id="myName"></h1><p>让思念有处安放，让记忆继续留存。</p></div></div><div class="my-layout"><main class="my-main"><div class="my-section-title"><div><h2>我创建的纪念馆</h2><p>你在这里保存的生命故事</p></div><a class="btn" href="#create">＋ 创建纪念馆</a></div><div class="my-hall-list" id="myHallList"></div></main><aside class="my-aside"><h2>账户设置</h2><a href="#change-password"><span>修改密码</span><span aria-hidden="true">›</span></a><a href="#logout"><span>退出登录</span><span aria-hidden="true">›</span></a></aside></div></div>`;
   app.querySelector('#myName').textContent=user.name;
+  const settings=app.querySelector('.my-aside');settings.classList.add('my-profile-settings');app.querySelector('.my-profile').append(settings);
   const avatarSource=avatarFor(user.accountId);
   if(avatarSource){const portrait=app.querySelector('.my-avatar');portrait.querySelector('img').src=avatarSource;portrait.querySelector('img').hidden=false}
   const list=app.querySelector('#myHallList');
   if(document.body.classList.contains('invite-theme')){app.querySelector('.my-section-title .btn').remove();list.innerHTML='<div class="my-empty"><strong>特邀主题暂不展示自建纪念馆</strong><p>切回普通主题后可继续查看。</p></div>';return}
   if(!own.length){app.querySelector('.my-section-title .btn').remove();list.innerHTML='<div class="my-empty"><strong>还没有创建纪念馆</strong><p>建立一处纪念空间，保存关于故人的故事。</p><a class="btn" href="#create">＋ 创建纪念馆</a></div>';return}
-  own.forEach(h=>{const item=document.createElement('a');item.className='my-hall-item';item.href='#hall/'+encodeURIComponent(h.id);const title=document.createElement('strong');title.textContent=h.name;const meta=document.createElement('small');meta.textContent=[h.birth,h.death].filter(Boolean).join(' — ');const arrow=document.createElement('span');arrow.textContent='进入纪念馆 ›';item.append(title,meta,arrow);list.append(item)});
+  own.forEach(h=>{const item=document.createElement('div');item.className='my-hall-item';const info=document.createElement('a');info.className='my-hall-info';info.href='#hall/'+encodeURIComponent(h.id);const title=document.createElement('strong');title.textContent=h.name;const meta=document.createElement('small');meta.textContent=[h.birth,h.death].filter(Boolean).join(' — ');info.append(title,meta);const actions=document.createElement('div');actions.className='my-hall-actions';const enter=document.createElement('a');enter.href=info.href;enter.textContent='进入';const edit=document.createElement('a');edit.href='#manage/'+encodeURIComponent(h.id);edit.textContent='编辑';const remove=document.createElement('button');remove.type='button';remove.textContent='删除';remove.onclick=()=>confirmHallDeletion(h);actions.append(enter,edit,remove);item.append(info,actions);list.append(item)});
+}
+function confirmHallDeletion(hall){
+  const user=account();if(!ownsHall(hall,user))return;
+  const dialog=document.createElement('dialog');dialog.className='my-delete-dialog';
+  dialog.innerHTML='<h2>删除纪念馆？</h2><p class="my-delete-name"></p><p>删除后，馆内资料、祭奠记录和留言都无法恢复。</p><div><button type="button" class="my-delete-cancel">取消</button><button type="button" class="my-delete-confirm">确认删除</button></div>';
+  dialog.querySelector('.my-delete-name').textContent=hall.name;
+  const close=()=>{dialog.close();dialog.remove()};dialog.querySelector('.my-delete-cancel').onclick=close;
+  dialog.querySelector('.my-delete-confirm').onclick=()=>{if(!ownsHall(hall,account())){close();return}localStorage.setItem('memorial-halls',JSON.stringify(saved().filter(item=>item.id!==hall.id)));close();myPage()};
+  dialog.addEventListener('close',()=>dialog.remove());document.body.append(dialog);dialog.showModal();
 }
 function showChenMessageVision(){
   document.querySelector('.chen-message-vision')?.remove();
@@ -661,6 +685,7 @@ function route(){
   else if(page==='me')myPage();
   else if(page==='browse')browse(id);
   else if(page==='create')create(id);
+  else if(page==='manage')editHall(id);
   else if(page==='hall')saved().some(item=>item.id===id)?customHall(id,tab):hall(id,tab);
   else if(page==='logout'){inviteAccessGranted=false;localStorage.removeItem('memorial-account');localStorage.removeItem('memorial-invite-theme');applyInviteTheme();location.hash='#home';return}
   else simple(({help:'帮助中心',agreement:'用户协议',privacy:'隐私政策'})[page]||'页面不存在');

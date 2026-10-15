@@ -507,3 +507,29 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 .custom-message-form{margin-top:24px}
 .custom-message-list .memorial-message,.custom-tribute-list .memorial-message{margin-top:12px}
 .memorial-card:not(.featured-memorial) .memorial-cover{background:#f6f1ec url("assets/person-placeholder.svg?v=3") center/142px 142px no-repeat;color:transparent}
+
+/* 个人资料与账户操作合为首行；自建纪念馆提供管理入口。 */
+.my-profile-settings{display:flex;align-items:center;gap:20px;width:auto;min-width:0;margin-left:auto;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+.my-profile-settings h2{display:none}
+.my-profile-settings a{padding:8px 0;font-size:14px;white-space:nowrap}
+.my-profile-settings a+a{padding-left:20px;border-left:1px solid #e8ddd3}
+.my-layout{margin-top:18px}
+.my-hall-item{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 4px}
+.my-hall-info{display:flex;flex-direction:column;gap:9px;min-width:0}
+.my-hall-info strong,.my-hall-info small{grid-column:auto}
+.my-hall-actions{display:flex;align-items:center;gap:15px;flex:none}
+.my-hall-actions a,.my-hall-actions button{border:0;background:transparent;color:#866959;font:inherit;font-size:14px;line-height:1.4;cursor:pointer;white-space:nowrap}
+.my-hall-actions button{color:#995951}
+.my-hall-actions a:hover,.my-hall-actions button:hover{color:#71352f;text-decoration:underline;text-underline-offset:4px}
+.create-edit-cancel{display:inline-block;margin:16px 0 0 18px;color:#88756b}
+.my-delete-dialog{width:min(420px,calc(100% - 32px));padding:26px 28px;border:1px solid #d9c6b9;border-radius:9px;background:#fffdfa;color:#57483e;box-shadow:0 18px 55px #24191145}
+.my-delete-dialog::backdrop{background:#15120f80}
+.my-delete-dialog h2{margin:0 0 12px;font:700 25px SimSun,serif}
+.my-delete-dialog p{margin:8px 0;color:#786b62;line-height:1.65}
+.my-delete-dialog .my-delete-name{color:#523d33;font-weight:700}
+.my-delete-dialog>div{display:flex;justify-content:flex-end;gap:10px;margin-top:24px}
+.my-delete-dialog button{padding:9px 16px;border:1px solid #cdbbb0;border-radius:5px;background:#fffdfa;color:#614e43;cursor:pointer}
+.my-delete-dialog .my-delete-confirm{border-color:#8d3c35;background:#8d3c35;color:#fff}
+.invite-theme .my-profile-settings{background:transparent;border:0}
+.invite-theme .my-profile-settings a+a{border-left-color:#3a5050}
+@media(max-width:760px){.my-profile{flex-wrap:wrap}.my-profile-settings{flex-basis:100%;justify-content:flex-end;margin-left:0;padding-top:10px;border-top:1px solid #e8ddd3}.my-hall-item{align-items:flex-start;flex-direction:column;gap:15px}.my-hall-actions{width:100%;justify-content:flex-end}}
