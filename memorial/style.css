@@ -569,3 +569,16 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 .invite-theme .edit-lamp-panel{background:#203031;border-color:#50605a}
 .invite-theme .edit-lamp-panel h2,.invite-theme .edit-lamp-panel a{color:#d7ded9}
 @media(max-width:600px){.edit-lamp-panel{align-items:stretch;flex-direction:column}.edit-lamp-panel a{text-align:center}}
+
+/* Keep memorial details and its lantern in one aligned editing workspace. */
+.edit-page .create-section-body{display:grid;grid-template-columns:minmax(0,1fr) 280px;align-items:start;gap:32px;min-height:0;border-top:1px solid #d9c9b9;border-radius:7px;padding:36px}
+.edit-page .create-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 22px;width:100%;max-width:none;margin:0}
+.edit-page .create-form>.field{min-width:0;margin:0}
+.edit-page .create-form>.field:first-child,.edit-page .create-form>.field:nth-child(4),.edit-page .create-edit-actions{grid-column:1/-1}
+.edit-page .create-form textarea{min-height:126px}
+.edit-page .create-edit-actions{margin-top:4px}
+.edit-page .edit-lamp-panel{display:flex;flex-direction:column;align-items:stretch;gap:18px;width:100%;max-width:none;margin:0;padding:26px;background:#faf6f1}
+.edit-page .edit-lamp-panel p{line-height:1.65}
+.edit-page .edit-lamp-panel a{display:block;text-align:center;line-height:1.5}
+@media(max-width:900px){.edit-page .create-section-body{grid-template-columns:minmax(0,1fr);gap:26px}.edit-page .edit-lamp-panel{flex-direction:row;align-items:center;justify-content:space-between}}
+@media(max-width:600px){.edit-page .create-section-body{padding:20px}.edit-page .create-form{grid-template-columns:minmax(0,1fr)}.edit-page .edit-lamp-panel{flex-direction:column;align-items:stretch}}

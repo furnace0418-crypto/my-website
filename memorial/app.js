@@ -518,6 +518,7 @@ function editHall(id){
   const user=account(),hall=saved().find(item=>item.id===id);
   if(!hall||!ownsHall(hall,user)||document.body.classList.contains('invite-theme')){location.hash='#me';return}
   create();
+  app.querySelector('.create-page').classList.add('edit-page');
   app.querySelector('.create-page-head h1').textContent='编辑纪念馆';
   app.querySelector('.create-page-head p').textContent='更新纪念馆的基本资料';
   app.querySelector('.create-sections').remove();
