@@ -30,21 +30,27 @@
   }
   async function create(name,password){
     const existing=users();
+    const normalized=name.trim().normalize('NFKC').toLocaleLowerCase();
+    if(Object.values(existing).some(user=>(user.name||'').trim().normalize('NFKC').toLocaleLowerCase()===normalized))throw new Error('昵称已被使用，请换一个昵称');
     const accountId=newId(existing);
     existing[accountId]=await record(accountId,name,password);
     localStorage.setItem(key,JSON.stringify(existing));
     return {accountId,name};
   }
-  async function verify(accountId,password){
+  async function verify(identifier,password){
     const existing=users();
-    const user=existing[accountId];
-    if(user?.salt&&user?.hash&&Number.isInteger(user.iterations)){
-      const actual=await digest(password,user.salt,user.iterations);
-      return actual===user.hash?{accountId,name:user.name||accountId}:null;
+    const normalized=identifier.trim().normalize('NFKC').toLocaleLowerCase();
+    const matches=existing[identifier]?[existing[identifier]]:Object.values(existing).filter(user=>(user.name||'').trim().normalize('NFKC').toLocaleLowerCase()===normalized);
+    for(const user of matches){
+      if(user?.salt&&user?.hash&&Number.isInteger(user.iterations)){
+        const actual=await digest(password,user.salt,user.iterations);
+        if(actual===user.hash)return {accountId:user.accountId,name:user.name||user.accountId};
+      }
     }
     let legacy;
     try{legacy=JSON.parse(localStorage.getItem(legacyKey)||'null')}catch(_){legacy=null}
-    if(legacy&&accountId===(legacy.accountId||legacy.phone)&&password===legacy.password){
+    if(legacy&&(identifier===(legacy.accountId||legacy.phone)||(legacy.name||'').trim().normalize('NFKC').toLocaleLowerCase()===normalized)&&password===legacy.password){
+      const accountId=legacy.accountId||legacy.phone;
       existing[accountId]=await record(accountId,legacy.name||accountId,password);
       localStorage.setItem(key,JSON.stringify(existing));
       localStorage.removeItem(legacyKey);
