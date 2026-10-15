@@ -154,13 +154,14 @@ let zhangOfferingState={};
 let chenRegistrationNoticeShown=false;
 let chenRegistrationNoticePending=false;
 function queueChenRegistrationNotice(){
-  if(chenRegistrationNoticeShown||chenRegistrationNoticePending||document.body.classList.contains('invite-theme'))return;
+  if(chenRegistrationNoticeShown||chenRegistrationNoticePending||window.memorialRegistrationState?.chen||document.body.classList.contains('invite-theme'))return;
   if(offerings().flower&&offerings().lamp){
     chenRegistrationNoticePending=true;
   }
 }
 function showChenRegistrationNotice(){
   if(chenRegistrationNoticeShown||!chenRegistrationNoticePending)return;
+  if(window.memorialRegistrationState?.chen){chenRegistrationNoticePending=false;return}
   if(document.body.classList.contains('invite-theme')){chenRegistrationNoticePending=false;return}
   if(location.hash.startsWith('#services'))return;
   const flowerConfirm=document.querySelector('.flower-confirm');
@@ -172,7 +173,7 @@ function showChenRegistrationNotice(){
   notice.setAttribute('role','alert');
   notice.innerHTML='<section><p>该居民尚未完成登记，请联系管理员。</p><small>桃原市纪念馆</small></section>';
   document.body.appendChild(notice);
-  setTimeout(()=>notice.remove(),1100);
+  setTimeout(()=>notice.remove(),3000);
 }
 window.memorialLampBridge={recordLamp:id=>{if(id==='zhang-wenhua')zhangOfferingState={...zhangOfferingState,lamp:true};else if(id==='chen-zhenzhen'){saveOffering('lamp');queueChenRegistrationNotice('lamp')}}};
 const offeringText=state=>state.flower&&state.lamp?'你已经献花，并点燃长明灯了。':state.flower?'你已经献花了。':state.lamp?'你已经点燃长明灯了。':'你还没有进行祭奠。';
