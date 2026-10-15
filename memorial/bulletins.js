@@ -32,7 +32,6 @@ function wireHomeBulletins(){
   panel.querySelector('h2').innerHTML='<span>︽</span> 资讯 <span>︾</span>';
   panel.querySelector('.section-heading p').textContent='研究会公告、平台说明与纪念文化';
   panel.querySelector('ul').innerHTML=memorialBulletins.map(item=>`<li><a href="#articles/${item.id}">${esc(item.title)}</a><time datetime="${item.date}">${item.date}</time></li>`).join('');
-  const more=document.createElement('a');more.className='bulletin-home-more';more.href='#articles';more.textContent='阅览全部资讯 · 福报说明 →';panel.appendChild(more);
 }
 
 function bulletinPage(id='launch'){
@@ -74,4 +73,3 @@ function showAdminBusyDialog(){
   document.addEventListener('keydown',onKeydown);
   overlay.querySelector('.admin-busy-confirm').focus();
 }
-
