@@ -625,6 +625,17 @@ function addPersonalArchive(name,residentNumber){
   }
   app.querySelector('.life-story').append(pane);
 }
+function setupMemorialMessageBoard(storageKey,{loadStored=false}={}){
+  const pane=app.querySelector('[data-life-pane="messages"]'),heading=pane.querySelector('.tribute-heading');
+  heading.querySelector('p')?.remove();
+  const list=document.createElement('div');list.className='memorial-message-list';
+  pane.querySelectorAll(':scope > .memorial-message').forEach(item=>list.append(item));heading.after(list);
+  const addMessage=entry=>{const article=document.createElement('article'),by=document.createElement('b'),body=document.createElement('p'),time=document.createElement('time');article.className='memorial-message';by.textContent=entry.by||'普通用户';body.textContent=entry.message||'';time.textContent=entry.at||'';article.append(by,body,time);list.append(article)};
+  if(loadStored){try{JSON.parse(localStorage.getItem(storageKey)||'[]').forEach(addMessage)}catch(_){}}
+  const updateEmpty=()=>{list.querySelector('.memorial-message-empty')?.remove();if(!list.querySelector('.memorial-message')){const empty=document.createElement('div');empty.className='memorial-message-empty';empty.textContent='暂无留言';list.append(empty)}};updateEmpty();
+  const form=document.createElement('form');form.className='custom-message-form';form.innerHTML='<label class="field"><span>留下思念</span><textarea name="message" placeholder="写下想说的话" required></textarea></label><button class="btn" type="submit">发表留言</button>';pane.append(form);
+  form.onsubmit=event=>{event.preventDefault();const message=form.elements.message.value.trim();if(!message)return;const entry={by:account()?.name||'普通用户',message,at:dateText()};try{const old=JSON.parse(localStorage.getItem(storageKey)||'[]');localStorage.setItem(storageKey,JSON.stringify([...old,entry]))}catch(_){return}list.querySelector('.memorial-message-empty')?.remove();addMessage(entry);form.reset()};
+}
 function zhenzhenMemorial(initialTab='story'){
   const taoyuanTimeline=[
     ['2004年｜出生于云阳','陈珍珍出生于云阳市。童年时期主要与母亲张文华共同生活，性格开朗，喜欢拍照，也很喜欢小动物。'],
@@ -674,6 +685,7 @@ function zhenzhenMemorial(initialTab='story'){
     article.className='memorial-message';by.textContent=wish.by||'普通用户';message.textContent=wish.message||'';time.textContent=wish.at||'';
     article.append(by,message,time);messagePane.insertBefore(article,messagePane.children[1]);
   }
+  setupMemorialMessageBoard(wishKey);
   document.querySelectorAll('[data-life-tab]').forEach(button=>button.onclick=()=>{document.querySelectorAll('[data-life-tab]').forEach(item=>item.classList.toggle('active',item===button));document.querySelectorAll('[data-life-pane]').forEach(pane=>pane.classList.toggle('active',pane.dataset.lifePane===button.dataset.lifeTab));if(button.dataset.lifeTab==='messages'&&!chenMessageVisionShown){chenMessageVisionShown=true;showChenMessageVision()}});
   if(initialTab!=='story')document.querySelector(`[data-life-tab="${initialTab}"]`)?.click();
   const offeringNotice=document.createElement('div');offeringNotice.className='offering-notice';offeringNotice.setAttribute('role','status');offeringNotice.textContent=offeringText(offerings());offeringNotice.hidden=!offerings().flower&&!offerings().lamp;document.querySelector('.life-story').prepend(offeringNotice);
@@ -803,6 +815,7 @@ function zhangwenhuaMemorial(initialTab='story'){
   addMemorialBackLink('张文华');
   const messagePane=app.querySelector('[data-life-pane="messages"]');
   try{for(const wish of JSON.parse(localStorage.getItem('zhang-wenhua-wishes')||'[]')){const article=document.createElement('article');article.className='memorial-message';const by=document.createElement('b'),body=document.createElement('p'),time=document.createElement('time');by.textContent=wish.by||'普通用户';body.textContent=wish.message||'';time.textContent=wish.at||'';article.append(by,body,time);messagePane.append(article)}}catch(_){}
+  setupMemorialMessageBoard('zhang-wenhua-wishes');
   app.querySelectorAll('[data-life-tab]').forEach(button=>button.onclick=()=>{app.querySelectorAll('[data-life-tab]').forEach(item=>item.classList.toggle('active',item===button));app.querySelectorAll('[data-life-pane]').forEach(pane=>pane.classList.toggle('active',pane.dataset.lifePane===button.dataset.lifeTab))});
   if(initialTab!=='story')app.querySelector(`[data-life-tab="${initialTab}"]`)?.click();
   const notice=document.createElement('div');notice.className='offering-notice';notice.setAttribute('role','status');notice.textContent=offeringText(zhangOfferingState);notice.hidden=!zhangOfferingState.flower&&!zhangOfferingState.lamp;app.querySelector('.life-story').prepend(notice);
@@ -854,6 +867,7 @@ function zhengxiuqinMemorial(initialTab='story'){
   }
   addMemorialBackLink('郑秀琴');
   addPersonalArchive('郑秀琴',null);
+  setupMemorialMessageBoard('zheng-xiuqin-wishes',{loadStored:true});
   app.querySelectorAll('[data-life-tab]').forEach(button=>button.onclick=()=>{app.querySelectorAll('[data-life-tab]').forEach(item=>item.classList.toggle('active',item===button));app.querySelectorAll('[data-life-pane]').forEach(pane=>pane.classList.toggle('active',pane.dataset.lifePane===button.dataset.lifeTab))});
   if(initialTab!=='story')app.querySelector(`[data-life-tab="${initialTab}"]`)?.click();
   const dialog=app.querySelector('.flower-confirm'),close=()=>dialog.hidden=true;

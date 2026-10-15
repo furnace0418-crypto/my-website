@@ -629,3 +629,16 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 @media(max-width:600px){.edit-page .create-form>.field:nth-child(4){grid-column:1/-1}}
 .invite-theme .notice-panel li{border-bottom-color:rgba(120,37,31,.48)}
 .invite-theme .notice-panel li:before{color:rgba(120,37,31,.48)}
+
+/* Match every memorial message board to the same spacious layout. */
+.life-pane[data-life-pane="messages"] .tribute-heading{padding:12px 0 22px;margin-bottom:24px}
+.life-pane[data-life-pane="messages"] .tribute-heading h2{font-size:28px}
+.memorial-message-list,.custom-message-list{display:grid;gap:14px;margin:0 0 28px}
+.memorial-message-list .memorial-message,.custom-message-list .memorial-message{margin:0;padding:22px 25px;border-radius:6px;background:#fff;border-color:#e6ded6}
+.memorial-message-empty,.custom-message-list>.empty{display:flex;align-items:center;justify-content:center;min-height:190px;margin:0;padding:24px;border-radius:7px;background:#fff;color:#817b75;font-size:17px;text-align:center}
+.life-pane[data-life-pane="messages"] .custom-message-form{margin-top:26px}
+.life-pane[data-life-pane="messages"] .custom-message-form .field{margin-bottom:24px;font-size:18px}
+.life-pane[data-life-pane="messages"] .custom-message-form textarea{display:block;min-height:160px;padding:17px 20px;font-size:18px}
+.life-pane[data-life-pane="messages"] .custom-message-form .btn{min-width:150px;min-height:56px;font-size:18px}
+.invite-theme .memorial-message-empty,.invite-theme .custom-message-list>.empty{background:#142122;color:#aeb9b4}
+.invite-theme .memorial-message-list .memorial-message,.invite-theme .custom-message-list .memorial-message{background:#142122;border-color:#3a4443}
