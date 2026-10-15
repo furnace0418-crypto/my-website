@@ -106,7 +106,8 @@ videoControlsObserver.observe(app,{childList:true,subtree:true});
 const demo={id:'demo',name:'阿乐',birth:'2024年08月21日',death:'2024年08月21日',creator:'admin',bio:'123123',records:[{type:'点烛',by:'admin',at:'2024年08月21日 21:30',text:'点燃了一支蜡烛，照亮前路'},{type:'上香',by:'admin',at:'2024年08月21日 21:28',text:'献上了一炷香，寄托哀思'},{type:'献花',by:'admin',at:'2024年08月21日 21:28',text:'献上了一束花，表达怀念'}]};
 const zhenzhen={id:'chen-zhenzhen',name:'陈珍珍',birth:'2004年03月14日',death:'2024年',creator:'安念堂',bio:'愿你在另一处，获得平静。',records:[]};
 const zhangwenhua={id:'zhang-wenhua',name:'张文华',birth:'1976年08月17日',death:'2013年11月03日',creator:'安念堂',bio:'张文华生于云阳，2013年于云阳市家中离世。',records:[]};
-const halls=()=>[zhenzhen,zhangwenhua,demo,...saved()];
+const zhengxiuqin={id:'zheng-xiuqin',name:'郑秀琴',birth:'1975年',death:'2008年05月12日',creator:'安念堂',bio:'郑秀琴生于云阳，2008年于云阳市城南区离世。',records:[]};
+const halls=()=>[zhenzhen,zhangwenhua,zhengxiuqin,demo,...saved()];
 const searchableHalls=()=>halls().filter(h=>!(document.body.classList.contains('invite-theme')&&h.id==='chen-zhenzhen'&&!window.memorialRegistrationState?.chen));
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const field=(form,name)=>form.elements.namedItem(name).value;
@@ -339,7 +340,7 @@ function browse(query=''){
     const q=input.value.trim();
     if(!q){grid.innerHTML='<div class="empty">请输入故人姓名进行搜索</div>';return}
     const found=searchableHalls().filter(h=>h.name.includes(q));
-    grid.innerHTML=found.length?found.map(h=>{const featured=['chen-zhenzhen','zhang-wenhua'].includes(h.id);const coverClass=h.id==='chen-zhenzhen'?' chen-cover':h.id==='zhang-wenhua'?' zhang-cover':'';return `<article class="memorial-card${featured?' featured-memorial':''}"><div class="memorial-cover${coverClass}">${featured?'':'☾'}</div><div class="memorial-card-body"><h2>${esc(h.name)}</h2><p>${esc(h.birth)} - ${esc(h.death)}</p><p>创建者: ${esc(h.creator)}</p><a class="btn btn-gold" href="#hall/${encodeURIComponent(h.id)}">${featured?'进入纪念馆':'❤ 进行祭祀'}</a></div></article>`}).join(''):'<div class="empty">没有找到相关纪念馆</div>';
+    grid.innerHTML=found.length?found.map(h=>{const featured=['chen-zhenzhen','zhang-wenhua','zheng-xiuqin'].includes(h.id);const coverClass=h.id==='chen-zhenzhen'?' chen-cover':h.id==='zhang-wenhua'?' zhang-cover':h.id==='zheng-xiuqin'?' zheng-cover':'';return `<article class="memorial-card${featured?' featured-memorial':''}"><div class="memorial-cover${coverClass}">${featured?'':'☾'}</div><div class="memorial-card-body"><h2>${esc(h.name)}</h2><p>${esc(h.birth)} - ${esc(h.death)}</p><p>创建者: ${esc(h.creator)}</p><a class="btn btn-gold" href="#hall/${encodeURIComponent(h.id)}">${featured?'进入纪念馆':'❤ 进行祭祀'}</a></div></article>`}).join(''):'<div class="empty">没有找到相关纪念馆</div>';
   }
   app.querySelector('#hallSearchForm').onsubmit=e=>{e.preventDefault();draw()};
   draw();
@@ -454,7 +455,7 @@ function zhenzhenMemorial(initialTab='story'){
     flowerConfirm.remove();
   }
 }
-function hall(id,tab){if(id==='chen-zhenzhen'){zhenzhenMemorial(tab);return}if(id==='zhang-wenhua'){zhangwenhuaMemorial(tab);return}const h=halls().find(x=>x.id===id);if(!h){browse();return}app.innerHTML=`<div class="page-shell"><div class="panel"><div class="detail-head"><div class="portrait">☾</div><div><h1>${esc(h.name)}</h1><p>${esc(h.birth)} - ${esc(h.death)}　创建者: ${esc(h.creator)}</p><div class="rite-actions"><button data-rite="点烛">🕯 点烛</button><button data-rite="上香">♨ 上香</button><button data-rite="献花">🌿 献花</button></div></div></div><div class="detail-content"><h2>生平简介</h2><p class="bio">${esc(h.bio||'暂无生平简介')}</p><h2>祭祀记录</h2><div id="recordList"></div><form id="messageForm"><label class="field"><span>留下思念</span><textarea name="message" placeholder="写下想说的话" required></textarea></label><button class="btn" type="submit">发表留言</button></form></div></div></div>`;const list=document.querySelector('#recordList');function records(){list.innerHTML=h.records.length?h.records.map(r=>`<article class="record"><div class="record-top"><span><b>${esc(r.by)}</b>　${esc(r.type)}</span><time>${esc(r.at)}</time></div><p>${esc(r.text)}</p></article>`).join(''):'<p class="empty">尚无祭祀记录</p>'}records();function add(type,text){h.records.unshift({type,by:account()?.name||'访客',at:dateText(),text});if(h.id!=='demo'){localStorage.setItem('memorial-halls',JSON.stringify(saved().map(x=>x.id===h.id?h:x)))}records()}document.querySelectorAll('[data-rite]').forEach(b=>b.onclick=()=>{const t=b.dataset.rite;add(t,({点烛:'点燃了一支蜡烛，照亮前路',上香:'献上了一炷香，寄托哀思',献花:'献上了一束花，表达怀念'})[t])});document.querySelector('#messageForm').onsubmit=e=>{e.preventDefault();const f=e.currentTarget;add('留言',f.message.value.trim());f.reset()};}
+function hall(id,tab){if(id==='chen-zhenzhen'){zhenzhenMemorial(tab);return}if(id==='zhang-wenhua'){zhangwenhuaMemorial(tab);return}if(id==='zheng-xiuqin'){zhengxiuqinMemorial(tab);return}const h=halls().find(x=>x.id===id);if(!h){browse();return}app.innerHTML=`<div class="page-shell"><div class="panel"><div class="detail-head"><div class="portrait">☾</div><div><h1>${esc(h.name)}</h1><p>${esc(h.birth)} - ${esc(h.death)}　创建者: ${esc(h.creator)}</p><div class="rite-actions"><button data-rite="点烛">🕯 点烛</button><button data-rite="上香">♨ 上香</button><button data-rite="献花">🌿 献花</button></div></div></div><div class="detail-content"><h2>生平简介</h2><p class="bio">${esc(h.bio||'暂无生平简介')}</p><h2>祭祀记录</h2><div id="recordList"></div><form id="messageForm"><label class="field"><span>留下思念</span><textarea name="message" placeholder="写下想说的话" required></textarea></label><button class="btn" type="submit">发表留言</button></form></div></div></div>`;const list=document.querySelector('#recordList');function records(){list.innerHTML=h.records.length?h.records.map(r=>`<article class="record"><div class="record-top"><span><b>${esc(r.by)}</b>　${esc(r.type)}</span><time>${esc(r.at)}</time></div><p>${esc(r.text)}</p></article>`).join(''):'<p class="empty">尚无祭祀记录</p>'}records();function add(type,text){h.records.unshift({type,by:account()?.name||'访客',at:dateText(),text});if(h.id!=='demo'){localStorage.setItem('memorial-halls',JSON.stringify(saved().map(x=>x.id===h.id?h:x)))}records()}document.querySelectorAll('[data-rite]').forEach(b=>b.onclick=()=>{const t=b.dataset.rite;add(t,({点烛:'点燃了一支蜡烛，照亮前路',上香:'献上了一炷香，寄托哀思',献花:'献上了一束花，表达怀念'})[t])});document.querySelector('#messageForm').onsubmit=e=>{e.preventDefault();const f=e.currentTarget;add('留言',f.message.value.trim());f.reset()};}
 function simple(title){app.innerHTML=`<div class="page-shell simple-page"><h1 class="page-heading">${title}</h1><p>相关内容正在整理中。</p><a class="btn" href="#home">返回首页</a></div>`;}
 function fortuneExplanation(){app.innerHTML=`<div class="page-shell fortune-page"><header><h1 class="page-heading">福报说明</h1></header><section class="fortune-body"><div class="fortune-copy fortune-copy-light"><p>然世间诸事，虽有顺逆得失，善念善行终有其归。</p><p>有人身处困厄，独力难支。若有人伸手相扶，使其得以渡过难关，此事，可谓善乎？</p><p>有人心怀怨憎，几欲伤人害己。若有人劝其止怒，引其回转，使恶念不再增长，此事，又可谓善乎？</p><p>一切众生，自久远以来，受贪、嗔、痴三毒所扰，常因执念而生烦恼，因烦恼而起争端。若能以慈心待人，以善意解怨，使众生少受一分苦，亦使自身少造一分业。</p><p>故扶其困，是善。解其忧，是慈。劝其止恶，是度。</p><p>善念既生，善行相续，久而积之，是为福报。</p></div><div class="fortune-copy fortune-copy-dark"><p>然世间诸事，并非皆有善恶之明界。</p><p>有人身受重苦，求生不得，求死不能。若有人代其断苦，使其不再受此身之刑，此事，可谓恶乎？</p><p>有人恶业深重，终日伤人造业。若任其存世，则恶业日增；若断其恶行，使其不再害人，此事，又可谓恶乎？</p><p>一切众生，自久远以来，受贪、嗔、痴三毒所缚，妄想颠倒，恶业轮转。众生困于火宅，却不知火宅为苦。</p><p>故止其苦，是救。止其恶，是度。断其业，是慈悲</p></div><div class="fortune-video"><video src="assets/invite-home-v2.mp4" controls preload="none" playsinline></video></div></section></div>`;useCachedFortuneVideo(app.querySelector('.fortune-video video'));}
 function route(){
@@ -560,5 +561,45 @@ function zhangwenhuaMemorial(initialTab='story'){
     dialog.remove();
   }
 }
+function zhengxiuqinMemorial(initialTab='story'){
+  const timeline=[
+    ['1975年｜出生于云阳','郑秀琴出生于云阳周边农村。家境普通，年轻时便离开家乡来到云阳市谋生，希望靠自己的工作改善生活。'],
+    ['年轻时期｜与张文华一同进厂','来到云阳市后，郑秀琴与好友张文华进入同一家服装厂工作。两人住在工厂宿舍，平日彼此照应，关系一直十分亲近。'],
+    ['工厂时期｜第一次听说桃原市','在宿舍生活期间，一位年长女工曾多次向她们提起“桃原市”，称那里没有贫穷和痛苦，只要多做好事、积累福报，将来便有机会前往。郑秀琴起初只把这些话当作长辈的安慰，并没有真正相信。'],
+    ['工厂时期｜经历风波','工作期间，郑秀琴逐渐察觉厂内部分年轻女工遭到不当对待，并曾私下帮助工友、匿名向有关部门反映情况。那段经历给她留下了很深的影响。此后不久，厂内又发生严重设备事故，一名与她们相熟的女工意外去世。'],
+    ['离开工厂｜经营服装店','离开工厂后，郑秀琴留在云阳市生活，并凭借多年积累开了一家小服装店。生意最好的几年里，生活逐渐稳定，她与张文华也一直保持往来。'],
+    ['此后｜接下郑愿的生活','故友由于家庭情况，将幼年的郑愿送到郑秀琴家中抚养。郑秀琴一直把他当作自家孩子照顾。'],
+    ['事业受挫｜生活重新陷入低谷','后来，郑秀琴的服装店因经营不善逐渐陷入困境，最终停业，并留下了一些债务和尚未结清的员工工资。此后她靠零工维持生活，同时一点点偿还欠款。即便生活并不宽裕，她仍会参与一些志愿活动，也会尽力帮助比自己更困难的人。'],
+    ['低谷时期｜重新想起桃原市','生活陷入低谷后，郑秀琴再次想起年轻时在工厂听过的“桃原市”。与过去不同的是，她开始认真相信，只要持续积累福报，或许真的能够去往一个没有痛苦、可以重新开始的地方。她也曾向身边人提起，自己正在完成一件“必须做完的事”。'],
+    ['2008年｜离世','2008年5月12日，郑秀琴于云阳市城南区一处出租屋内离世。']
+  ];
+  const taoyuanTimeline=[
+    ['1975年｜出生于云阳','郑秀琴出生于云阳周边农村。家境普通，年轻时便离开家乡来到云阳市生活，希望通过工作让自己的日子慢慢稳定下来。'],
+    ['年轻时期｜来到云阳市工作','成年后，郑秀琴与好友张文华一同进入服装厂工作。两人住在同一间宿舍，在陌生的城市里彼此照应，关系一直十分亲近。'],
+    ['工作时期｜生活逐渐安定','随着工作渐渐稳定，郑秀琴的生活也慢慢有了起色。后来她离开工厂，在云阳市经营起一家小服装店，生意虽然不算很大，但日子过得踏实。'],
+    ['成家以后｜建立自己的家庭','生活稳定后，郑秀琴结婚成家，也有了自己的孩子。她一直很珍惜这份来之不易的家庭生活，平日除了经营店铺，大部分时间都用来照顾家人。'],
+    ['家庭稳定后｜与张文华一家保持往来','郑秀琴与张文华始终保持着联系。张文华有了陈珍珍和郑愿以后，也常带着两个孩子来店里找她。几个孩子年龄相近，见面时总能玩到一起，两家人的往来也因此一直没有断过。'],
+    ['中年时期｜听闻桃原市','生活逐渐安稳以后，郑秀琴再次听人提起了年轻时曾听说过的“桃原市”。有人说，那里生活平静，没有太多烦恼，也很适合一家人长久生活。随着类似的说法越来越多，她也渐渐对那里产生向往。'],
+    ['迁居桃原｜重新开始生活','经过一段时间的考虑，郑秀琴最终和家人一同来到桃原市生活。新的环境让一家人的生活慢慢稳定下来，她也重新开始经营自己的小店。'],
+    ['此后｜安居桃原','郑秀琴此后一直与家人生活在桃原市。张文华也会偶尔带着陈珍珍和郑愿来探望她，两家人仍像从前一样保持往来，日子平静而普通。']
+  ];
+  const dark=document.body.classList.contains('invite-theme');
+  const portrait=dark?'assets/zheng-xiuqin-taoyuan.png':'assets/zheng-xiuqin-portrait.png';
+  app.innerHTML=`<div class="life-memorial-shell"><aside class="life-profile"><img class="life-portrait" src="${portrait}" alt="郑秀琴"><h1>郑秀琴</h1><p class="life-dates">1975　—　2008.05.12</p><p class="life-wish">愿记忆与思念长存。</p><dl><div><dt>性别</dt><dd>女</dd></div><div><dt>出生</dt><dd>1975年</dd></div><div><dt>籍贯</dt><dd>云阳</dd></div><div><dt>离世</dt><dd>2008年5月12日</dd></div><div><dt>${dark?'登记地':'安葬地'}</dt><dd>${dark?'桃原市纪念馆':'云阳市纪念馆'}</dd></div></dl>${dark?'':'<button class="life-flower" type="button">✿　献花</button>'}</aside><section class="life-story"><nav class="life-tabs" aria-label="纪念馆栏目"><button class="active" data-life-tab="story">过往记事</button><button data-life-tab="tributes">${dark?'福报记录':'祭奠记录'}</button><button data-life-tab="messages">留言板</button><span>／ 生者记忆 · 让爱延续 ／</span></nav><div class="life-pane active" data-life-pane="story"><div class="life-timeline">${timeline.map(([title,body])=>`<article><i></i><h2>${esc(title)}</h2><p>${esc(body)}</p></article>`).join('')}</div></div><div class="life-pane" data-life-pane="tributes"><div class="tribute-heading"><h2>${dark?'福报记录':'祭奠记录'}</h2></div><div class="tribute-list"></div></div><div class="life-pane" data-life-pane="messages"><div class="tribute-heading"><h2>留言板</h2></div></div></section></div><div class="flower-confirm" hidden><section role="dialog" aria-modal="true" aria-labelledby="flower-confirm-title"><button class="flower-confirm-close" type="button" aria-label="关闭">×</button><div class="flower-confirm-icon">✿</div><h2 id="flower-confirm-title">已献花</h2><p>愿这一束花承载思念，长伴她安眠。</p><button class="flower-confirm-ok" type="button">确定</button></section></div>`;
+  if(dark){
+    app.querySelector('.life-timeline').innerHTML=taoyuanTimeline.map(([title,body])=>`<article><i></i><h2>${esc(title)}</h2><p>${esc(body)}</p></article>`).join('');
+    app.querySelector('.life-dates').textContent='1975　—　';
+    app.querySelector('.life-wish').textContent='祝郑女士在桃原市生活愉快';
+    const rows=app.querySelectorAll('.life-profile dl div');
+    rows[3].querySelector('dt').textContent='现居';
+    rows[3].querySelector('dd').textContent='桃原市';
+  }
+  addMemorialBackLink('郑秀琴');
+  app.querySelectorAll('[data-life-tab]').forEach(button=>button.onclick=()=>{app.querySelectorAll('[data-life-tab]').forEach(item=>item.classList.toggle('active',item===button));app.querySelectorAll('[data-life-pane]').forEach(pane=>pane.classList.toggle('active',pane.dataset.lifePane===button.dataset.lifeTab))});
+  if(initialTab!=='story')app.querySelector(`[data-life-tab="${initialTab}"]`)?.click();
+  const dialog=app.querySelector('.flower-confirm'),close=()=>dialog.hidden=true;
+  if(dark){dialog.remove();return}
+  app.querySelector('.life-flower').onclick=()=>{dialog.hidden=false;app.querySelector('.flower-confirm-ok').focus()};
+  app.querySelector('.flower-confirm-close').onclick=close;app.querySelector('.flower-confirm-ok').onclick=close;dialog.onclick=e=>{if(e.target===dialog)close()};
+}
 addEventListener('hashchange',route);route();
-

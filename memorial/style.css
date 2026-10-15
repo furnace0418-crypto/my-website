@@ -292,4 +292,5 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 .invite-entry-text{color:#78251f}
 .invite-theme .overview-frame .platform-intro,.invite-theme .service-panel .section-heading,.invite-theme .notice-panel .section-heading,.invite-theme .about-panel .section-heading{border-bottom-color:rgba(120,37,31,.48)}
 .invite-theme .service-grid a{border-color:rgba(120,37,31,.48)}
-
+.featured-memorial .memorial-cover.zheng-cover{background:#e8e4df url("assets/zheng-xiuqin-portrait.png") center 27%/cover no-repeat}
+.invite-theme .featured-memorial .memorial-cover.zheng-cover{background-image:url("assets/zheng-xiuqin-taoyuan.png")}
