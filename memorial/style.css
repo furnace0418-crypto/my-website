@@ -370,3 +370,7 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 .invite-theme .my-profile p,.invite-theme .my-section-title p,.invite-theme .my-empty,.invite-theme .create-page-head p{color:#aab8b3}
 .invite-theme .my-aside a,.invite-theme .my-hall-item,.invite-theme .my-section-title{border-color:#3a5050}
 .invite-theme .create-sections{border-color:#3a5050}
+.header-account .account-mode{border:1px solid rgba(255,255,255,.42);background:rgba(255,255,255,.12);color:inherit;border-radius:4px;padding:7px 10px;white-space:nowrap;font-size:13px;line-height:1.3}
+.header-account .account-mode:hover,.header-account .account-mode:focus-visible{background:rgba(255,255,255,.24);outline-color:currentColor}
+.invite-theme .header-account .account-mode{border-color:rgba(213,226,220,.45);background:rgba(255,255,255,.06)}
+@media(max-width:700px){.header-account .account-mode{padding:6px;font-size:11px}}
