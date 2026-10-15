@@ -316,7 +316,7 @@ function showEntryInvitePrompt(){
   code.focus();
 }
 function register(){
-  app.innerHTML=`<div class="page-shell"><div class="panel form-panel"><div class="form-heading"><h1>用户注册</h1></div><form class="form-body" id="registerForm"><div class="message" id="formMessage" hidden></div><label class="avatar-upload"><span class="avatar-preview"><img alt="头像预览" hidden></span><strong>选择头像</strong><input name="avatar" type="file" accept="image/png,image/jpeg,image/webp" aria-label="上传头像"></label><label class="field"><span>昵称</span><input name="name" autocomplete="nickname" placeholder="请输入昵称" maxlength="24" required></label><label class="field"><span>设置密码</span><input name="password" type="password" autocomplete="new-password" placeholder="至少 8 位" minlength="8" required></label><label class="check"><input type="checkbox" name="terms" required>我已阅读并同意用户协议和隐私政策</label><button class="btn" type="submit">注册</button><p class="fine-print">已有账号？ <a href="#login">立即登录</a></p></form></div></div>`;
+  app.innerHTML=`<div class="page-shell"><div class="panel form-panel"><div class="form-heading"><h1>用户注册</h1></div><form class="form-body" id="registerForm" autocomplete="off"><div class="message" id="formMessage" hidden></div><label class="avatar-upload"><span class="avatar-preview"><img alt="头像预览" hidden></span><strong>选择头像</strong><input name="avatar" type="file" accept="image/png,image/jpeg,image/webp" aria-label="上传头像"></label><label class="field"><span>昵称</span><input name="annianRegisterName" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="请输入昵称" maxlength="24" required></label><label class="field"><span>设置密码</span><input name="password" type="password" autocomplete="new-password" placeholder="至少 8 位" minlength="8" required></label><label class="check"><input type="checkbox" name="terms" required>我已阅读并同意用户协议和隐私政策</label><button class="btn" type="submit">注册</button><p class="fine-print">已有账号？ <a href="#login">立即登录</a></p></form></div></div>`;
   const registerForm=document.querySelector('#registerForm');
   registerForm.noValidate=true;
   const fieldHint=input=>{
@@ -332,9 +332,9 @@ function register(){
   registerForm.onsubmit=async e=>{
     e.preventDefault();
     const form=e.currentTarget,message=document.querySelector('#formMessage');
-    const nickname=field(form,'name').trim(),password=field(form,'password');
+    const nickname=field(form,'annianRegisterName').trim(),password=field(form,'password');
     message.hidden=true;passwordHint.hidden=true;
-    if(nickname.length<2||nickname.length>24){message.textContent='昵称需为 2 至 24 个字符';message.hidden=false;form.elements.namedItem('name').focus();return}
+    if(nickname.length<2||nickname.length>24){message.textContent='昵称需为 2 至 24 个字符';message.hidden=false;form.elements.namedItem('annianRegisterName').focus();return}
     if(password.length<8||password.length>128){passwordHint.textContent='密码需为 8 至 128 位';passwordHint.hidden=false;form.elements.namedItem('password').focus();return}
     if(avatarInput.files[0]&&(!['image/png','image/jpeg','image/webp'].includes(avatarInput.files[0].type)||avatarInput.files[0].size>8*1024*1024)){message.textContent='请选择不超过 8 MB 的 PNG、JPG 或 WebP 图片';message.hidden=false;return}
     if(!form.elements.namedItem('terms').checked){message.textContent='请先阅读并同意用户协议和隐私政策';message.hidden=false;return}
