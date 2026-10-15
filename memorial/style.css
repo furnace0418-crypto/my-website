@@ -606,3 +606,15 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 .custom-photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
 .custom-photo-grid img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:5px}
 @media(max-width:600px){.edit-page .create-section-body{padding:22px 18px}.edit-page .edit-lamp-panel{flex-direction:row;align-items:center}.edit-page .edit-lamp-panel a{width:auto}}
+
+/* One clear return control and a focused memorial editor. */
+.page-return-me,.life-back-link,.create-lantern-back{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:8px 16px;border:1px solid #d8c8ba;border-radius:22px;background:#fffaf5;color:#654a3d;font-size:16px;font-weight:500;box-shadow:0 2px 8px #4a352d0b;text-decoration:none}
+.page-return-me:hover,.life-back-link:hover,.create-lantern-back:hover{background:#f3eae2;border-color:#bda693;color:#513c32;text-decoration:none}
+.edit-page .create-page-head{display:none}
+.edit-page .page-return-me{margin:0 0 16px max(0px,calc((100% - 900px)/2))}
+.edit-page .create-section-body{margin-top:0}
+.edit-page .edit-lamp-panel{margin-top:8px;padding:19px 22px;border:1px solid #e1d1c3;border-radius:6px;background:#fcf8f4}
+.edit-page .edit-lamp-panel span{font-size:21px}
+.hall-photo-item,.hall-photo-add{border-radius:50%}
+.empty-life-bio{display:flex;align-items:center;justify-content:center;min-height:250px;color:#77716a;font-size:18px;text-align:center}
+@media(max-width:600px){.edit-page .page-return-me{margin-left:0}.edit-page .edit-lamp-panel{gap:10px;padding:15px}.edit-page .edit-lamp-panel span{font-size:18px}}
