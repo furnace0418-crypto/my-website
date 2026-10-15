@@ -37,3 +37,4 @@ aside h2{font-size:19px}
 .lamp-confirm-ok{min-width:116px;padding:10px 25px;border:1px solid #78251f;background:#78251f;color:#fff;font:16px "Microsoft YaHei",sans-serif;letter-spacing:2px}
 @media(max-width:480px){.memorial-lantern .studio{grid-template-rows:minmax(0,1fr) auto}.memorial-lantern .stage{height:100%}.memorial-back{top:12px;left:12px;padding:8px 11px;font-size:13px}.memorial-wish-form{flex-wrap:wrap;padding:12px}.memorial-wish-form label{width:100%}.memorial-lantern .stage-toolbar{bottom:20px}}
 .save-feedback{min-height:1.6em;margin:10px 0 0;color:#695f58;font-size:14px;line-height:1.6;text-align:center}
+.lamp-hall-name{margin:0 0 8px;color:#87655c;font-size:15px;letter-spacing:1px}

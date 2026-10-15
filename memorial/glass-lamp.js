@@ -6,8 +6,12 @@
   const dedicated=['chen-zhenzhen','zhang-wenhua'].includes(memorialId);
   let owner=null;
   try{owner=JSON.parse(localStorage.getItem('memorial-account')||'null')}catch(_){}
-  const storageKey=owner?.accountId?`annian-glass-lamp-v3-${owner.accountId}`:'annian-glass-lamp-v2';
+  let customHall=null,ownedHalls=[];
+  try{const halls=JSON.parse(localStorage.getItem('memorial-halls')||'[]');customHall=halls.find(h=>h.id===memorialId)||null;ownedHalls=halls.filter(h=>owner&&(h.creatorId?h.creatorId===owner.accountId:h.creator===owner.name))}catch(_){}
+  const canSaveCustom=Boolean(customHall&&ownedHalls.some(h=>h.id===customHall.id));
+  const storageKey=customHall?`annian-glass-lamp-hall-v1-${customHall.id}`:owner?.accountId?`annian-glass-lamp-v3-${owner.accountId}`:'annian-glass-lamp-v2';
   document.body.classList.toggle('memorial-lantern',dedicated);
+  if(customHall){const label=document.createElement('p');label.className='lamp-hall-name';label.textContent=`${customHall.name}的长明灯`;document.querySelector('.single-style').prepend(label)}
   $('memorialWishForm').hidden=!dedicated;
   $('backToTributes').hidden=!dedicated;
   $('backToTributes').onclick=()=>{
@@ -27,11 +31,12 @@
   let state = {...defaults,base:memorialId==='zhang-wenhua'?'lotus':defaults.base,shade:memorialId==='zhang-wenhua'?'amber':dedicated?'cloud':defaults.shade}, lit = !dedicated, rotating = false, model, flame, glow, frame, stopped = false;
   let goldMaterial, blackMaterial, glassMaterial, wickMaterial, glassShader;
   let burn = lit?1:0, lastTime = null, lampConfirmTimer = null;
-  if(!dedicated)try {
-    const previous=storageKey!=='annian-glass-lamp-v2'&&!localStorage.getItem(storageKey)?localStorage.getItem('annian-glass-lamp-v2'):null;
+  if(!dedicated&&customHall)try {
+    const oldKey=owner?.accountId?`annian-glass-lamp-v3-${owner.accountId}`:'annian-glass-lamp-v2';
+    const previous=canSaveCustom&&ownedHalls.length===1&&!localStorage.getItem(storageKey)?localStorage.getItem(oldKey)||localStorage.getItem('annian-glass-lamp-v2'):null;
     const saved = JSON.parse(localStorage.getItem(storageKey) || previous || 'null');
     for (const key in defaults) if (saved && typeof saved[key] === typeof defaults[key]) state[key] = saved[key];
-    if(previous){localStorage.setItem(storageKey,previous);localStorage.removeItem('annian-glass-lamp-v2')}
+    if(previous){localStorage.setItem(storageKey,previous);localStorage.removeItem(oldKey);localStorage.removeItem('annian-glass-lamp-v2')}
     if(saved)$('saveFeedback').textContent='已载入上次保存的长明灯。';
   } catch (_) {}
   state.brightness=Math.max(.2,Math.min(1,state.brightness));
@@ -280,7 +285,7 @@
     parent.postMessage({type:'memorial-wish',message},location.origin==='null'?'*':location.origin);
     input.value='';$('status').hidden=false;$('status').textContent='心愿已送至留言板。';
   };
-  $('reset').onclick=()=>{state={...defaults,base:memorialId==='zhang-wenhua'?'lotus':defaults.base,shade:memorialId==='zhang-wenhua'?'amber':dedicated?'cloud':defaults.shade};for(const shade in shadeColors)delete shadeColors[shade];shadeColors[state.shade]=state.shadeColor;lit=!dedicated;lightButton();build();try{localStorage.removeItem(storageKey);$('saveFeedback').textContent='已恢复默认设置。'}catch(_){$('saveFeedback').textContent='已恢复默认设置，但无法清除旧存档。'}};
-  $('save').onclick=()=>{try{localStorage.setItem(storageKey,JSON.stringify(state));$('saveFeedback').textContent='已保存。下次打开会恢复这盏灯。'}catch(_){$('saveFeedback').textContent='保存失败，请检查浏览器存储权限。'}};
+  $('reset').onclick=()=>{state={...defaults,base:memorialId==='zhang-wenhua'?'lotus':defaults.base,shade:memorialId==='zhang-wenhua'?'amber':dedicated?'cloud':defaults.shade};for(const shade in shadeColors)delete shadeColors[shade];shadeColors[state.shade]=state.shadeColor;lit=!dedicated;lightButton();build();try{if(canSaveCustom||dedicated)localStorage.removeItem(storageKey);$('saveFeedback').textContent='已恢复默认设置。'}catch(_){$('saveFeedback').textContent='已恢复默认设置，但无法清除旧存档。'}};
+  $('save').onclick=()=>{if(customHall&&!canSaveCustom){$('saveFeedback').textContent='只有创建者可以保存这座纪念馆的长明灯。';return}if(!customHall&&!dedicated){$('saveFeedback').textContent='请先选择一座纪念馆。';return}try{localStorage.setItem(storageKey,JSON.stringify(state));$('saveFeedback').textContent=`已保存${customHall?`「${customHall.name}」的`:''}长明灯。`}catch(_){$('saveFeedback').textContent='保存失败，请检查浏览器存储权限。'}};
   addEventListener('pagehide',()=>{stopped=true;clearTimeout(lampConfirmTimer);cancelAnimationFrame(frame);observer.disconnect();controls.dispose();clearModel();bump.dispose();transmissionMap.dispose();glowMap.dispose();contactShadowMap.dispose();contactShadow.geometry.dispose();contactShadow.material.dispose();environment.dispose();floor.geometry.dispose();floor.material.dispose();enclosure.geometry.dispose();enclosure.material.dispose();skirting.children.forEach(o=>o.geometry.dispose());trimMaterial.dispose();renderer.dispose();});
 })();

@@ -488,11 +488,22 @@ function wireCreateDatePicker(input){
   panel.addEventListener('keydown',event=>{if(event.key==='Escape'){panel.hidden=true;toggle.setAttribute('aria-expanded','false');toggle.focus()}});
   document.addEventListener('pointerdown',event=>{if(!picker.isConnected)return;if(!picker.contains(event.target)){panel.hidden=true;toggle.setAttribute('aria-expanded','false')}},{signal:window.createDatePickerAbort?.signal});
 }
-function create(section='details'){
+function create(section='details',hallId=''){
   if(!account()){location.hash='#register';return}
   const lamp=section==='lantern';
   if(lamp){
-    app.innerHTML='<div class="create-lantern-fullscreen"><iframe class="create-lantern-frame" title="定制长明灯" src="lantern.html?v=3" allow="fullscreen"></iframe><a class="create-lantern-back" href="#create">‹ 返回创建纪念馆</a></div>';
+    if(document.body.classList.contains('invite-theme')){location.hash='#me';return}
+    const own=saved().filter(h=>ownsHall(h,account()));
+    if(!hallId){
+      if(own.length===1){location.hash='#create/lantern/'+encodeURIComponent(own[0].id);return}
+      app.innerHTML='<div class="page-shell create-page"><div class="create-page-head"><h1>定制长明灯</h1><p>请选择要绑定的纪念馆</p></div><div class="my-main"><div class="my-hall-list" id="lampHallList"></div></div></div>';
+      const list=app.querySelector('#lampHallList');
+      if(!own.length)list.innerHTML='<div class="my-empty"><strong>先创建纪念馆</strong><p>每座纪念馆拥有自己独立的长明灯。</p><a class="btn" href="#create">创建纪念馆</a></div>';
+      else own.forEach(h=>{const link=document.createElement('a');link.className='my-hall-item lamp-hall-choice';link.href='#create/lantern/'+encodeURIComponent(h.id);link.textContent=h.name+'　›';list.append(link)});
+      return;
+    }
+    const hall=own.find(h=>h.id===hallId);if(!hall){location.hash='#me';return}
+    app.innerHTML=`<div class="create-lantern-fullscreen"><iframe class="create-lantern-frame" title="${esc(hall.name)}的长明灯" src="lantern.html?memorial=${encodeURIComponent(hall.id)}&v=4" allow="fullscreen"></iframe><a class="create-lantern-back" href="#hall/${encodeURIComponent(hall.id)}">‹ 返回${esc(hall.name)}的纪念馆</a></div>`;
     return;
   }
   app.innerHTML=`<div class="page-shell create-page"><div class="create-page-head"><h1>创建纪念馆</h1><p>为逝者建立专属的记忆空间</p></div><div class="create-sections" role="tablist" aria-label="创建纪念馆栏目"><a role="tab" aria-selected="${!lamp}" href="#create">基本资料</a><a role="tab" aria-selected="${lamp}" href="#create/lantern">定制长明灯</a></div><div class="create-section-body">${lamp?'<iframe class="create-lantern-frame" title="定制长明灯" src="lantern.html?v=2" loading="lazy" allow="fullscreen"></iframe>':'<form class="form-body create-form" id="createForm"><label class="field"><span>逝者姓名</span><input name="name" required placeholder="请输入姓名"></label><label class="field"><span>出生日期</span><input name="birth" type="date" required></label><label class="field"><span>逝世日期</span><input name="death" type="date" required></label><label class="field"><span>生平简介</span><textarea name="bio" placeholder="记录值得珍藏的故事"></textarea></label><button class="btn" type="submit">创建纪念馆</button></form>'}</div></div>`;
@@ -519,6 +530,8 @@ function myPage(){
   const user=account();
   if(!user){location.hash='#login';return}
   const own=document.body.classList.contains('invite-theme')?[]:saved().filter(h=>ownsHall(h,user));
+  const legacyKey=user.accountId?`annian-glass-lamp-v3-${user.accountId}`:'annian-glass-lamp-v2';
+  if(own.length===1){const hallKey=`annian-glass-lamp-hall-v1-${own[0].id}`,legacy=localStorage.getItem(legacyKey)||localStorage.getItem('annian-glass-lamp-v2');if(legacy&&!localStorage.getItem(hallKey)){localStorage.setItem(hallKey,legacy);localStorage.removeItem(legacyKey);localStorage.removeItem('annian-glass-lamp-v2')}}
   app.innerHTML=`<div class="page-shell my-page"><div class="my-profile"><div class="my-avatar" aria-hidden="true"><img alt="" hidden></div><div><span class="my-eyebrow">我的安念堂</span><h1 id="myName"></h1><p>让思念有处安放，让记忆继续留存。</p></div></div><div class="my-layout"><main class="my-main"><div class="my-section-title"><div><h2>我创建的纪念馆</h2><p>你在这里保存的生命故事</p></div><a class="btn" href="#create">＋ 创建纪念馆</a></div><div class="my-hall-list" id="myHallList"></div></main><aside class="my-aside"><h2>账户设置</h2><a href="#change-password"><span>修改密码</span><span aria-hidden="true">›</span></a><a href="#logout"><span>退出登录</span><span aria-hidden="true">›</span></a></aside></div></div>`;
   app.querySelector('#myName').textContent=user.name;
   app.querySelector('.my-eyebrow').remove();
@@ -526,19 +539,22 @@ function myPage(){
   const avatarSource=avatarFor(user.accountId);
   if(avatarSource){const portrait=app.querySelector('.my-avatar');portrait.querySelector('img').src=avatarSource;portrait.querySelector('img').hidden=false}
   const list=app.querySelector('#myHallList');
-  const lampKey=user.accountId?`annian-glass-lamp-v3-${user.accountId}`:'annian-glass-lamp-v2';
-  if(!document.body.classList.contains('invite-theme')&&(localStorage.getItem(lampKey)||localStorage.getItem('annian-glass-lamp-v2'))){const lamp=document.createElement('div');lamp.className='my-saved-lamp';lamp.innerHTML='<strong>我的长明灯</strong><a href="#create/lantern">继续定制 ›</a>';app.querySelector('.my-main').append(lamp)}
+  const unmappedLegacy=own.length>1?(localStorage.getItem(legacyKey)||localStorage.getItem('annian-glass-lamp-v2')):null;
+  if(unmappedLegacy){
+    const free=own.filter(h=>!localStorage.getItem(`annian-glass-lamp-hall-v1-${h.id}`));
+    if(free.length){const box=document.createElement('div');box.className='my-legacy-lamp';box.innerHTML='<label>旧长明灯尚未绑定纪念馆 <select aria-label="选择旧长明灯绑定的纪念馆"></select></label><button type="button">关联旧灯</button>';const select=box.querySelector('select');free.forEach(h=>{const option=document.createElement('option');option.value=h.id;option.textContent=h.name;select.append(option)});box.querySelector('button').onclick=()=>{const hall=free.find(h=>h.id===select.value);if(!hall)return;localStorage.setItem(`annian-glass-lamp-hall-v1-${hall.id}`,unmappedLegacy);localStorage.removeItem(legacyKey);localStorage.removeItem('annian-glass-lamp-v2');myPage()};app.querySelector('.my-main').append(box)}
+  }
   if(document.body.classList.contains('invite-theme')){app.querySelector('.my-section-title .btn').remove();list.innerHTML='<div class="my-empty"><strong>特邀主题暂不展示自建纪念馆</strong><p>切回普通主题后可继续查看。</p></div>';return}
   if(!own.length){app.querySelector('.my-section-title .btn').remove();list.innerHTML='<div class="my-empty"><strong>还没有创建纪念馆</strong><p>建立一处纪念空间，保存关于故人的故事。</p><a class="btn" href="#create">＋ 创建纪念馆</a></div>';return}
-  own.forEach(h=>{const item=document.createElement('div');item.className='my-hall-item';const info=document.createElement('a');info.className='my-hall-info';info.href='#hall/'+encodeURIComponent(h.id);const title=document.createElement('strong');title.textContent=h.name;const meta=document.createElement('small');meta.textContent=[h.birth,h.death].filter(Boolean).join(' — ');info.append(title,meta);const actions=document.createElement('div');actions.className='my-hall-actions';const enter=document.createElement('a');enter.href=info.href;enter.textContent='进入';const edit=document.createElement('a');edit.href='#manage/'+encodeURIComponent(h.id);edit.textContent='编辑';const remove=document.createElement('button');remove.type='button';remove.textContent='删除';remove.onclick=()=>confirmHallDeletion(h);actions.append(enter,edit,remove);item.append(info,actions);list.append(item)});
+  own.forEach(h=>{const item=document.createElement('div');item.className='my-hall-item';const info=document.createElement('a');info.className='my-hall-info';info.href='#hall/'+encodeURIComponent(h.id);const title=document.createElement('strong');title.textContent=h.name;const meta=document.createElement('small');meta.textContent=[h.birth,h.death].filter(Boolean).join(' — ');info.append(title,meta);const actions=document.createElement('div');actions.className='my-hall-actions';const enter=document.createElement('a');enter.href=info.href;enter.textContent='进入';const lamp=document.createElement('a');lamp.href='#create/lantern/'+encodeURIComponent(h.id);lamp.textContent=localStorage.getItem(`annian-glass-lamp-hall-v1-${h.id}`)?'继续定制长明灯':'定制长明灯';const edit=document.createElement('a');edit.href='#manage/'+encodeURIComponent(h.id);edit.textContent='编辑';const remove=document.createElement('button');remove.type='button';remove.textContent='删除';remove.onclick=()=>confirmHallDeletion(h);actions.append(enter,lamp,edit,remove);item.append(info,actions);list.append(item)});
 }
 function confirmHallDeletion(hall){
   const user=account();if(!ownsHall(hall,user))return;
   const dialog=document.createElement('dialog');dialog.className='my-delete-dialog';
-  dialog.innerHTML='<h2>删除纪念馆？</h2><p class="my-delete-name"></p><p>删除后，馆内资料、祭奠记录和留言都无法恢复。</p><div><button type="button" class="my-delete-cancel">取消</button><button type="button" class="my-delete-confirm">确认删除</button></div>';
+  dialog.innerHTML='<h2>删除纪念馆？</h2><p class="my-delete-name"></p><p>删除后，馆内资料、长明灯、祭奠记录和留言都无法恢复。</p><div><button type="button" class="my-delete-cancel">取消</button><button type="button" class="my-delete-confirm">确认删除</button></div>';
   dialog.querySelector('.my-delete-name').textContent=hall.name;
   const close=()=>{dialog.close();dialog.remove()};dialog.querySelector('.my-delete-cancel').onclick=close;
-  dialog.querySelector('.my-delete-confirm').onclick=()=>{if(!ownsHall(hall,account())){close();return}localStorage.setItem('memorial-halls',JSON.stringify(saved().filter(item=>item.id!==hall.id)));close();myPage()};
+  dialog.querySelector('.my-delete-confirm').onclick=()=>{if(!ownsHall(hall,account())){close();return}localStorage.setItem('memorial-halls',JSON.stringify(saved().filter(item=>item.id!==hall.id)));localStorage.removeItem(`annian-glass-lamp-hall-v1-${hall.id}`);close();myPage()};
   dialog.addEventListener('close',()=>dialog.remove());document.body.append(dialog);dialog.showModal();
 }
 function showChenMessageVision(){
@@ -682,7 +698,8 @@ function route(){
   if(page==='home'){home();wireHomeBulletins()}
   else if(page==='services'&&!id){location.hash='#create/lantern';return}
   else if(page==='services'){
-    const source=['chen-zhenzhen','zhang-wenhua'].includes(id)?`lantern.html?memorial=${id}&v=3`:'lantern.html?v=3';
+    if(document.body.classList.contains('invite-theme')&&saved().some(h=>h.id===id)){location.hash='#browse';return}
+    const source=['chen-zhenzhen','zhang-wenhua'].includes(id)||saved().some(h=>h.id===id)?`lantern.html?memorial=${encodeURIComponent(id)}&v=4`:'lantern.html?v=4';
     app.innerHTML=`<iframe title="云祭服务 · 定制长明灯" src="${source}" style="display:block;width:100%;height:1250px;border:0" allow="fullscreen"></iframe>`;
   }
   else if(page==='articles')bulletinPage(id);
@@ -691,7 +708,7 @@ function route(){
   else if(page==='change-password')changePasswordPage();
   else if(page==='me')myPage();
   else if(page==='browse')browse(id);
-  else if(page==='create')create(id);
+  else if(page==='create')create(id,tab);
   else if(page==='manage')editHall(id);
   else if(page==='hall')saved().some(item=>item.id===id)?customHall(id,tab):hall(id,tab);
   else if(page==='logout'){inviteAccessGranted=false;localStorage.removeItem('memorial-account');localStorage.removeItem('memorial-invite-theme');applyInviteTheme();location.hash='#home';return}

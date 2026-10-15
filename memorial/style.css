@@ -554,3 +554,8 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 .my-saved-lamp a{font-size:16px;color:#866959}
 .my-saved-lamp a:hover{text-decoration:underline;text-underline-offset:4px}
 .invite-theme .my-saved-lamp{border-top-color:#3a5050}
+.lamp-hall-choice{display:block;color:#5b4339;font-size:19px}
+.my-legacy-lamp{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:14px;padding:17px 20px;border:1px solid #e8ddd3;border-radius:6px;background:#fcf8f3;color:#624e43;font-size:15px}
+.my-legacy-lamp select{margin-left:10px;padding:7px 10px;border:1px solid #d8c8ba;background:#fff;color:inherit;font:inherit}
+.my-legacy-lamp button{padding:9px 15px;border:1px solid #9b5148;border-radius:5px;background:#9b5148;color:#fff;font:inherit;cursor:pointer}
+@media(max-width:700px){.my-legacy-lamp{flex-direction:column;align-items:stretch}.my-legacy-lamp select{display:block;width:100%;margin:8px 0 0}}
