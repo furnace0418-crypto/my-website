@@ -367,17 +367,27 @@ function login(){
   forgot.innerHTML='<button type="button">忘记密码？</button><span hidden>若已退出且不记得密码，请重新注册。</span>';
   form.querySelector('.fine-print').before(forgot);
   forgot.querySelector('button').onclick=()=>{forgot.querySelector('span').hidden=!forgot.querySelector('span').hidden};
-  const history=document.createElement('details');
-  history.className='login-account-history';
-  accountInput.closest('.field').after(history);
+  const picker=document.createElement('div');
+  picker.className='login-nickname-picker';
+  const nicknameField=accountInput.closest('.field');
+  nicknameField.before(picker);
+  picker.append(nicknameField);
+  const toggle=document.createElement('button');
+  toggle.type='button';toggle.className='login-history-toggle';toggle.setAttribute('aria-label','展开最近登录的昵称');toggle.setAttribute('aria-expanded','false');
+  const history=document.createElement('div');
+  history.className='login-account-history';history.hidden=true;
+  picker.append(toggle,history);
+  const closeHistory=()=>{history.hidden=true;toggle.setAttribute('aria-expanded','false')};
+  toggle.onclick=()=>{history.hidden=!history.hidden;toggle.setAttribute('aria-expanded',String(!history.hidden))};
+  document.addEventListener('pointerdown',function closeOnOutside(event){if(!picker.isConnected){document.removeEventListener('pointerdown',closeOnOutside);return}if(!picker.contains(event.target))closeHistory()});
   const renderLoginHistory=()=>{
     const ids=recentLoginAccounts();
     history.replaceChildren();
-    history.hidden=!ids.length;
+    toggle.hidden=!ids.length;
+    if(!ids.length)closeHistory();
     if(!ids.length)return;
-    const title=document.createElement('summary');
-    title.innerHTML='<span>最近登录</span><span class="login-history-count"></span>';
-    title.querySelector('.login-history-count').textContent=`${ids.length} 个昵称`;
+    const title=document.createElement('p');
+    title.textContent='最近登录';
     history.append(title);
     const list=document.createElement('div');
     list.className='login-account-list';
@@ -393,7 +403,7 @@ function login(){
       const label=document.createElement('span');label.className='login-history-name';label.textContent=savedProfile.name;
       const arrow=document.createElement('span');arrow.className='login-history-arrow';arrow.setAttribute('aria-hidden','true');
       item.append(portrait,label,arrow);
-      item.onclick=()=>{accountInput.value=savedProfile.name;history.open=false;form.elements.namedItem('password').focus()};
+      item.onclick=()=>{accountInput.value=savedProfile.name;closeHistory();form.elements.namedItem('password').focus()};
       list.append(item);
     }
   };

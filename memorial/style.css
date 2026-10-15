@@ -413,15 +413,15 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 @media(max-width:720px){.header-account:not(.signed-in){position:absolute;right:12px;top:8px;min-height:38px;padding:3px 5px}.header-account:not(.signed-in) .account-login{gap:7px;padding-right:9px;font-size:12px}.header-account:not(.signed-in) .account-register{padding:6px 5px 6px 9px;font-size:12px}}
 
 /* 统一的默认头像与轻量头像上传。 */
-.account-avatar,.my-avatar,.avatar-preview,.login-history-avatar{background:#eee5db url("assets/default-avatar.svg") center/cover no-repeat}
+.account-avatar,.my-avatar,.avatar-preview,.login-history-avatar{background:#f3ebe3 url("assets/default-avatar.svg?v=2") center/cover no-repeat}
 .avatar-upload{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;width:max-content;margin:0 auto 27px;padding:0;border:0;background:transparent;color:#604a3d}
 .avatar-upload:hover{background:transparent}
-.avatar-upload .avatar-preview{width:92px;height:92px;border:3px solid #fff;box-shadow:0 0 0 1px #d6c1ae,0 3px 12px #553b2a17;position:relative}
+.avatar-upload .avatar-preview{width:92px;height:92px;border:1px solid #a86a62;box-shadow:none;position:relative}
 .avatar-upload .avatar-preview:after{content:'+';position:absolute;right:0;bottom:0;width:25px;height:25px;display:grid;place-items:center;border:2px solid #fff;border-radius:50%;background:#78251f;color:#fff;font:20px/1 Arial,sans-serif}
 .avatar-upload strong{font-size:16px;font-weight:600;margin:0}
-.avatar-upload:hover .avatar-preview{box-shadow:0 0 0 2px #a3735e,0 4px 14px #553b2a22}
+.avatar-upload:hover .avatar-preview{border-color:#78251f;box-shadow:0 0 0 2px #78251f1f}
 .avatar-upload:focus-within{outline:0}
-.avatar-upload:focus-within .avatar-preview{box-shadow:0 0 0 3px #b8a078}
+.avatar-upload:focus-within .avatar-preview{box-shadow:0 0 0 3px #78251f3d}
 .account-avatar img,.my-avatar img,.avatar-preview img,.login-history-avatar img{display:block;width:100%;height:100%;object-fit:cover}
 
 /* 最近登录：默认折叠，展开后以头像和昵称选择账号。 */
@@ -444,3 +444,18 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 .invite-theme .login-account-item{color:#dce5df}
 .invite-theme .login-account-item:hover,.invite-theme .login-account-item:focus-visible{background:#273a3a}
 @media(max-width:720px){.avatar-upload .avatar-preview{width:80px;height:80px}.login-account-history summary{padding:12px 14px}}
+
+/* 最近登录与昵称输入合并为一个下拉控件。 */
+.login-nickname-picker{position:relative;margin-bottom:21px}
+.login-nickname-picker .field{margin-bottom:0}
+.login-nickname-picker input[name="nickname"]{padding-right:58px}
+.login-history-toggle{position:absolute;right:2px;bottom:2px;width:48px;height:46px;border:0;border-left:1px solid #ece4dd;border-radius:0 5px 5px 0;background:transparent;display:grid;place-items:center;color:#927a6a}
+.login-history-toggle:hover,.login-history-toggle:focus-visible{background:#f6f0eb;outline:0}
+.login-history-toggle:after{content:'';width:8px;height:8px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform .18s}
+.login-history-toggle[aria-expanded="true"]:after{transform:translateY(2px) rotate(225deg)}
+.login-nickname-picker .login-account-history{position:absolute;z-index:30;top:100%;left:0;right:0;margin:5px 0 0;padding:9px;border:1px solid #ded2c7;border-radius:7px;background:#fffdfa;box-shadow:0 12px 26px #3a2d2426;max-height:310px;overflow:auto}
+.login-nickname-picker .login-account-history p{margin:2px 9px 7px;color:#95877c;font-size:13px}
+.login-nickname-picker .login-account-list{padding:0;border:0}
+.invite-theme .login-history-toggle{border-left-color:#46504e;color:#b7c5bf}
+.invite-theme .login-history-toggle:hover,.invite-theme .login-history-toggle:focus-visible{background:#263a39}
+.invite-theme .login-nickname-picker .login-account-history{background:#172526;border-color:#46504e}
