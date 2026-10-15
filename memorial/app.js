@@ -468,6 +468,10 @@ function browse(query=''){
 function create(section='details'){
   if(!account()){location.hash='#register';return}
   const lamp=section==='lantern';
+  if(lamp){
+    app.innerHTML='<div class="create-lantern-fullscreen"><iframe class="create-lantern-frame" title="定制长明灯" src="lantern.html?v=2" allow="fullscreen"></iframe><a class="create-lantern-back" href="#create">‹ 返回创建纪念馆</a></div>';
+    return;
+  }
   app.innerHTML=`<div class="page-shell create-page"><div class="create-page-head"><h1>创建纪念馆</h1><p>为逝者建立专属的记忆空间</p></div><div class="create-sections" role="tablist" aria-label="创建纪念馆栏目"><a role="tab" aria-selected="${!lamp}" href="#create">基本资料</a><a role="tab" aria-selected="${lamp}" href="#create/lantern">定制长明灯</a></div><div class="create-section-body">${lamp?'<iframe class="create-lantern-frame" title="定制长明灯" src="lantern.html?v=2" loading="lazy" allow="fullscreen"></iframe>':'<form class="form-body create-form" id="createForm"><label class="field"><span>逝者姓名</span><input name="name" required placeholder="请输入姓名"></label><label class="field"><span>出生日期</span><input name="birth" type="date" required></label><label class="field"><span>逝世日期</span><input name="death" type="date" required></label><label class="field"><span>生平简介</span><textarea name="bio" placeholder="记录值得珍藏的故事"></textarea></label><button class="btn" type="submit">创建纪念馆</button></form>'}</div></div>`;
   if(lamp)return;
   document.querySelector('#createForm').onsubmit=e=>{e.preventDefault();const f=e.currentTarget,h={id:String(Date.now()),name:f.name.value.trim(),birth:f.birth.value,death:f.death.value,creator:account().name,bio:f.bio.value.trim(),records:[]};localStorage.setItem('memorial-halls',JSON.stringify([...saved(),h]));location.hash='#hall/'+h.id;};

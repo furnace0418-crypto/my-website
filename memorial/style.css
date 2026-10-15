@@ -462,3 +462,20 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 .invite-theme .login-history-toggle{border-left-color:#46504e;color:#b7c5bf}
 .invite-theme .login-history-toggle:hover,.invite-theme .login-history-toggle:focus-visible{background:#263a39}
 .invite-theme .login-nickname-picker .login-account-history{background:#172526;border-color:#46504e}
+
+/* 个人中心收拢留白，长明灯恢复整屏展示。 */
+.my-page{max-width:1140px;padding-top:32px;padding-bottom:64px}
+.my-profile{padding:24px 30px;gap:18px}
+.my-profile h1{margin:4px 0 5px;font-size:30px}
+.my-profile p{font-size:14px}
+.my-layout{grid-template-columns:minmax(0,1fr) 240px;gap:18px;margin-top:18px;align-items:start}
+.my-main{min-height:0;padding:26px 30px}
+.my-section-title{padding-bottom:18px}
+.my-empty{padding:46px 16px 35px}
+.my-aside{padding:23px 22px}
+.my-aside a{padding:14px 1px}
+.create-lantern-fullscreen{position:relative;width:100%;height:calc(100dvh - 96px);min-height:620px;overflow:hidden}
+.create-lantern-fullscreen .create-lantern-frame{width:100%!important;height:100%!important;min-height:0;border:0}
+.create-lantern-back{position:absolute;z-index:2;top:18px;left:20px;padding:9px 14px;border:1px solid #d8c9bc;border-radius:24px;background:rgba(255,252,247,.94);color:#5b4339;box-shadow:0 3px 12px #0002;font-size:14px}
+.create-lantern-back:hover{background:#fff;color:#8b4c40}
+@media(max-width:760px){.my-page{padding-top:20px}.my-profile{padding:20px}.my-layout{grid-template-columns:1fr}.my-main{padding:22px}.my-empty{padding:34px 8px}.create-lantern-fullscreen{height:calc(100dvh - 86px)}}
