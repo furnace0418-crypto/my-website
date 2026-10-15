@@ -320,3 +320,53 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 .invite-theme .service-grid a{border-color:rgba(120,37,31,.48)}
 .featured-memorial .memorial-cover.zheng-cover{background:#e8e4df url("assets/zheng-xiuqin-portrait.png") center 27%/cover no-repeat}
 .invite-theme .featured-memorial .memorial-cover.zheng-cover{background-image:url("assets/zheng-xiuqin-taoyuan.png")}
+
+/* 我的 / 创建纪念馆：沿用安念堂的暖纸色与深棕色。 */
+.my-page,.create-page{max-width:1180px;margin:0 auto;padding-top:52px;padding-bottom:88px}
+.my-profile{display:flex;align-items:center;gap:24px;padding:35px 42px;background:#fffaf5;border:1px solid #e8ddd3;border-radius:8px}
+.my-avatar{width:72px;height:72px;flex:none;border-radius:50%;background:#eee0d0;display:grid;place-items:center;color:#795a48;font:38px SimSun,serif}
+.my-avatar:before{content:'念'}
+.my-eyebrow{font-size:13px;letter-spacing:3px;color:#a17a5e}
+.my-profile h1{font:700 32px SimSun,serif;margin:8px 0;color:#4d372e}
+.my-profile p{margin:0;color:#86776e;font-size:15px}
+.my-layout{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:25px;margin-top:27px}
+.my-main,.my-aside{background:#fff;border:1px solid #e8ddd3;border-radius:8px}
+.my-main{padding:30px 34px;min-height:330px}
+.my-section-title{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:22px;border-bottom:1px solid #eee4dc}
+.my-section-title h2,.my-aside h2{font:700 25px SimSun,serif;margin:0 0 7px;color:#503b32}
+.my-section-title p{margin:0;color:#998b82;font-size:14px}
+.my-section-title .btn{font-size:14px;padding:11px 16px;white-space:nowrap}
+.my-empty{text-align:center;padding:70px 15px;color:#93877f}
+.my-empty strong{font:700 23px SimSun,serif;color:#5e4a3e}
+.my-empty p{margin:13px 0 20px}
+.my-empty a{color:#8d654e;border-bottom:1px solid #bba08e;padding-bottom:3px}
+.my-hall-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 15px;padding:20px 4px;border-bottom:1px solid #eee7e1}
+.my-hall-item:last-child{border-bottom:0}
+.my-hall-item strong{font-size:19px;color:#594237}
+.my-hall-item small{grid-column:1;color:#9d8d81}
+.my-hall-item span{grid-column:2;grid-row:1/3;align-self:center;color:#906c55;font-size:14px}
+.my-hall-item:hover strong,.my-hall-item:hover span{color:#b5784c}
+.my-aside{padding:27px 25px;align-self:start}
+.my-aside h2{font-size:22px;margin-bottom:16px}
+.my-aside a{display:flex;justify-content:space-between;align-items:center;padding:17px 1px;border-top:1px solid #eee7e1;font-size:15px}
+.my-aside a span:last-child{font-size:25px;line-height:12px;color:#a29388}
+.my-aside a:hover{color:#a0704d}
+.my-welcome{max-width:680px;margin:35px auto;padding:55px;text-align:center;background:#fff;border:1px solid #e8ddd3;border-radius:8px}
+.my-welcome h1{font:700 36px SimSun,serif;margin:0 0 20px}
+.my-welcome p{color:#86776e}
+.my-welcome-actions{display:flex;justify-content:center;gap:13px;margin-top:30px}
+.create-page-head{margin-bottom:25px}
+.create-page-head h1{font:700 35px SimSun,serif;margin:0 0 10px;color:#503b32}
+.create-page-head p{margin:0;color:#8d8075}
+.create-sections{display:flex;gap:8px;border-bottom:1px solid #d9c9b9}
+.create-sections a{padding:14px 25px;color:#7d6d61;font-weight:600;border:1px solid transparent;border-bottom:0;border-radius:6px 6px 0 0}
+.create-sections a[aria-selected="true"]{background:#fff;border-color:#d9c9b9;color:#5b4339;margin-bottom:-1px}
+.create-section-body{background:#fff;border:1px solid #d9c9b9;border-top:0;padding:28px;min-height:500px}
+.create-form{max-width:650px;margin:auto}
+.create-lantern-frame{display:block;width:100%;height:960px;border:0;background:#ece6dd}
+@media(max-width:760px){.my-page,.create-page{padding:25px 16px 65px}.my-profile{padding:25px;gap:17px}.my-layout{grid-template-columns:1fr}.my-main{padding:22px}.my-section-title{align-items:flex-start;flex-direction:column}.my-aside{width:100%}.create-section-body{padding:10px}.create-lantern-frame{height:1080px}}
+.invite-theme .my-profile,.invite-theme .my-main,.invite-theme .my-aside,.invite-theme .my-welcome,.invite-theme .create-section-body,.invite-theme .create-sections a[aria-selected="true"]{background:#182627;border-color:#3a5050;color:#dfe6e2}
+.invite-theme .my-profile h1,.invite-theme .my-section-title h2,.invite-theme .my-aside h2,.invite-theme .my-empty strong,.invite-theme .my-hall-item strong,.invite-theme .create-page-head h1{color:#e8e7df}
+.invite-theme .my-profile p,.invite-theme .my-section-title p,.invite-theme .my-empty,.invite-theme .create-page-head p{color:#aab8b3}
+.invite-theme .my-aside a,.invite-theme .my-hall-item,.invite-theme .my-section-title{border-color:#3a5050}
+.invite-theme .create-sections{border-color:#3a5050}
