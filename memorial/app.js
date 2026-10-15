@@ -661,7 +661,7 @@ function zhenzhenMemorial(initialTab='story'){
   ];
   const tributes=[['x华','献花','2025年09月25日 20:16'],['xx远','献花','2025年08月02日 07:43'],['x梅','点燃长明灯','2025年04月04日 10:05'],['xx兰','点燃长明灯','2025年03月19日 22:31'],['x宁','献花','2024年12月21日 09:12'],['xx安','献花','2024年10月03日 19:48'],['x林','点燃长明灯','2024年09月18日 14:26'],['x愿','点燃长明灯','2024年09月13日 21:41'],['x愿','献花','2024年09月13日 21:37']];
   const fortuneRecords=[
-    {title:'捡垃圾，清理路面',paragraphs:['陈珍珍曾长期在居住地附近清理路边垃圾，捡拾烟头、塑料袋和废纸，并主动清扫楼栋周边的卫生死角。'],verdict:'清净环境，积累微量福报。'},
+    {title:'捡垃圾，清理路面',paragraphs:['陈珍珍曾长期在居住地附近清理路边垃圾，捡拾烟头、塑料袋和废纸，并主动清扫楼栋周边的卫生死角。'],verdict:'获得福报'},
     {title:'布施蚂蚁',paragraphs:['陈珍珍会定期在楼下角落投放糖水、米粒和饼干碎屑，认为这样是在“照顾微小生命”。','后期她开始频繁提到“它们也有去处”“小东西也要被看见”。'],verdict:'获取福报'},
     {title:'只吃素食',paragraphs:['陈珍珍自某一阶段起开始坚持素食，并在聊天记录中多次表示“减少欲望”“不再沾染血气”会让人更接近平静。','她将节制饮食视为一种“自我净化”。'],verdict:'获取福报'},
     {title:'在妇科医院劝人不要堕胎',paragraphs:['陈珍珍曾多次前往妇科医院附近，与陌生人交谈，劝说对方“留下生命”“不要亲手结束一个可能来到世上的人”。'],verdict:'福报提升'},
@@ -815,7 +815,7 @@ function zhangwenhuaMemorial(initialTab='story'){
     {title:'收养附近的流浪猫',paragraphs:['张文华曾陆续将住处附近受伤、生病或无人照料的流浪猫带回家中照顾，并自行承担食物和治疗费用。'],verdict:'获得福报'},
     {title:'将家中不用的物品送给有需要的人',paragraphs:['张文华会主动整理家中闲置的衣物、家具和日用品，并将仍可使用的物品送给附近生活困难的家庭。'],verdict:'获得福报'},
     {title:'长期帮助行动不便者处理生活困难',paragraphs:['张文华曾主动帮助附近几名行动不便或长期卧床的人处理生活中的实际问题，包括购买生活用品、陪同就医以及处理一些个人生活上的困难。'],verdict:'获得福报'},
-    {title:'对长期表达痛苦的人采取“解脱”行为',paragraphs:['张文华主动帮助有困难的人寻得安宁'],verdict:'福报已满'}
+    {title:'对长期表达痛苦的人采取解脱行为',paragraphs:['张文华主动帮助有困难的人寻得安宁'],verdict:'福报已满'}
   ];
   app.innerHTML=`<div class="life-memorial-shell"><aside class="life-profile"><img class="life-portrait" src="assets/zhang-wenhua-portrait.png" alt="张文华"><h1>张文华</h1><p class="life-dates">1976.08.17　—　2013.11.03</p><p class="life-wish">愿记忆与思念长存。</p><dl><div><dt>性别</dt><dd>女</dd></div><div><dt>出生</dt><dd>1976年8月17日</dd></div><div><dt>籍贯</dt><dd>云阳</dd></div><div><dt>离世</dt><dd>2013年11月3日</dd></div><div><dt>安葬地</dt><dd>未注明</dd></div></dl><button class="life-flower" type="button">✿　献花</button></aside><section class="life-story"><nav class="life-tabs" aria-label="纪念馆栏目"><button class="active" data-life-tab="story">过往记事</button><button data-life-tab="tributes">祭奠记录</button><button data-life-tab="messages">留言板</button><span>／ 生者记忆 · 让爱延续 ／</span></nav><div class="life-pane active" data-life-pane="story"><div class="life-timeline">${timeline.map(([title,body])=>`<article><i></i><h2>${esc(title)}</h2><p>${esc(body)}</p></article>`).join('')}</div></div><div class="life-pane" data-life-pane="tributes"><div class="tribute-heading"><h2>祭奠记录</h2><p>每一次到访，都让思念有了回声。</p></div><div class="tribute-list"></div><a class="tribute-action" href="#services/zhang-wenhua">前往祭奠</a></div><div class="life-pane" data-life-pane="messages"><div class="tribute-heading"><h2>留言板</h2><p>那些没有说完的话，仍可以在这里轻轻写下。</p></div></div></section></div><div class="flower-confirm" hidden><section role="dialog" aria-modal="true" aria-labelledby="flower-confirm-title"><button class="flower-confirm-close" type="button" aria-label="关闭">×</button><div class="flower-confirm-icon">✿</div><h2 id="flower-confirm-title">已献花</h2><p>愿这一束花承载思念，长伴她安眠。</p><button class="flower-confirm-ok" type="button">确定</button></section></div>`;
   app.querySelector('.life-profile dl div:last-child dd').textContent='云阳市纪念馆';
@@ -863,6 +863,14 @@ function zhengxiuqinMemorial(initialTab='story'){
     ['低谷时期｜重新想起桃原市','生活陷入低谷后，郑秀琴再次想起年轻时在工厂听过的“桃原市”。与过去不同的是，她开始认真相信，只要持续积累福报，或许真的能够去往一个没有痛苦、可以重新开始的地方。她也曾向身边人提起，自己正在完成一件“必须做完的事”。'],
     ['2008年｜离世','2008年5月12日，郑秀琴于云阳市城南区一处出租屋内离世，年仅33岁。']
   ];
+  const fortuneRecords=[
+    {title:'帮助拾荒老人 / 环卫工人',paragraphs:['郑秀琴平时遇到附近拾荒的老人或环卫工人，会主动送水、送饭，有时也会把店里不要的纸箱和旧物整理好交给他们。'],verdict:'获得福报'},
+    {title:'捐给山区孩子自己剩下的衣物',paragraphs:['郑秀琴会把自己和店里剩下但还能穿的衣物整理出来，统一寄给山区学校和困难家庭。','服装店经营困难以后，她仍然保留了这个习惯。'],verdict:'获得福报'},
+    {title:'借贷补发工人工资',paragraphs:['服装店经营出现问题后，郑秀琴一度无力结清员工工资。她后来通过借款筹集资金，陆续补发拖欠款项。'],verdict:'获得福报'},
+    {title:'到养老院做义工照顾患病老人',paragraphs:['生活陷入低谷后，郑秀琴开始长期到养老院做义工，帮助行动不便、长期卧床或患有重病的老人处理日常生活。','在长期接触这些老人后，她开始频繁提到“活着是不是一定比离开更好”之类的问题。'],verdict:'获得福报'},
+    {title:'将自己的积蓄交给病重老人的家属',paragraphs:['郑秀琴曾将自己剩余的大部分积蓄交给一名长期患病老人的家属，用于治疗和后续照护。'],verdict:'获得福报'},
+    {title:'帮助长期受病痛折磨的人结束痛苦',paragraphs:['郑秀琴主动帮助长期受病痛折磨的人寻得安宁。'],verdict:'福报已满'}
+  ];
   const taoyuanTimeline=[
     ['1975年｜出生于云阳','郑秀琴出生于云阳周边农村。家境普通，年轻时便离开家乡来到云阳市生活，希望通过工作让自己的日子慢慢稳定下来。'],
     ['年轻时期｜来到云阳市工作','成年后，郑秀琴与好友张文华一同进入服装厂工作。两人住在同一间宿舍，在陌生的城市里彼此照应，关系一直十分亲近。'],
@@ -878,6 +886,10 @@ function zhengxiuqinMemorial(initialTab='story'){
   app.innerHTML=`<div class="life-memorial-shell"><aside class="life-profile"><img class="life-portrait" src="${portrait}" alt="郑秀琴"><h1>郑秀琴</h1><p class="life-dates">1975　—　2008.05.12</p><p class="life-wish">愿记忆与思念长存。</p><dl><div><dt>性别</dt><dd>女</dd></div><div><dt>出生</dt><dd>1975年</dd></div><div><dt>籍贯</dt><dd>云阳</dd></div><div><dt>离世</dt><dd>2008年5月12日</dd></div><div><dt>${dark?'登记地':'安葬地'}</dt><dd>${dark?'桃原市纪念馆':'云阳市纪念馆'}</dd></div></dl>${dark?'':'<button class="life-flower" type="button">✿　献花</button>'}</aside><section class="life-story"><nav class="life-tabs" aria-label="纪念馆栏目"><button class="active" data-life-tab="story">过往记事</button><button data-life-tab="tributes">${dark?'福报记录':'祭奠记录'}</button><button data-life-tab="messages">留言板</button><span>／ 生者记忆 · 让爱延续 ／</span></nav><div class="life-pane active" data-life-pane="story"><div class="life-timeline">${timeline.map(([title,body])=>`<article><i></i><h2>${esc(title)}</h2><p>${esc(body)}</p></article>`).join('')}</div></div><div class="life-pane" data-life-pane="tributes"><div class="tribute-heading"><h2>${dark?'福报记录':'祭奠记录'}</h2></div><div class="tribute-list"></div></div><div class="life-pane" data-life-pane="messages"><div class="tribute-heading"><h2>留言板</h2></div></div></section></div><div class="flower-confirm" hidden><section role="dialog" aria-modal="true" aria-labelledby="flower-confirm-title"><button class="flower-confirm-close" type="button" aria-label="关闭">×</button><div class="flower-confirm-icon">✿</div><h2 id="flower-confirm-title">已献花</h2><p>愿这一束花承载思念，长伴她安眠。</p><button class="flower-confirm-ok" type="button">确定</button></section></div>`;
   if(dark){
     app.querySelector('.life-timeline').innerHTML=taoyuanTimeline.map(([title,body])=>`<article><i></i><h2>${esc(title)}</h2><p>${esc(body)}</p></article>`).join('');
+    app.querySelector('[data-life-pane="tributes"] .tribute-heading').insertAdjacentHTML('beforeend','<p>以下为已记录的福报事项。</p>');
+    const recordList=app.querySelector('[data-life-pane="tributes"] .tribute-list');
+    recordList.classList.add('fortune-record-list');
+    recordList.innerHTML=fortuneRecords.map(({title,paragraphs,verdict})=>`<article class="fortune-record"><h3>${esc(title)}</h3>${paragraphs.map(text=>`<p>${esc(text)}</p>`).join('')}<p class="fortune-verdict"><strong>系统判定：</strong>${esc(verdict)}</p></article>`).join('');
     app.querySelector('.life-dates').textContent='1975　—　';
     app.querySelector('.life-wish').textContent='祝郑女士在桃原市生活愉快';
     const rows=app.querySelectorAll('.life-profile dl div');
