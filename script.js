@@ -204,7 +204,7 @@ const apps = {
 };
 let forumFavoriteThisDesktopSession = false;
 let skyGameInstalledThisPage = false;
-let caseArchiveDownloadedThisPage = false;
+let caseArchiveDownloadedThisPage = true;
 let caseArchiveUnlockedThisPage = false;
 let caseArchiveNightTriggeredThisPage = false;
 const forumRepliesThisDesktopSession = {};
