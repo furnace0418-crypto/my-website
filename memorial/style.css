@@ -582,3 +582,27 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 .edit-page .edit-lamp-panel a{display:block;text-align:center;line-height:1.5}
 @media(max-width:900px){.edit-page .create-section-body{grid-template-columns:minmax(0,1fr);gap:26px}.edit-page .edit-lamp-panel{flex-direction:row;align-items:center;justify-content:space-between}}
 @media(max-width:600px){.edit-page .create-section-body{padding:20px}.edit-page .create-form{grid-template-columns:minmax(0,1fr)}.edit-page .edit-lamp-panel{flex-direction:column;align-items:stretch}}
+
+.edit-page .create-section-body{display:block;max-width:900px;margin:0 auto;padding:34px 40px}
+.edit-page .create-form>.hall-photo-upload,.edit-page .create-form>.edit-lamp-panel{grid-column:1/-1}
+.edit-page .edit-lamp-panel{flex-direction:row;align-items:center;justify-content:space-between;margin:0;padding:18px 0;border:0;border-top:1px solid #e8ddd3;border-radius:0;background:transparent}
+.edit-page .edit-lamp-panel span{color:#503b32;font:700 20px SimSun,serif}
+.edit-page .edit-lamp-panel a{padding:9px 16px;font-size:16px}
+.hall-photo-upload{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:4px 0 0}
+.hall-photo-title{flex-basis:100%;color:#554238;font-size:18px}
+.hall-photo-list{display:flex;flex-wrap:wrap;gap:10px}
+.hall-photo-item{position:relative;width:104px;height:104px;overflow:hidden;border:1px solid #ddcec0;border-radius:5px;background:#f5f0eb}
+.hall-photo-item img{width:100%;height:100%;object-fit:cover}
+.hall-photo-item button{position:absolute;right:4px;bottom:4px;padding:3px 7px;border:0;border-radius:3px;background:#fffdf9ec;color:#6f4c40;font-size:13px}
+.hall-photo-add{display:inline-flex;align-items:center;justify-content:center;min-width:104px;height:104px;padding:10px;border:1px dashed #cdb6a6;border-radius:5px;color:#795647;cursor:pointer;text-align:center}
+.hall-photo-add:hover{background:#faf5ef}
+.hall-photo-add input{position:absolute;width:1px;height:1px;opacity:0}
+.hall-photo-add:focus-within{outline:2px solid #9b5148;outline-offset:2px}
+.hall-photo-message{flex-basis:100%;margin:0;color:#8b332d;font-size:14px}
+.hall-photo-message:empty{display:none}
+.custom-life-portrait img.uploaded-photo{width:100%;height:100%;object-fit:cover}
+.custom-photo-gallery{margin:30px 0 0}
+.custom-photo-gallery h2{margin:0 0 18px;color:#503b32;font:700 25px SimSun,serif}
+.custom-photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.custom-photo-grid img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:5px}
+@media(max-width:600px){.edit-page .create-section-body{padding:22px 18px}.edit-page .edit-lamp-panel{flex-direction:row;align-items:center}.edit-page .edit-lamp-panel a{width:auto}}
