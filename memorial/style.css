@@ -618,3 +618,12 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 .hall-photo-item,.hall-photo-add{border-radius:50%}
 .empty-life-bio{display:flex;align-items:center;justify-content:center;min-height:250px;color:#77716a;font-size:18px;text-align:center}
 @media(max-width:600px){.edit-page .page-return-me{margin-left:0}.edit-page .edit-lamp-panel{gap:10px;padding:15px}.edit-page .edit-lamp-panel span{font-size:18px}}
+
+/* Memorial photo belongs at the start of the form, in a portrait frame. */
+.edit-page .create-form>.field:nth-child(4){grid-column:auto}
+.edit-page .create-form>.field:nth-child(2),.edit-page .create-form>.field:nth-child(5){grid-column:1/-1}
+.create-form>.hall-photo-upload{margin:0 0 6px;padding:0 0 24px;border-bottom:1px solid #eee4db}
+.hall-photo-item,.hall-photo-add{width:132px;height:158px;border-radius:6px}
+.hall-photo-add{min-width:132px;background:#fcf9f5}
+.hall-photo-title{font-size:19px;font-weight:600}
+@media(max-width:600px){.edit-page .create-form>.field:nth-child(4){grid-column:1/-1}}
