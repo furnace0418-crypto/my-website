@@ -285,7 +285,7 @@ body{min-height:100dvh;display:flex;flex-direction:column}#app{flex:1 0 auto}.si
 .invite-theme .life-back-link{color:#b88c87}
 .memorial-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:23px}
 .memorial-card{flex:0 1 calc((100% - 46px)/3);min-width:min(100%,280px)}
-.featured-memorial .memorial-cover.chen-cover,.featured-memorial .memorial-cover.zhang-cover{background:#f6f1ec url("assets/person-placeholder.svg?v=2") center/142px 142px no-repeat}
+.featured-memorial .memorial-cover.chen-cover,.featured-memorial .memorial-cover.zhang-cover{background:#f6f1ec url("assets/person-placeholder.svg?v=3") center/142px 142px no-repeat}
 .invite-theme .featured-memorial .memorial-cover.chen-cover,.invite-theme .featured-memorial .memorial-cover.zhang-cover{background-color:#1a2525}
 .memorial-card-body{text-align:center}
 .memorial-card .btn{display:flex;width:max-content;margin:13px auto 0}
@@ -318,8 +318,8 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 .invite-entry-text{color:#78251f}
 .invite-theme .overview-frame .platform-intro,.invite-theme .service-panel .section-heading,.invite-theme .notice-panel .section-heading,.invite-theme .about-panel .section-heading{border-bottom-color:rgba(120,37,31,.48)}
 .invite-theme .service-grid a{border-color:rgba(120,37,31,.48)}
-.featured-memorial .memorial-cover.zheng-cover{background:#e8e4df url("assets/zheng-xiuqin-portrait.png") center 27%/cover no-repeat}
-.invite-theme .featured-memorial .memorial-cover.zheng-cover{background-image:url("assets/zheng-xiuqin-taoyuan.png")}
+.featured-memorial .memorial-cover.zheng-cover{background:#f6f1ec url("assets/person-placeholder.svg?v=3") center/142px 142px no-repeat}
+.invite-theme .featured-memorial .memorial-cover.zheng-cover{background-color:#1a2525}
 
 /* 我的 / 创建纪念馆：沿用安念堂的暖纸色与深棕色。 */
 .my-page,.create-page{max-width:1180px;margin:0 auto;padding-top:52px;padding-bottom:88px}

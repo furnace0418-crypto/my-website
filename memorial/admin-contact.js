@@ -25,13 +25,11 @@ function playAdminNoticeAudio(){
   }).catch(()=>{});
 }
 localStorage.removeItem('memorial-chen-registration-unlocked');
-const chenRegistrationDoneKey='memorial-chen-registration-complete';
-const chenRegistrationReadyKey='memorial-chen-registration-ready-at';
-window.memorialRegistrationState={chen:localStorage.getItem(chenRegistrationDoneKey)==='1'};
+localStorage.removeItem('memorial-chen-registration-complete');
+localStorage.removeItem('memorial-chen-registration-ready-at');
+window.memorialRegistrationState={chen:false};
 let chenRegistrationTimer;
 function finishChenRegistration(){
-  localStorage.removeItem(chenRegistrationReadyKey);
-  localStorage.setItem(chenRegistrationDoneKey,'1');
   window.memorialRegistrationState.chen=true;
   adminCompletionMessage?.('登记核验已完成。陈珍珍的纪念馆现已开放查询。');
   playAdminNoticeAudio();
@@ -44,11 +42,9 @@ function finishChenRegistration(){
   overlay.querySelector('.chen-registration-dialog-ok').focus();
 }
 function scheduleChenRegistrationCompletion(readyAt=Date.now()+10000){
-  localStorage.setItem(chenRegistrationReadyKey,String(readyAt));
   clearTimeout(chenRegistrationTimer);
   chenRegistrationTimer=setTimeout(finishChenRegistration,Math.max(0,readyAt-Date.now()));
 }
-if(localStorage.getItem(chenRegistrationReadyKey))scheduleChenRegistrationCompletion(Number(localStorage.getItem(chenRegistrationReadyKey)));
 function renderAdminContact(host){
   if(adminChatSession){
     host.replaceWith(adminChatSession);
