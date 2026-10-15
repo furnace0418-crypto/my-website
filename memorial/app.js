@@ -181,7 +181,9 @@ const wishKey='chen-zhenzhen-wishes';
 const memorialWishes=()=>{try{const entries=JSON.parse(localStorage.getItem(wishKey)||'[]');return Array.isArray(entries)?entries:[]}catch(_){return[]}};
 function applyOfferingIcons(){
   app.querySelectorAll('.service-grid b,.tribute-person b').forEach(element=>{
-    if(element.textContent.includes('♨')){
+    if(element.textContent.includes('♨')&&/[❀✿]/u.test(element.textContent)){
+      element.innerHTML='<img class="flower-symbol" src="assets/flower-symbol.png?v=2" alt=""><span>献花并</span><img class="lamp-symbol" src="assets/lamp-symbol.png?v=1" alt=""><span>点燃长明灯</span>';
+    }else if(element.textContent.includes('♨')){
       const label=element.closest('.tribute-person')?'点燃长明灯':'';
       element.innerHTML=`<img class="lamp-symbol" src="assets/lamp-symbol.png?v=1" alt="">${label?`<span>${label}</span>`:''}`;
     }else if(/[❀✿]/u.test(element.textContent)){
@@ -602,7 +604,7 @@ function addPersonalArchive(name){
   pane.className='life-pane personal-archive-pane';
   pane.dataset.lifePane='personal';
   if(name!=='陈珍珍'){
-    pane.innerHTML='<div class="personal-archive-details"><h2>个人信息留存</h2><p>暂无</p></div>';
+    pane.innerHTML='<div class="personal-archive-empty">暂无个人信息留存</div>';
     app.querySelector('.life-story').append(pane);
     return;
   }
@@ -659,7 +661,7 @@ function zhenzhenMemorial(initialTab='story'){
     ['高中时期｜生活发生变化','进入高中后，陈珍珍逐渐认识了一些校外人士，开始频繁参加聚会，偶尔逃课，原本的生活圈也随之发生变化。此后她接触到一些较为复杂的社交关系，并曾卷入带有金钱往来的私人交往。她很少向家人和旧友详细谈起这些经历，只偶尔表示自己“最近很忙”。'],
     ['2024年｜离世','高三期间，陈珍珍与过去的同学和朋友往来越来越少，也很少再更新自己的日常。生命最后一段时间，她开始频繁接触有关“福报”“善业”和人生意义的内容，并转发过多篇相关文章。2024年，陈珍珍于云阳市家中离世。']
   ];
-  const tributes=[['x华','献花','2025年09月25日 20:16'],['xx远','献花','2025年08月02日 07:43'],['x梅','点燃长明灯','2025年04月04日 10:05'],['xx兰','点燃长明灯','2025年03月19日 22:31'],['x宁','献花','2024年12月21日 09:12'],['xx安','献花','2024年10月03日 19:48'],['x林','点燃长明灯','2024年09月18日 14:26'],['x愿','点燃长明灯','2024年09月13日 21:41'],['x愿','献花','2024年09月13日 21:37']];
+  const tributes=[['x华','献花','2025年09月25日 20:16'],['xx远','献花并点燃长明灯','2025年08月02日 07:43'],['x梅','点燃长明灯','2025年04月04日 10:05'],['xx兰','献花','2025年03月19日 22:31'],['x宁','献花并点燃长明灯','2024年12月21日 09:12'],['xx安','献花','2024年10月03日 19:48'],['x林','点燃长明灯','2024年09月18日 14:26'],['x愿','献花并点燃长明灯','2024年09月13日 21:41']];
   const fortuneRecords=[
     {title:'捡垃圾，清理路面',paragraphs:['陈珍珍曾长期在居住地附近清理路边垃圾，捡拾烟头、塑料袋和废纸，并主动清扫楼栋周边的卫生死角。'],verdict:'获得福报'},
     {title:'布施蚂蚁',paragraphs:['陈珍珍会定期在楼下角落投放糖水、米粒和饼干碎屑，认为这样是在“照顾微小生命”。','后期她开始频繁提到“它们也有去处”“小东西也要被看见”。'],verdict:'获取福报'},
@@ -668,6 +670,9 @@ function zhenzhenMemorial(initialTab='story'){
     {title:'与抑郁症网友聊天，并劝其前往桃原市',paragraphs:['陈珍珍曾在网络上长期接触情绪低落、厌世或有自毁倾向的网友。她最初以安慰、陪伴和倾听为主，但后期聊天内容逐渐发生变化。她开始频繁提到“桃原市”，并将那里描述成一个“不会再痛苦的地方”、“真正可以结束一切的地方”。'],verdict:'福报已满'}
   ];
   app.innerHTML=`<div class="life-memorial-shell"><aside class="life-profile"><img class="life-portrait" src="assets/chen-zhenzhen-portrait.jpg" alt="陈珍珍"><h1>陈珍珍</h1><p class="life-dates">2004.03.14　—　2024</p><p class="life-wish">愿你在另一处，获得平静。</p><dl><div><dt>性别</dt><dd>女</dd></div><div><dt>出生</dt><dd>2004年3月14日</dd></div><div><dt>籍贯</dt><dd>云阳市</dd></div><div><dt>离世</dt><dd>2024年</dd></div><div><dt>安葬地</dt><dd>云阳市纪念馆</dd></div></dl><button class="life-flower" type="button">✿　献花</button></aside><section class="life-story"><nav class="life-tabs" aria-label="纪念馆栏目"><button class="active" data-life-tab="story">过往记事</button><button data-life-tab="tributes">祭奠记录</button><button data-life-tab="messages">留言板</button><span>／ 生者记忆 · 让爱延续 ／</span></nav><div class="life-pane active" data-life-pane="story"><div class="life-timeline">${timeline.map(([title,text])=>`<article><i></i><h2>${esc(title)}</h2><p>${esc(text)}</p></article>`).join('')}</div></div><div class="life-pane" data-life-pane="tributes"><div class="tribute-heading"><h2>祭奠记录</h2><p>每一次到访，都让思念有了回声。</p></div><div class="tribute-list">${tributes.map(([name,type,time])=>`<article><div class="tribute-person"><span>${name}</span><b>${type==='献花'?'✿ 献花':'♨ 点燃长明灯'}</b></div><time>${time}</time></article>`).join('')}</div><a class="tribute-action" href="#services">前往祭奠</a></div><div class="life-pane" data-life-pane="messages"><div class="tribute-heading"><h2>留言板</h2><p>那些没有说完的话，仍可以在这里轻轻写下。</p></div><article class="memorial-message"><b>匿名用户</b><p>等等我</p></article></div></section></div><div class="flower-confirm" hidden><section role="dialog" aria-modal="true" aria-labelledby="flower-confirm-title"><button class="flower-confirm-close" type="button" aria-label="关闭">×</button><div class="flower-confirm-icon">✿</div><h2 id="flower-confirm-title">已献花</h2><p>愿这一束花伴她安眠，也让思念长久芬芳。</p><button class="flower-confirm-ok" type="button">确定</button></section></div>`;
+  app.querySelectorAll('.tribute-list .tribute-person b').forEach((label,index)=>{
+    if(tributes[index][1]==='献花并点燃长明灯')label.textContent='✿ 献花并 ♨ 点燃长明灯';
+  });
   if(document.body.classList.contains('invite-theme')){
     app.querySelectorAll('[data-life-tab="tributes"], [data-life-pane="tributes"] .tribute-heading h2').forEach(label=>label.textContent='福报记录');
     app.querySelector('[data-life-pane="tributes"] .tribute-heading p').textContent='以下为已记录的福报事项。';
@@ -733,6 +738,11 @@ function route(){
   rememberInviteVideo();applyInviteTheme();header();
   const hash=decodeURIComponent(location.hash.slice(1)||'home');
   const [page,id,tab]=hash.split('/');
+  const activeSection=page==='home'?'home':page==='letters'?'letters':page==='articles'?'articles':['me','create','manage','change-password'].includes(page)?'me':'';
+  document.querySelectorAll('.site-header nav a').forEach(link=>{
+    if(link.getAttribute('href')===`#${activeSection}`)link.setAttribute('aria-current','page');
+    else link.removeAttribute('aria-current');
+  });
   if(page==='me'&&!account()){location.hash='#login';return}
   if(page==='hall'&&id==='chen-zhenzhen'&&document.body.classList.contains('invite-theme')&&!window.memorialRegistrationState?.chen){location.hash='#browse';return}
   if(!account()&&(page==='letters'||(page==='services'&&!['chen-zhenzhen','zhang-wenhua'].includes(id)))){location.hash='#login';return}
