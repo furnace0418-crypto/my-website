@@ -492,7 +492,7 @@ function create(section='details'){
   if(!account()){location.hash='#register';return}
   const lamp=section==='lantern';
   if(lamp){
-    app.innerHTML='<div class="create-lantern-fullscreen"><iframe class="create-lantern-frame" title="定制长明灯" src="lantern.html?v=2" allow="fullscreen"></iframe><a class="create-lantern-back" href="#create">‹ 返回创建纪念馆</a></div>';
+    app.innerHTML='<div class="create-lantern-fullscreen"><iframe class="create-lantern-frame" title="定制长明灯" src="lantern.html?v=3" allow="fullscreen"></iframe><a class="create-lantern-back" href="#create">‹ 返回创建纪念馆</a></div>';
     return;
   }
   app.innerHTML=`<div class="page-shell create-page"><div class="create-page-head"><h1>创建纪念馆</h1><p>为逝者建立专属的记忆空间</p></div><div class="create-sections" role="tablist" aria-label="创建纪念馆栏目"><a role="tab" aria-selected="${!lamp}" href="#create">基本资料</a><a role="tab" aria-selected="${lamp}" href="#create/lantern">定制长明灯</a></div><div class="create-section-body">${lamp?'<iframe class="create-lantern-frame" title="定制长明灯" src="lantern.html?v=2" loading="lazy" allow="fullscreen"></iframe>':'<form class="form-body create-form" id="createForm"><label class="field"><span>逝者姓名</span><input name="name" required placeholder="请输入姓名"></label><label class="field"><span>出生日期</span><input name="birth" type="date" required></label><label class="field"><span>逝世日期</span><input name="death" type="date" required></label><label class="field"><span>生平简介</span><textarea name="bio" placeholder="记录值得珍藏的故事"></textarea></label><button class="btn" type="submit">创建纪念馆</button></form>'}</div></div>`;
@@ -526,6 +526,8 @@ function myPage(){
   const avatarSource=avatarFor(user.accountId);
   if(avatarSource){const portrait=app.querySelector('.my-avatar');portrait.querySelector('img').src=avatarSource;portrait.querySelector('img').hidden=false}
   const list=app.querySelector('#myHallList');
+  const lampKey=user.accountId?`annian-glass-lamp-v3-${user.accountId}`:'annian-glass-lamp-v2';
+  if(!document.body.classList.contains('invite-theme')&&(localStorage.getItem(lampKey)||localStorage.getItem('annian-glass-lamp-v2'))){const lamp=document.createElement('div');lamp.className='my-saved-lamp';lamp.innerHTML='<strong>我的长明灯</strong><a href="#create/lantern">继续定制 ›</a>';app.querySelector('.my-main').append(lamp)}
   if(document.body.classList.contains('invite-theme')){app.querySelector('.my-section-title .btn').remove();list.innerHTML='<div class="my-empty"><strong>特邀主题暂不展示自建纪念馆</strong><p>切回普通主题后可继续查看。</p></div>';return}
   if(!own.length){app.querySelector('.my-section-title .btn').remove();list.innerHTML='<div class="my-empty"><strong>还没有创建纪念馆</strong><p>建立一处纪念空间，保存关于故人的故事。</p><a class="btn" href="#create">＋ 创建纪念馆</a></div>';return}
   own.forEach(h=>{const item=document.createElement('div');item.className='my-hall-item';const info=document.createElement('a');info.className='my-hall-info';info.href='#hall/'+encodeURIComponent(h.id);const title=document.createElement('strong');title.textContent=h.name;const meta=document.createElement('small');meta.textContent=[h.birth,h.death].filter(Boolean).join(' — ');info.append(title,meta);const actions=document.createElement('div');actions.className='my-hall-actions';const enter=document.createElement('a');enter.href=info.href;enter.textContent='进入';const edit=document.createElement('a');edit.href='#manage/'+encodeURIComponent(h.id);edit.textContent='编辑';const remove=document.createElement('button');remove.type='button';remove.textContent='删除';remove.onclick=()=>confirmHallDeletion(h);actions.append(enter,edit,remove);item.append(info,actions);list.append(item)});
@@ -680,7 +682,7 @@ function route(){
   if(page==='home'){home();wireHomeBulletins()}
   else if(page==='services'&&!id){location.hash='#create/lantern';return}
   else if(page==='services'){
-    const source=['chen-zhenzhen','zhang-wenhua'].includes(id)?`lantern.html?memorial=${id}&v=2`:'lantern.html?v=2';
+    const source=['chen-zhenzhen','zhang-wenhua'].includes(id)?`lantern.html?memorial=${id}&v=3`:'lantern.html?v=3';
     app.innerHTML=`<iframe title="云祭服务 · 定制长明灯" src="${source}" style="display:block;width:100%;height:1250px;border:0" allow="fullscreen"></iframe>`;
   }
   else if(page==='articles')bulletinPage(id);

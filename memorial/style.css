@@ -549,3 +549,8 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 
 .custom-life-shell .custom-life-dates{display:flex;flex-wrap:wrap;gap:2px 8px;max-width:100%;font-size:clamp(13px,1.1vw,16px);letter-spacing:0;line-height:1.5}
 .custom-life-dates time,.custom-life-dates span{white-space:nowrap}
+.my-saved-lamp{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:10px;padding:20px 4px;border-top:1px solid #eee7e1}
+.my-saved-lamp strong{font-size:18px;color:#594237}
+.my-saved-lamp a{font-size:16px;color:#866959}
+.my-saved-lamp a:hover{text-decoration:underline;text-underline-offset:4px}
+.invite-theme .my-saved-lamp{border-top-color:#3a5050}

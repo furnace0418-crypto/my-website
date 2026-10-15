@@ -4,6 +4,9 @@
   const T = window.THREE, $ = id => document.getElementById(id), host = $('viewport');
   const memorialId=new URLSearchParams(location.search).get('memorial');
   const dedicated=['chen-zhenzhen','zhang-wenhua'].includes(memorialId);
+  let owner=null;
+  try{owner=JSON.parse(localStorage.getItem('memorial-account')||'null')}catch(_){}
+  const storageKey=owner?.accountId?`annian-glass-lamp-v3-${owner.accountId}`:'annian-glass-lamp-v2';
   document.body.classList.toggle('memorial-lantern',dedicated);
   $('memorialWishForm').hidden=!dedicated;
   $('backToTributes').hidden=!dedicated;
@@ -12,7 +15,7 @@
     catch(_){parent.postMessage({type:'memorial-return'},'*')}
   };
   const FIXED_METAL_COLOR = '#b57a36';
-  const defaults = {base:'round', shade:'amber', shadeColor:'#ffffff', brightness:1, baseSize:1, baseHeight:1, wish:''};
+  const defaults = {base:'round', shade:'amber', shadeColor:'#ffffff', brightness:1, baseSize:1, baseHeight:1};
   const formerDefaultColors = new Set(['#eeb768','#d9d8d4','#dbaeae','#b8a4a0']);
   const shadeStyles={
     amber:{name:'琥珀玻璃灯',description:'琥珀曲腹 · 清透暖光',roughness:.19,transmission:.97,bump:0,profile:[[.40,0],[.52,.035],[.64,.10],[.72,.20],[.755,.32],[.72,.44],[.61,.55],[.43,.66],[.30,.76],[.275,.89],[.29,1]]},
@@ -25,8 +28,11 @@
   let goldMaterial, blackMaterial, glassMaterial, wickMaterial, glassShader;
   let burn = lit?1:0, lastTime = null, lampConfirmTimer = null;
   if(!dedicated)try {
-    const saved = JSON.parse(localStorage.getItem('annian-glass-lamp-v2') || 'null');
+    const previous=storageKey!=='annian-glass-lamp-v2'&&!localStorage.getItem(storageKey)?localStorage.getItem('annian-glass-lamp-v2'):null;
+    const saved = JSON.parse(localStorage.getItem(storageKey) || previous || 'null');
     for (const key in defaults) if (saved && typeof saved[key] === typeof defaults[key]) state[key] = saved[key];
+    if(previous){localStorage.setItem(storageKey,previous);localStorage.removeItem('annian-glass-lamp-v2')}
+    if(saved)$('saveFeedback').textContent='已载入上次保存的长明灯。';
   } catch (_) {}
   state.brightness=Math.max(.2,Math.min(1,state.brightness));
   for (const key of ['baseSize','baseHeight']) state[key] = Math.max(.2,Math.min(2,state[key]));
@@ -220,7 +226,7 @@
     document.querySelectorAll('[data-shade]').forEach(b=>{const selected=b.dataset.shade===state.shade;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected));});
     $('styleName').textContent=shadeStyles[state.shade].name;
     $('styleDescription').textContent=shadeStyles[state.shade].description+' · 暖烛微光';
-    document.querySelectorAll('[data-base]').forEach(b=>{b.classList.toggle('active',b.dataset.base===state.base);b.setAttribute('aria-pressed',String(b.dataset.base===state.base));});$('wishDisplay').textContent=state.wish;
+    document.querySelectorAll('[data-base]').forEach(b=>{b.classList.toggle('active',b.dataset.base===state.base);b.setAttribute('aria-pressed',String(b.dataset.base===state.base));});
   }
   function resize(){const b=host.getBoundingClientRect();if(!b.width||!b.height)return;renderer.setSize(b.width,b.height);camera.aspect=b.width/b.height;camera.updateProjectionMatrix();}
   const observer=new ResizeObserver(resize);observer.observe(host);build();resize();
@@ -250,7 +256,6 @@
   const changeGlassColor=()=>{state.shadeColor=$('shadeColor').value;shadeColors[state.shade]=state.shadeColor;glassMaterial.attenuationColor.set(state.shadeColor);};
   $('shadeColor').oninput=changeGlassColor;$('shadeColor').onchange=changeGlassColor;
   $('brightness').oninput=()=>{state.brightness=+$('brightness').value;$('brightnessOut').textContent=Math.round(state.brightness*100)+'%';};
-  $('wish').oninput=()=>{$('wishDisplay').textContent=state.wish=$('wish').value;};
   $('rotate').onclick=()=>{rotating=!rotating;$('rotate').textContent=rotating?'暂停旋转':'自动旋转';$('rotate').setAttribute('aria-pressed',String(rotating));};
   $('rotate').disabled=false;
   function lightButton(){$('light').textContent=dedicated?(lit?'已点灯':'点灯'):(lit?'熄灯':'点灯');$('light').disabled=dedicated&&lit;$('light').setAttribute('aria-pressed',String(lit));}
@@ -275,7 +280,7 @@
     parent.postMessage({type:'memorial-wish',message},location.origin==='null'?'*':location.origin);
     input.value='';$('status').hidden=false;$('status').textContent='心愿已送至留言板。';
   };
-  $('reset').onclick=()=>{state={...defaults,base:memorialId==='zhang-wenhua'?'lotus':defaults.base,shade:memorialId==='zhang-wenhua'?'amber':dedicated?'cloud':defaults.shade};for(const shade in shadeColors)delete shadeColors[shade];shadeColors[state.shade]=state.shadeColor;lit=!dedicated;lightButton();build();};
-  $('save').onclick=()=>{try{localStorage.setItem('annian-glass-lamp-v2',JSON.stringify(state));$('status').textContent='已保存这盏灯与寄语。';}catch(_){$('status').textContent='浏览器未允许保存。';}};
+  $('reset').onclick=()=>{state={...defaults,base:memorialId==='zhang-wenhua'?'lotus':defaults.base,shade:memorialId==='zhang-wenhua'?'amber':dedicated?'cloud':defaults.shade};for(const shade in shadeColors)delete shadeColors[shade];shadeColors[state.shade]=state.shadeColor;lit=!dedicated;lightButton();build();try{localStorage.removeItem(storageKey);$('saveFeedback').textContent='已恢复默认设置。'}catch(_){$('saveFeedback').textContent='已恢复默认设置，但无法清除旧存档。'}};
+  $('save').onclick=()=>{try{localStorage.setItem(storageKey,JSON.stringify(state));$('saveFeedback').textContent='已保存。下次打开会恢复这盏灯。'}catch(_){$('saveFeedback').textContent='保存失败，请检查浏览器存储权限。'}};
   addEventListener('pagehide',()=>{stopped=true;clearTimeout(lampConfirmTimer);cancelAnimationFrame(frame);observer.disconnect();controls.dispose();clearModel();bump.dispose();transmissionMap.dispose();glowMap.dispose();contactShadowMap.dispose();contactShadow.geometry.dispose();contactShadow.material.dispose();environment.dispose();floor.geometry.dispose();floor.material.dispose();enclosure.geometry.dispose();enclosure.material.dispose();skirting.children.forEach(o=>o.geometry.dispose());trimMaterial.dispose();renderer.dispose();});
 })();
