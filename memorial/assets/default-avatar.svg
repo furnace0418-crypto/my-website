@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" role="img" aria-label="默认头像">
   <circle cx="40" cy="40" r="40" fill="#f3ebe3"/>
-  <circle cx="40" cy="28" r="13" fill="#78251f"/>
-  <path d="M15 69c0-13.3 10.5-23 25-23s25 9.7 25 23v2.5c0 4.7-10.9 7.5-25 7.5s-25-2.8-25-7.5z" fill="#78251f"/>
+  <circle cx="40" cy="28" r="13" fill="#8b7669"/>
+  <path d="M15 69c0-13.3 10.5-23 25-23s25 9.7 25 23v2.5c0 4.7-10.9 7.5-25 7.5s-25-2.8-25-7.5z" fill="#8b7669"/>
 </svg>
