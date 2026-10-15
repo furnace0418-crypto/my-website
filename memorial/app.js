@@ -509,6 +509,11 @@ function addPersonalArchive(name,residentNumber){
   const pane=document.createElement('div');
   pane.className='life-pane personal-archive-pane';
   pane.dataset.lifePane='personal';
+  if(name!=='陈珍珍'){
+    pane.innerHTML='<div class="personal-archive-details"><h2>个人信息留存</h2><p>暂无</p></div>';
+    app.querySelector('.life-story').append(pane);
+    return;
+  }
   const rows=[...app.querySelectorAll('.life-profile dl div')].map(row=>[row.querySelector('dt').textContent,row.querySelector('dd').textContent]);
   const details=`<div class="personal-archive-details"><h2>个人信息留存</h2><p>以下内容依据纪念馆现有资料留存。</p><dl><div><dt>姓名</dt><dd>${esc(name)}</dd></div>${rows.map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl></div>`;
   if(!document.body.classList.contains('invite-theme')){
@@ -736,6 +741,7 @@ function zhengxiuqinMemorial(initialTab='story'){
     rows[3].querySelector('dd').textContent='桃原市';
   }
   addMemorialBackLink('郑秀琴');
+  addPersonalArchive('郑秀琴',null);
   app.querySelectorAll('[data-life-tab]').forEach(button=>button.onclick=()=>{app.querySelectorAll('[data-life-tab]').forEach(item=>item.classList.toggle('active',item===button));app.querySelectorAll('[data-life-pane]').forEach(pane=>pane.classList.toggle('active',pane.dataset.lifePane===button.dataset.lifeTab))});
   if(initialTab!=='story')app.querySelector(`[data-life-tab="${initialTab}"]`)?.click();
   const dialog=app.querySelector('.flower-confirm'),close=()=>dialog.hidden=true;
