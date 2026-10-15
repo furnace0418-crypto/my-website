@@ -516,7 +516,7 @@ function editHall(id){
 }
 function myPage(){
   const user=account();
-  if(!user){app.innerHTML='<div class="page-shell my-page"><div class="my-welcome"><h1>我的</h1><p>登录后可查看你创建的纪念馆和账户设置。</p><div class="my-welcome-actions"><a class="btn" href="#login">登录</a><a class="btn btn-outline" href="#register">注册</a></div></div></div>';return}
+  if(!user){location.hash='#login';return}
   const own=document.body.classList.contains('invite-theme')?[]:saved().filter(h=>ownsHall(h,user));
   app.innerHTML=`<div class="page-shell my-page"><div class="my-profile"><div class="my-avatar" aria-hidden="true"><img alt="" hidden></div><div><span class="my-eyebrow">我的安念堂</span><h1 id="myName"></h1><p>让思念有处安放，让记忆继续留存。</p></div></div><div class="my-layout"><main class="my-main"><div class="my-section-title"><div><h2>我创建的纪念馆</h2><p>你在这里保存的生命故事</p></div><a class="btn" href="#create">＋ 创建纪念馆</a></div><div class="my-hall-list" id="myHallList"></div></main><aside class="my-aside"><h2>账户设置</h2><a href="#change-password"><span>修改密码</span><span aria-hidden="true">›</span></a><a href="#logout"><span>退出登录</span><span aria-hidden="true">›</span></a></aside></div></div>`;
   app.querySelector('#myName').textContent=user.name;
@@ -670,6 +670,7 @@ function route(){
   rememberInviteVideo();applyInviteTheme();header();
   const hash=decodeURIComponent(location.hash.slice(1)||'home');
   const [page,id,tab]=hash.split('/');
+  if(page==='me'&&!account()){location.hash='#login';return}
   if(page==='hall'&&id==='chen-zhenzhen'&&document.body.classList.contains('invite-theme')&&!window.memorialRegistrationState?.chen){location.hash='#browse';return}
   if(!account()&&(page==='letters'||(page==='services'&&!['chen-zhenzhen','zhang-wenhua'].includes(id)))){location.hash='#login';return}
   if(page==='home'){home();wireHomeBulletins()}
