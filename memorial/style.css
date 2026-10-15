@@ -642,3 +642,25 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 .life-pane[data-life-pane="messages"] .custom-message-form .btn{min-width:150px;min-height:56px;font-size:18px}
 .invite-theme .memorial-message-empty,.invite-theme .custom-message-list>.empty{background:#142122;color:#aeb9b4}
 .invite-theme .memorial-message-list .memorial-message,.invite-theme .custom-message-list .memorial-message{background:#142122;border-color:#3a4443}
+
+/* Compact archive access and dark-theme controls. */
+.invite-theme .page-return-me,.invite-theme .life-back-link,.invite-theme .create-lantern-back{border-color:#40504d;background:#1b2b2b;color:#cbd5d0;box-shadow:0 2px 10px #0003}
+.invite-theme .page-return-me:hover,.invite-theme .life-back-link:hover,.invite-theme .create-lantern-back:hover{border-color:#65736d;background:#253737;color:#eff3f0}
+.invite-theme .personal-archive-gate{max-width:500px;padding:24px 27px 28px;border-radius:7px}
+.invite-theme .personal-archive-gate>p{margin-bottom:17px}
+.invite-theme .personal-archive-entry input{border-color:#4a5b56;border-radius:5px;background:#1c2c2b;color:#e6ece8}
+.invite-theme .personal-archive-entry input:focus{outline:2px solid #826b65;outline-offset:1px}
+.invite-theme .personal-archive-entry button{border-radius:5px;background:#68413d;border-color:#68413d;color:#f5f0ec}
+.personal-archive-downloads{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:26px}
+.personal-archive-downloads a{display:flex;align-items:center;gap:14px;min-width:0;padding:17px 18px;border:1px solid #d7c9bb;border-radius:6px;background:#fffdf9;color:#54473e}
+.personal-archive-downloads a:hover{border-color:#a68273;background:#faf4ee}
+.personal-archive-downloads a>span:nth-child(2){display:grid;gap:4px;min-width:0}
+.personal-archive-downloads strong{font-size:16px}
+.personal-archive-downloads small{color:#8c7e73;font-size:13px}
+.personal-archive-downloads b{margin-left:auto;white-space:nowrap;font-size:14px;font-weight:500}
+.archive-file-type{flex:none;display:grid;place-items:center;min-width:44px;height:44px;padding:4px;border:1px solid #cdbbad;border-radius:5px;color:#76594c;font-size:13px}
+.invite-theme .personal-archive-downloads a{border-color:#40514d;background:#1b2b2b;color:#d7dfda}
+.invite-theme .personal-archive-downloads a:hover{border-color:#61736b;background:#253735}
+.invite-theme .personal-archive-downloads small{color:#a9b5ae}
+.invite-theme .archive-file-type{border-color:#60716a;color:#bcc9c0}
+@media(max-width:700px){.personal-archive-downloads{grid-template-columns:1fr}}
