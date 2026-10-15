@@ -618,7 +618,7 @@ function addPersonalArchive(name,residentNumber){
     pane.querySelector('form').onsubmit=event=>{
       event.preventDefault();
       const value=pane.querySelector('input').value.trim().toUpperCase();
-      if(residentNumber&&value===residentNumber){pane.innerHTML=details+unlockedFiles;return}
+      if(residentNumber&&value===residentNumber){pane.innerHTML=unlockedFiles;return}
       const error=pane.querySelector('.personal-archive-error');
       error.textContent=residentNumber?'居民编号有误，请核对后重试。':'该居民的留存资料暂未开放查询。';
       error.hidden=false;
