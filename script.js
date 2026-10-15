@@ -841,9 +841,10 @@ function showGhostLinkSaveDialog() {
   dialog.querySelector("[data-ghost-open]").addEventListener("click",()=>{dialog.remove();openApp("ghost-link");});
 }
 function setupGhostLinkWindow(win) {
-  win.classList.add("ghost-link-window");win.style.width=`${Math.min(480,innerWidth-40)}px`;win.style.height=`${Math.min(420,innerHeight-60)}px`;
+  win.classList.add("ghost-link-window");win.style.width=`${Math.min(540,innerWidth-40)}px`;win.style.height=`${Math.min(455,innerHeight-60)}px`;
   win.querySelector("h2").textContent="旧址转换器 98";
-  win.querySelector(".menu-bar").innerHTML='<button type="button">文件(F)</button><button type="button">编辑(E)</button><button type="button">工具(T)</button><button type="button">帮助(H)</button>';
+  win.querySelector(".menu-bar").remove();
+  win.querySelector('[data-action="maximize"]').remove();
   win.querySelector(".toolbar").remove();
   const content=win.querySelector(".window-content");content.innerHTML='<form class="ghost-converter"><p>将失效网址转换为可访问的历史节点地址</p><label class="ghost-url-label">原始网址：<input type="url" value="http://annian.yunyang.cn/" spellcheck="false" required></label><div class="ghost-convert-row"><label>转换方式：<select><option>自动检测</option></select></label><button type="submit">开始转换</button></div><fieldset><legend>转换结果</legend><div>站点状态： <span data-ghost-status>等待检测</span></div><div>历史节点： <span data-ghost-node>尚未发现</span></div><div>转换地址： <a data-ghost-url hidden target="_blank" rel="noopener noreferrer"></a><span data-ghost-placeholder>—</span></div><div>访问级别： <span data-ghost-access>—</span></div></fieldset><div class="ghost-actions"><button type="button" data-ghost-copy disabled>复制地址</button><button type="button" data-ghost-visit disabled>打开页面</button><button type="button" data-ghost-exit>关闭</button></div></form>';
   const form=content.querySelector("form"),target="https://furnace0418-crypto.github.io/my-website/memorial/#home";
@@ -1844,7 +1845,7 @@ function openForwardRecord() {
   bindWindow(win); focusWindow(win); win.classList.add("opening"); win.addEventListener("animationend", () => win.classList.remove("opening"), { once: true });
 }
 function bindWindowResize(win) {
-  if (win.matches(".qq-channel-error-window,.recycle-properties-window,.qq-login-window,.qq-user-info-window,.sky-game-window") || win.querySelector(".window-resize-handle")) return;
+  if (win.matches(".qq-channel-error-window,.recycle-properties-window,.qq-login-window,.qq-user-info-window,.sky-game-window,.ghost-link-window") || win.querySelector(".window-resize-handle")) return;
   const handle = document.createElement("button"); handle.type = "button"; handle.className = "window-resize-handle"; handle.setAttribute("aria-label", "拖动调整窗口大小"); handle.title = "拖动调整窗口大小"; win.appendChild(handle);
   handle.addEventListener("pointerdown", event => {
     if (event.button !== 0 || win.classList.contains("maximized")) return;
@@ -1938,7 +1939,7 @@ function focusTopWindow() { const visible = [...document.querySelectorAll(".retr
 function toggleMaximize(win) { if (!win.classList.contains("maximized")) { win.dataset.restore = JSON.stringify({ left:win.style.left,top:win.style.top,width:win.style.width,height:win.style.height }); win.classList.add("maximized"); } else { win.classList.remove("maximized"); Object.assign(win.style, JSON.parse(win.dataset.restore || "{}")); } focusWindow(win); }
 function bindWindow(win) {
   win.addEventListener("pointerdown", () => focusWindow(win)); win.querySelector("[data-action=minimize]")?.addEventListener("click", e => {e.stopPropagation();minimizeWindow(win)}); win.querySelector("[data-action=maximize]")?.addEventListener("click", e => {e.stopPropagation();toggleMaximize(win)}); win.querySelector("[data-action=close]")?.addEventListener("click", e => {e.stopPropagation();closeWindow(win)});
-  const bar = win.querySelector(".titlebar"); if (!win.classList.contains("sky-game-window")) bar.addEventListener("dblclick", () => toggleMaximize(win)); bar.addEventListener("pointerdown", event => { if (event.button !== 0 || event.target.closest("button") || win.classList.contains("maximized")) return; event.preventDefault(); focusWindow(win); const rect=win.getBoundingClientRect(), offsetX=event.clientX-rect.left, offsetY=event.clientY-rect.top; bar.setPointerCapture(event.pointerId); const move=e=>{win.style.left=`${Math.max(0,Math.min(innerWidth-win.offsetWidth,e.clientX-offsetX))}px`;win.style.top=`${Math.max(0,Math.min(innerHeight-75,e.clientY-offsetY))}px`}; const up=()=>{bar.removeEventListener("pointermove",move);bar.removeEventListener("pointerup",up)}; bar.addEventListener("pointermove",move);bar.addEventListener("pointerup",up); }); bindWindowResize(win);
+  const bar = win.querySelector(".titlebar"); if (!win.matches(".sky-game-window,.ghost-link-window")) bar.addEventListener("dblclick", () => toggleMaximize(win)); bar.addEventListener("pointerdown", event => { if (event.button !== 0 || event.target.closest("button") || win.classList.contains("maximized")) return; event.preventDefault(); focusWindow(win); const rect=win.getBoundingClientRect(), offsetX=event.clientX-rect.left, offsetY=event.clientY-rect.top; bar.setPointerCapture(event.pointerId); const move=e=>{win.style.left=`${Math.max(0,Math.min(innerWidth-win.offsetWidth,e.clientX-offsetX))}px`;win.style.top=`${Math.max(0,Math.min(innerHeight-75,e.clientY-offsetY))}px`}; const up=()=>{bar.removeEventListener("pointermove",move);bar.removeEventListener("pointerup",up)}; bar.addEventListener("pointermove",move);bar.addEventListener("pointerup",up); }); bindWindowResize(win);
 }
 
 document.querySelectorAll(".desktop-icon[data-app]").forEach(button => {
