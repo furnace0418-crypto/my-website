@@ -809,6 +809,14 @@ function zhangwenhuaMemorial(initialTab='story'){
     ['2008年后｜故友离世','郑秀琴离世后，张文华一直对她最后一段时间的状态难以释怀。曾经被两人当作安慰故事的“桃原市”，也从此成为她始终无法完全忘记的一件事。'],
     ['2013年｜离世','2013年，张文华于云阳市家中离世，享年37岁。']
   ];
+  const fortuneRecords=[
+    {title:'在医院门口给绝症患者家属免费送盒饭',paragraphs:['张文华曾连续一段时间在医院附近为陪护病人的家属准备简单餐食。她认为长期照顾病人已经足够辛苦，至少应该让这些人在最疲惫的时候能够吃上一顿热饭。','后期她也开始频繁与一些长期陪护的家属交谈，尤其关注那些已经失去治疗希望的病人。'],verdict:'获得福报'},
+    {title:'每天进行力所能及的布施',paragraphs:['张文华会定期拿出一部分收入帮助生活困难的人，有时是现金，有时是食物和生活用品。即使自身生活并不宽裕，她仍认为“自己还能撑过去，就应该帮一把更难的人”。'],verdict:'获得福报'},
+    {title:'收养附近的流浪猫',paragraphs:['张文华曾陆续将住处附近受伤、生病或无人照料的流浪猫带回家中照顾，并自行承担食物和治疗费用。'],verdict:'获得福报'},
+    {title:'将家中不用的物品送给有需要的人',paragraphs:['张文华会主动整理家中闲置的衣物、家具和日用品，并将仍可使用的物品送给附近生活困难的家庭。'],verdict:'获得福报'},
+    {title:'长期帮助行动不便者处理生活困难',paragraphs:['张文华曾主动帮助附近几名行动不便或长期卧床的人处理生活中的实际问题，包括购买生活用品、陪同就医以及处理一些个人生活上的困难。'],verdict:'获得福报'},
+    {title:'对长期表达痛苦的人采取“解脱”行为',paragraphs:['张文华主动帮助有困难的人寻得安宁'],verdict:'福报已满'}
+  ];
   app.innerHTML=`<div class="life-memorial-shell"><aside class="life-profile"><img class="life-portrait" src="assets/zhang-wenhua-portrait.png" alt="张文华"><h1>张文华</h1><p class="life-dates">1976.08.17　—　2013.11.03</p><p class="life-wish">愿记忆与思念长存。</p><dl><div><dt>性别</dt><dd>女</dd></div><div><dt>出生</dt><dd>1976年8月17日</dd></div><div><dt>籍贯</dt><dd>云阳</dd></div><div><dt>离世</dt><dd>2013年11月3日</dd></div><div><dt>安葬地</dt><dd>未注明</dd></div></dl><button class="life-flower" type="button">✿　献花</button></aside><section class="life-story"><nav class="life-tabs" aria-label="纪念馆栏目"><button class="active" data-life-tab="story">过往记事</button><button data-life-tab="tributes">祭奠记录</button><button data-life-tab="messages">留言板</button><span>／ 生者记忆 · 让爱延续 ／</span></nav><div class="life-pane active" data-life-pane="story"><div class="life-timeline">${timeline.map(([title,body])=>`<article><i></i><h2>${esc(title)}</h2><p>${esc(body)}</p></article>`).join('')}</div></div><div class="life-pane" data-life-pane="tributes"><div class="tribute-heading"><h2>祭奠记录</h2><p>每一次到访，都让思念有了回声。</p></div><div class="tribute-list"></div><a class="tribute-action" href="#services/zhang-wenhua">前往祭奠</a></div><div class="life-pane" data-life-pane="messages"><div class="tribute-heading"><h2>留言板</h2><p>那些没有说完的话，仍可以在这里轻轻写下。</p></div></div></section></div><div class="flower-confirm" hidden><section role="dialog" aria-modal="true" aria-labelledby="flower-confirm-title"><button class="flower-confirm-close" type="button" aria-label="关闭">×</button><div class="flower-confirm-icon">✿</div><h2 id="flower-confirm-title">已献花</h2><p>愿这一束花承载思念，长伴她安眠。</p><button class="flower-confirm-ok" type="button">确定</button></section></div>`;
   app.querySelector('.life-profile dl div:last-child dd').textContent='云阳市纪念馆';
   if(document.body.classList.contains('invite-theme')){
@@ -835,7 +843,9 @@ function zhangwenhuaMemorial(initialTab='story'){
   app.querySelector('.flower-confirm-close').onclick=close;app.querySelector('.flower-confirm-ok').onclick=close;dialog.onclick=e=>{if(e.target===dialog)close()};
   if(document.body.classList.contains('invite-theme')){
     app.querySelectorAll('[data-life-tab="tributes"], [data-life-pane="tributes"] .tribute-heading h2').forEach(label=>label.textContent='福报记录');
-    tributes.querySelectorAll('article').forEach(record=>{if(record.querySelector('b')?.textContent.includes('献花'))record.remove()});
+    app.querySelector('[data-life-pane="tributes"] .tribute-heading p').textContent='以下为已记录的福报事项。';
+    tributes.classList.add('fortune-record-list');
+    tributes.innerHTML=fortuneRecords.map(({title,paragraphs,verdict})=>`<article class="fortune-record"><h3>${esc(title)}</h3>${paragraphs.map(text=>`<p>${esc(text)}</p>`).join('')}<p class="fortune-verdict"><strong>系统判定：</strong>${esc(verdict)}</p></article>`).join('');
     app.querySelector('.life-flower')?.remove();
     app.querySelector('.tribute-action')?.remove();
     dialog.remove();
