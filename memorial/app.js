@@ -510,8 +510,9 @@ function editHall(id){
   app.querySelector('.create-sections').remove();
   const form=app.querySelector('#createForm');
   for(const key of ['name','birth','death','bio'])form.elements[key].value=hall[key]||'';
-  form.querySelector('button[type="submit"]').textContent='保存修改';
-  form.insertAdjacentHTML('beforeend','<a class="create-edit-cancel" href="#me">取消并返回</a>');
+  const saveButton=form.querySelector('button[type="submit"]');saveButton.textContent='保存修改';
+  const actions=document.createElement('div');actions.className='create-edit-actions';saveButton.before(actions);actions.append(saveButton);
+  actions.insertAdjacentHTML('beforeend','<a class="create-edit-cancel" href="#me">返回我的</a>');
   form.onsubmit=event=>{event.preventDefault();if(!form.reportValidity())return;const updated={...hall,name:form.elements.name.value.trim(),birth:form.elements.birth.value,death:form.elements.death.value,bio:form.elements.bio.value.trim()};localStorage.setItem('memorial-halls',JSON.stringify(saved().map(item=>item.id===id?updated:item)));location.hash='#me'};
 }
 function myPage(){
@@ -520,6 +521,7 @@ function myPage(){
   const own=document.body.classList.contains('invite-theme')?[]:saved().filter(h=>ownsHall(h,user));
   app.innerHTML=`<div class="page-shell my-page"><div class="my-profile"><div class="my-avatar" aria-hidden="true"><img alt="" hidden></div><div><span class="my-eyebrow">我的安念堂</span><h1 id="myName"></h1><p>让思念有处安放，让记忆继续留存。</p></div></div><div class="my-layout"><main class="my-main"><div class="my-section-title"><div><h2>我创建的纪念馆</h2><p>你在这里保存的生命故事</p></div><a class="btn" href="#create">＋ 创建纪念馆</a></div><div class="my-hall-list" id="myHallList"></div></main><aside class="my-aside"><h2>账户设置</h2><a href="#change-password"><span>修改密码</span><span aria-hidden="true">›</span></a><a href="#logout"><span>退出登录</span><span aria-hidden="true">›</span></a></aside></div></div>`;
   app.querySelector('#myName').textContent=user.name;
+  app.querySelector('.my-eyebrow').remove();
   const settings=app.querySelector('.my-aside');settings.classList.add('my-profile-settings');app.querySelector('.my-profile').append(settings);
   const avatarSource=avatarFor(user.accountId);
   if(avatarSource){const portrait=app.querySelector('.my-avatar');portrait.querySelector('img').src=avatarSource;portrait.querySelector('img').hidden=false}
@@ -656,6 +658,8 @@ function customHall(id,initialTab='story'){
   if(document.body.classList.contains('invite-theme')){location.hash='#browse';return}
   const h=saved().find(item=>item.id===id);if(!h){browse();return}
   app.innerHTML=`<div class="life-memorial-shell custom-life-shell"><aside class="life-profile"><div class="custom-life-portrait"><img src="assets/person-placeholder.svg?v=3" alt=""></div><h1>${esc(h.name)}</h1><p class="life-dates">${esc(h.birth)}　—　${esc(h.death)}</p><p class="life-wish">愿记忆与思念长存。</p><dl><div><dt>出生</dt><dd>${esc(h.birth)}</dd></div><div><dt>离世</dt><dd>${esc(h.death)}</dd></div><div><dt>创建者</dt><dd>${esc(h.creator)}</dd></div></dl><button class="life-flower" type="button">✿　献花</button></aside><section class="life-story"><nav class="life-tabs" aria-label="纪念馆栏目"><button class="active" data-life-tab="story">过往记事</button><button data-life-tab="tributes">祭奠记录</button><button data-life-tab="messages">留言板</button><span>／ 生者记忆 · 让爱延续 ／</span></nav><div class="life-pane active" data-life-pane="story"><div class="life-timeline"><article><i></i><h2>生平简介</h2><p>${esc(h.bio||'暂无生平简介')}</p></article></div></div><div class="life-pane" data-life-pane="tributes"><div class="tribute-heading"><h2>祭奠记录</h2></div><div class="tribute-list custom-tribute-list"></div><a class="tribute-action" href="#services/${encodeURIComponent(id)}">前往祭奠</a></div><div class="life-pane" data-life-pane="messages"><div class="tribute-heading"><h2>留言板</h2></div><div class="custom-message-list"></div><form class="custom-message-form"><label class="field"><span>留下思念</span><textarea name="message" placeholder="写下想说的话" required></textarea></label><button class="btn" type="submit">发表留言</button></form></div></section></div><div class="flower-confirm" hidden><section role="dialog" aria-modal="true"><button class="flower-confirm-close" type="button" aria-label="关闭">×</button><div class="flower-confirm-icon">✿</div><h2>已献花</h2><p>愿这一束花承载思念，长伴安眠。</p><button class="flower-confirm-ok" type="button">确定</button></section></div>`;
+  const dates=app.querySelector('.life-dates');dates.classList.add('custom-life-dates');
+  const birth=document.createElement('time'),death=document.createElement('span');birth.textContent=h.birth||'';death.textContent=`— ${h.death||''}`;dates.replaceChildren(birth,death);
   addMemorialBackLink(h.name);addPersonalArchive(h.name,null);
   const render=()=>{const rites=h.records.filter(item=>item.type!=='留言'),messages=h.records.filter(item=>item.type==='留言');app.querySelector('.custom-tribute-list').innerHTML=rites.length?rites.map(item=>`<article class="memorial-message"><b>${esc(item.by)}</b><time>${esc(item.at)}</time><p>${esc(item.text)}</p></article>`).join(''):'<p class="empty">尚无祭奠记录</p>';app.querySelector('.custom-message-list').innerHTML=messages.length?messages.map(item=>`<article class="memorial-message"><b>${esc(item.by)}</b><time>${esc(item.at)}</time><p>${esc(item.text)}</p></article>`).join(''):'<p class="empty">暂无留言</p>'};
   const add=(type,message)=>{h.records??=[];h.records.unshift({type,by:account()?.name||'访客',at:dateText(),text:message});localStorage.setItem('memorial-halls',JSON.stringify(saved().map(item=>item.id===h.id?h:item)));render()};render();
