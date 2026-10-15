@@ -377,6 +377,11 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 
 /* 账户区：头像、身份和退出操作组成同一条紧凑工具栏。 */
 .header-account.signed-in{gap:0;min-height:48px;border:1px solid #dfd9d2;border-radius:28px;background:rgba(255,255,255,.72);padding:4px 8px 4px 5px;letter-spacing:0;box-shadow:0 1px 4px #39251a0b}
+.header-account:not(.signed-in){gap:0;min-height:50px;border:1px solid #dfd9d2;border-radius:28px;background:rgba(255,255,255,.72);padding:4px 7px 4px 5px;letter-spacing:0;box-shadow:0 1px 4px #39251a0b}
+.header-account:not(.signed-in) .account-login{display:inline-flex;align-items:center;gap:12px;min-width:0;max-width:none;padding:0 17px 0 0;border:0;background:transparent;color:#604c42;font:700 15px/1.3 "STSong","SimSun",serif}
+.header-account:not(.signed-in) .account-login:hover{background:transparent;color:#78251f}
+.header-account:not(.signed-in) .account-register{min-width:0;border:0;border-left:1px solid #e4dcd4;background:transparent;color:#604c42;padding:8px 13px 8px 17px;font:700 15px/1.3 "STSong","SimSun",serif;letter-spacing:0}
+.header-account:not(.signed-in) .account-register:hover{background:transparent;color:#78251f}
 .header-account.signed-in .account-login{min-width:0;max-width:none;width:42px;height:42px;padding:0;border:0;border-radius:50%;background:transparent;display:grid;place-items:center}
 .account-avatar{width:40px;height:40px;border-radius:50%;background:#ede4db;display:grid;place-items:center;overflow:hidden;border:1px solid #d8c7b7}
 .account-avatar svg,.my-avatar svg,.avatar-preview svg{width:66%;height:66%;fill:none;stroke:#8a6d58;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
@@ -405,3 +410,4 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 .invite-theme .avatar-upload{border-color:#526562;color:#dde5df}
 .invite-theme .avatar-upload small{color:#aab8b3}
 @media(max-width:720px){.header-account.signed-in{position:absolute;right:12px;top:8px;min-height:38px;padding:3px 5px}.header-account.signed-in .account-login,.account-avatar{width:32px;height:32px}.header-account.signed-in .account-mode{font-size:12px;padding:6px 7px}.header-account.signed-in .account-exit{font-size:12px;padding:6px 5px 6px 8px}}
+@media(max-width:720px){.header-account:not(.signed-in){position:absolute;right:12px;top:8px;min-height:38px;padding:3px 5px}.header-account:not(.signed-in) .account-login{gap:7px;padding-right:9px;font-size:12px}.header-account:not(.signed-in) .account-register{padding:6px 5px 6px 9px;font-size:12px}}

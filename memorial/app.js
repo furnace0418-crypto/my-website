@@ -280,7 +280,7 @@ function header(){
   const signedIn=Boolean(user),darkTheme=document.body.classList.contains('invite-theme');
   document.querySelector('.header-account')?.classList.toggle('signed-in',signedIn);
   if(name){name.textContent='登录';name.hidden=signedIn}
-  if(avatar){avatar.hidden=!signedIn;const image=avatar.querySelector('img'),icon=avatar.querySelector('svg'),source=avatarFor(user?.accountId);image.hidden=!source;icon.hidden=!!source;if(source)image.src=source;else image.removeAttribute('src')}
+  if(avatar){avatar.hidden=false;const image=avatar.querySelector('img'),icon=avatar.querySelector('svg'),source=avatarFor(user?.accountId);image.hidden=!source;icon.hidden=!!source;if(source)image.src=source;else image.removeAttribute('src')}
   if(mode){mode.hidden=!signedIn;mode.textContent=darkTheme?'特邀访客':'普通用户';mode.title=darkTheme?'切换至普通用户':inviteAccessGranted?'切换至特邀访客':'输入邀请码，切换至特邀访客';mode.onclick=darkTheme||inviteAccessGranted?toggleInviteTheme:showInviteVerification}
   if(exit)exit.hidden=!user;
   if(registerLink)registerLink.hidden=signedIn;
