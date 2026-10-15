@@ -280,7 +280,7 @@ function header(){
   const signedIn=Boolean(user),darkTheme=document.body.classList.contains('invite-theme');
   document.querySelector('.header-account')?.classList.toggle('signed-in',signedIn);
   if(name){name.textContent='登录';name.hidden=signedIn}
-  if(avatar){avatar.hidden=false;const image=avatar.querySelector('img'),icon=avatar.querySelector('svg'),source=avatarFor(user?.accountId);image.hidden=!source;icon.hidden=!!source;if(source)image.src=source;else image.removeAttribute('src')}
+  if(avatar){avatar.hidden=false;const image=avatar.querySelector('img'),source=avatarFor(user?.accountId);image.hidden=!source;if(source)image.src=source;else image.removeAttribute('src')}
   if(mode){mode.hidden=!signedIn;mode.textContent=darkTheme?'特邀访客':'普通用户';mode.title=darkTheme?'切换至普通用户':inviteAccessGranted?'切换至特邀访客':'输入邀请码，切换至特邀访客';mode.onclick=darkTheme||inviteAccessGranted?toggleInviteTheme:showInviteVerification}
   if(exit)exit.hidden=!user;
   if(registerLink)registerLink.hidden=signedIn;
@@ -304,7 +304,7 @@ function showEntryInvitePrompt(){
   code.focus();
 }
 function register(){
-  app.innerHTML=`<div class="page-shell"><div class="panel form-panel"><div class="form-heading"><h1>用户注册</h1><p>设置昵称和密码，保存你的回忆</p></div><form class="form-body" id="registerForm"><div class="message" id="formMessage" hidden></div><label class="field"><span>昵称</span><input name="name" autocomplete="nickname" placeholder="填写一个你喜欢的名字，无需真实姓名" maxlength="24" required></label><label class="field"><span>设置密码</span><input name="password" type="password" autocomplete="new-password" placeholder="至少 8 位" minlength="8" required></label><label class="avatar-upload"><span class="avatar-preview"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="18" r="8"/><path d="M9 42c1-10 7-15 15-15s14 5 15 15"/></svg><img alt="头像预览" hidden></span><span><strong>上传头像（选填）</strong><small>未上传时使用默认头像</small></span><input name="avatar" type="file" accept="image/png,image/jpeg,image/webp" aria-label="上传头像"></label><label class="check"><input type="checkbox" name="terms" required>我已阅读并同意用户协议和隐私政策</label><button class="btn" type="submit">注册</button><p class="fine-print">已有账号？ <a href="#login">立即登录</a></p></form></div></div>`;
+  app.innerHTML=`<div class="page-shell"><div class="panel form-panel"><div class="form-heading"><h1>用户注册</h1></div><form class="form-body" id="registerForm"><div class="message" id="formMessage" hidden></div><label class="avatar-upload"><span class="avatar-preview"><img alt="头像预览" hidden></span><strong>选择头像</strong><input name="avatar" type="file" accept="image/png,image/jpeg,image/webp" aria-label="上传头像"></label><label class="field"><span>昵称</span><input name="name" autocomplete="nickname" placeholder="请输入昵称" maxlength="24" required></label><label class="field"><span>设置密码</span><input name="password" type="password" autocomplete="new-password" placeholder="至少 8 位" minlength="8" required></label><label class="check"><input type="checkbox" name="terms" required>我已阅读并同意用户协议和隐私政策</label><button class="btn" type="submit">注册</button><p class="fine-print">已有账号？ <a href="#login">立即登录</a></p></form></div></div>`;
   const registerForm=document.querySelector('#registerForm');
   registerForm.noValidate=true;
   const fieldHint=input=>{
@@ -316,7 +316,7 @@ function register(){
   };
   const passwordHint=fieldHint(registerForm.elements.namedItem('password'));
   const avatarInput=registerForm.elements.namedItem('avatar');
-  avatarInput.onchange=()=>{const file=avatarInput.files[0],image=registerForm.querySelector('.avatar-preview img'),icon=registerForm.querySelector('.avatar-preview svg');if(image.dataset.preview)URL.revokeObjectURL(image.dataset.preview);if(file){image.dataset.preview=URL.createObjectURL(file);image.src=image.dataset.preview;image.hidden=false;icon.hidden=true}else{image.hidden=true;icon.hidden=false}};
+  avatarInput.onchange=()=>{const file=avatarInput.files[0],image=registerForm.querySelector('.avatar-preview img');if(image.dataset.preview)URL.revokeObjectURL(image.dataset.preview);if(file){image.dataset.preview=URL.createObjectURL(file);image.src=image.dataset.preview;image.hidden=false}else{image.hidden=true;image.removeAttribute('src')}};
   registerForm.onsubmit=async e=>{
     e.preventDefault();
     const form=e.currentTarget,message=document.querySelector('#formMessage');
@@ -367,7 +367,7 @@ function login(){
   forgot.innerHTML='<button type="button">忘记密码？</button><span hidden>若已退出且不记得密码，请重新注册。</span>';
   form.querySelector('.fine-print').before(forgot);
   forgot.querySelector('button').onclick=()=>{forgot.querySelector('span').hidden=!forgot.querySelector('span').hidden};
-  const history=document.createElement('div');
+  const history=document.createElement('details');
   history.className='login-account-history';
   accountInput.closest('.field').after(history);
   const renderLoginHistory=()=>{
@@ -375,25 +375,26 @@ function login(){
     history.replaceChildren();
     history.hidden=!ids.length;
     if(!ids.length)return;
-    const title=document.createElement('p');
-    title.textContent='此设备登录过的昵称';
+    const title=document.createElement('summary');
+    title.innerHTML='<span>最近登录</span><span class="login-history-count"></span>';
+    title.querySelector('.login-history-count').textContent=`${ids.length} 个昵称`;
     history.append(title);
+    const list=document.createElement('div');
+    list.className='login-account-list';
+    history.append(list);
     for(const id of ids){
-      const item=document.createElement('div');
+      const item=document.createElement('button');
       item.className='login-account-item';
-      const choose=document.createElement('button');
-      choose.type='button';
+      item.type='button';
       const savedProfile=window.memorialLocalAuth.profile(id);
-      choose.textContent=savedProfile.name;
-      choose.onclick=()=>{accountInput.value=savedProfile.name;form.elements.namedItem('password').focus()};
-      const remove=document.createElement('button');
-      remove.type='button';
-      remove.className='login-account-remove';
-      remove.textContent='×';
-      remove.setAttribute('aria-label',`移除昵称 ${savedProfile.name}`);
-      remove.onclick=()=>{localStorage.setItem(loginHistoryKey,JSON.stringify(recentLoginAccounts().filter(entry=>entry!==id)));renderLoginHistory()};
-      item.append(choose,remove);
-      history.append(item);
+      const portrait=document.createElement('span');portrait.className='login-history-avatar';
+      const source=avatarFor(id);
+      if(source){const image=document.createElement('img');image.src=source;image.alt='';portrait.append(image)}
+      const label=document.createElement('span');label.className='login-history-name';label.textContent=savedProfile.name;
+      const arrow=document.createElement('span');arrow.className='login-history-arrow';arrow.setAttribute('aria-hidden','true');
+      item.append(portrait,label,arrow);
+      item.onclick=()=>{accountInput.value=savedProfile.name;history.open=false;form.elements.namedItem('password').focus()};
+      list.append(item);
     }
   };
   renderLoginHistory();
@@ -465,10 +466,10 @@ function myPage(){
   const user=account();
   if(!user){app.innerHTML='<div class="page-shell my-page"><div class="my-welcome"><h1>我的</h1><p>登录后可查看你创建的纪念馆和账户设置。</p><div class="my-welcome-actions"><a class="btn" href="#login">登录</a><a class="btn btn-outline" href="#register">注册</a></div></div></div>';return}
   const own=saved().filter(h=>h.creator===user.name);
-  app.innerHTML=`<div class="page-shell my-page"><div class="my-profile"><div class="my-avatar" aria-hidden="true"><svg viewBox="0 0 48 48"><circle cx="24" cy="18" r="8"/><path d="M9 42c1-10 7-15 15-15s14 5 15 15"/></svg><img alt="" hidden></div><div><span class="my-eyebrow">我的安念堂</span><h1 id="myName"></h1><p>让思念有处安放，让记忆继续留存。</p></div></div><div class="my-layout"><main class="my-main"><div class="my-section-title"><div><h2>我创建的纪念馆</h2><p>你在这里保存的生命故事</p></div><a class="btn" href="#create">＋ 创建纪念馆</a></div><div class="my-hall-list" id="myHallList"></div></main><aside class="my-aside"><h2>账户设置</h2><a href="#change-password"><span>修改密码</span><span aria-hidden="true">›</span></a><a href="#logout"><span>退出登录</span><span aria-hidden="true">›</span></a></aside></div></div>`;
+  app.innerHTML=`<div class="page-shell my-page"><div class="my-profile"><div class="my-avatar" aria-hidden="true"><img alt="" hidden></div><div><span class="my-eyebrow">我的安念堂</span><h1 id="myName"></h1><p>让思念有处安放，让记忆继续留存。</p></div></div><div class="my-layout"><main class="my-main"><div class="my-section-title"><div><h2>我创建的纪念馆</h2><p>你在这里保存的生命故事</p></div><a class="btn" href="#create">＋ 创建纪念馆</a></div><div class="my-hall-list" id="myHallList"></div></main><aside class="my-aside"><h2>账户设置</h2><a href="#change-password"><span>修改密码</span><span aria-hidden="true">›</span></a><a href="#logout"><span>退出登录</span><span aria-hidden="true">›</span></a></aside></div></div>`;
   app.querySelector('#myName').textContent=user.name;
   const avatarSource=avatarFor(user.accountId);
-  if(avatarSource){const portrait=app.querySelector('.my-avatar');portrait.querySelector('img').src=avatarSource;portrait.querySelector('img').hidden=false;portrait.querySelector('svg').hidden=true}
+  if(avatarSource){const portrait=app.querySelector('.my-avatar');portrait.querySelector('img').src=avatarSource;portrait.querySelector('img').hidden=false}
   const list=app.querySelector('#myHallList');
   if(!own.length){list.innerHTML='<div class="my-empty"><strong>还没有创建纪念馆</strong><p>建立一处纪念空间，保存关于故人的故事。</p><a href="#create">开始创建 →</a></div>';return}
   own.forEach(h=>{const item=document.createElement('a');item.className='my-hall-item';item.href='#hall/'+encodeURIComponent(h.id);const title=document.createElement('strong');title.textContent=h.name;const meta=document.createElement('small');meta.textContent=[h.birth,h.death].filter(Boolean).join(' — ');const arrow=document.createElement('span');arrow.textContent='进入纪念馆 ›';item.append(title,meta,arrow);list.append(item)});

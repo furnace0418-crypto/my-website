@@ -411,3 +411,36 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 .invite-theme .avatar-upload small{color:#aab8b3}
 @media(max-width:720px){.header-account.signed-in{position:absolute;right:12px;top:8px;min-height:38px;padding:3px 5px}.header-account.signed-in .account-login,.account-avatar{width:32px;height:32px}.header-account.signed-in .account-mode{font-size:12px;padding:6px 7px}.header-account.signed-in .account-exit{font-size:12px;padding:6px 5px 6px 8px}}
 @media(max-width:720px){.header-account:not(.signed-in){position:absolute;right:12px;top:8px;min-height:38px;padding:3px 5px}.header-account:not(.signed-in) .account-login{gap:7px;padding-right:9px;font-size:12px}.header-account:not(.signed-in) .account-register{padding:6px 5px 6px 9px;font-size:12px}}
+
+/* 统一的默认头像与轻量头像上传。 */
+.account-avatar,.my-avatar,.avatar-preview,.login-history-avatar{background:#eee5db url("assets/default-avatar.svg") center/cover no-repeat}
+.avatar-upload{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;width:max-content;margin:0 auto 27px;padding:0;border:0;background:transparent;color:#604a3d}
+.avatar-upload:hover{background:transparent}
+.avatar-upload .avatar-preview{width:92px;height:92px;border:3px solid #fff;box-shadow:0 0 0 1px #d6c1ae,0 3px 12px #553b2a17;position:relative}
+.avatar-upload .avatar-preview:after{content:'+';position:absolute;right:0;bottom:0;width:25px;height:25px;display:grid;place-items:center;border:2px solid #fff;border-radius:50%;background:#78251f;color:#fff;font:20px/1 Arial,sans-serif}
+.avatar-upload strong{font-size:16px;font-weight:600;margin:0}
+.avatar-upload:hover .avatar-preview{box-shadow:0 0 0 2px #a3735e,0 4px 14px #553b2a22}
+.avatar-upload:focus-within{outline:0}
+.avatar-upload:focus-within .avatar-preview{box-shadow:0 0 0 3px #b8a078}
+.account-avatar img,.my-avatar img,.avatar-preview img,.login-history-avatar img{display:block;width:100%;height:100%;object-fit:cover}
+
+/* 最近登录：默认折叠，展开后以头像和昵称选择账号。 */
+.login-account-history{margin:-7px 0 23px;padding:0;border:1px solid #e0d9d1;border-radius:7px;background:#fbf9f6;overflow:hidden}
+.login-account-history summary{display:flex;align-items:center;gap:8px;list-style:none;padding:13px 16px;cursor:pointer;color:#655449;font-size:15px;font-weight:600}
+.login-account-history summary::-webkit-details-marker{display:none}
+.login-history-count{margin-left:auto;color:#a09388;font-size:13px;font-weight:400}
+.login-account-history summary:after{content:'';width:7px;height:7px;margin-left:5px;border-right:1.5px solid #a48b79;border-bottom:1.5px solid #a48b79;transform:translateY(-2px) rotate(45deg);transition:transform .18s}
+.login-account-history[open] summary:after{transform:translateY(2px) rotate(225deg)}
+.login-account-list{border-top:1px solid #e8e0d8;padding:4px 8px 8px}
+.login-account-item{display:flex;align-items:center;gap:12px;width:100%;min-height:61px;border:0;border-radius:5px;background:transparent;text-align:left;padding:8px;color:#504238}
+.login-account-item+.login-account-item{margin:0}
+.login-account-item:hover,.login-account-item:focus-visible{background:#f0e9e1;outline:0}
+.login-history-avatar{width:40px;height:40px;flex:none;border-radius:50%;overflow:hidden;border:1px solid #d4c1ae}
+.login-history-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:16px;font-weight:600}
+.login-history-arrow{margin-left:auto;width:7px;height:7px;flex:none;border-top:1.5px solid #b19a8a;border-right:1.5px solid #b19a8a;transform:rotate(45deg)}
+.invite-theme .login-account-history{background:#172526;border-color:#46504e}
+.invite-theme .login-account-history summary{color:#d4dfd9}
+.invite-theme .login-account-list{border-color:#46504e}
+.invite-theme .login-account-item{color:#dce5df}
+.invite-theme .login-account-item:hover,.invite-theme .login-account-item:focus-visible{background:#273a3a}
+@media(max-width:720px){.avatar-upload .avatar-preview{width:80px;height:80px}.login-account-history summary{padding:12px 14px}}
