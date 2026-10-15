@@ -321,7 +321,8 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 .featured-memorial .memorial-cover.zheng-cover{background:#f6f1ec url("assets/person-placeholder.svg?v=3") center/142px 142px no-repeat}
 .invite-theme .featured-memorial .memorial-cover.zheng-cover{background-color:#1a2525}
 .invite-theme .featured-memorial .memorial-cover.chen-cover,.invite-theme .featured-memorial .memorial-cover.zhang-cover,.invite-theme .featured-memorial .memorial-cover.zheng-cover{background-image:url("assets/person-placeholder-dark.svg?v=1")}
-.invite-theme .notice-panel li{border-bottom-color:#78251f}
+.invite-theme .notice-panel li{border-bottom-color:#51403d}
+.invite-theme .notice-panel li:before{color:#75534e}
 
 /* 我的 / 创建纪念馆：沿用安念堂的暖纸色与深棕色。 */
 .my-page,.create-page{max-width:1180px;margin:0 auto;padding-top:52px;padding-bottom:88px}
