@@ -94,7 +94,6 @@
 .recycle-native-icon.recycle-property-icon{flex-basis:58px;width:58px;height:58px}
 .recycle-native-icon>.qq-icon{width:70px;height:68px;background-size:68px 68px}
 .recycle-native-icon.recycle-property-icon>.qq-icon{width:58px;height:58px;background-size:58px 58px}
-.desktop-icon .recycle-icon.recycle-full{background-image:url("assets/icons/recycle-full-pixel.png");background-size:86px 86px;image-rendering:pixelated}
+.desktop-icon .recycle-icon.recycle-full{background-image:url("assets/icons/recycle-full-pixel.png");background-size:92px 92px;background-position:center 53%;image-rendering:pixelated}
 .recycle-large-icon.recycle-full{background-image:url("assets/icons/recycle-full-pixel.png");background-size:110px 110px}
 .window-mini-icon.recycle.recycle-full,.task-app-icon.recycle.recycle-full{background-image:url("assets/icons/recycle-full-pixel.png")!important;background-size:29px 29px!important}
-
