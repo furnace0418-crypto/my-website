@@ -139,7 +139,7 @@ videoControlsObserver.observe(app,{childList:true,subtree:true});
 const demo={id:'demo',name:'阿乐',birth:'2024年08月21日',death:'2024年08月21日',creator:'admin',bio:'123123',records:[{type:'点烛',by:'admin',at:'2024年08月21日 21:30',text:'点燃了一支蜡烛，照亮前路'},{type:'上香',by:'admin',at:'2024年08月21日 21:28',text:'献上了一炷香，寄托哀思'},{type:'献花',by:'admin',at:'2024年08月21日 21:28',text:'献上了一束花，表达怀念'}]};
 const zhenzhen={id:'chen-zhenzhen',name:'陈珍珍',birth:'2004年03月14日',death:'2024年',creator:'安念堂',bio:'愿你在另一处，获得平静。',records:[]};
 const zhangwenhua={id:'zhang-wenhua',name:'张文华',birth:'1976年08月17日',death:'2013年11月03日',creator:'安念堂',bio:'张文华生于云阳，2013年于云阳市家中离世。',records:[]};
-const zhengxiuqin={id:'zheng-xiuqin',name:'郑秀琴',birth:'1975年',death:'2008年05月12日',creator:'安念堂',bio:'郑秀琴生于云阳，2008年于云阳市城南区离世。',records:[]};
+const zhengxiuqin={id:'zheng-xiuqin',name:'郑秀琴',birth:'1975年',death:'2011年05月12日',creator:'安念堂',bio:'郑秀琴生于云阳，2011年于云阳市城南区离世。',records:[]};
 const halls=()=>[zhenzhen,zhangwenhua,zhengxiuqin,demo,...saved()];
 const searchableHalls=()=>halls().filter(h=>!document.body.classList.contains('invite-theme')||(['chen-zhenzhen','zhang-wenhua','zheng-xiuqin','demo'].includes(h.id)&&!(h.id==='chen-zhenzhen'&&!window.memorialRegistrationState?.chen)));
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -808,7 +808,7 @@ function zhangwenhuaMemorial(initialTab='story'){
     ['离开工厂｜各自开始生活','经历那段时期后，两人后来陆续离开工厂。张文华逐渐建立自己的家庭，郑秀琴则留在云阳市经营一家服装店。虽然生活方向不同，两人仍一直保持联系。'],
     ['成家以后｜家庭与牵挂','张文华后来有了陈珍珍和郑愿。由于当时的家庭状况，她将年幼的郑愿托付给好友郑秀琴照料。张文华一直牵挂着他，也会偶尔带陈珍珍前去看望。陈珍珍与郑愿也因此从小保持着亲近的姐弟关系。'],
     ['生活低谷｜桃原市再次被提起','郑秀琴的服装店后来因经营不善陷入困境。生活跌入低谷后，她重新提起年轻时在工厂听说的“桃原市”，并开始认真相信只要积累足够的福报，就能前往那里。张文华起初并不认同，但随着郑秀琴反复提起，她也逐渐重新想起工厂时期那些已经被遗忘的往事。'],
-    ['2008年后｜故友离世','郑秀琴离世后，张文华一直对她最后一段时间的状态难以释怀。曾经被两人当作安慰故事的“桃原市”，也从此成为她始终无法完全忘记的一件事。'],
+    ['2011年后｜故友离世','郑秀琴离世后，张文华一直对她最后一段时间的状态难以释怀。曾经被两人当作安慰故事的“桃原市”，也从此成为她始终无法完全忘记的一件事。'],
     ['2013年｜离世','2013年，张文华于云阳市家中离世，享年37岁。']
   ];
   const fortuneRecords=[
@@ -863,7 +863,7 @@ function zhengxiuqinMemorial(initialTab='story'){
     ['郑愿幼年｜承担照料','由于家庭情况，好友张文华将年幼的郑愿托付给郑秀琴照料。郑秀琴一直把他当作自家孩子照顾，郑愿也因此在她家生活过一段时间。'],
     ['事业受挫｜生活重新陷入低谷','后来，郑秀琴的服装店因经营不善逐渐陷入困境，最终停业，并留下了一些债务和尚未结清的员工工资。此后她靠零工维持生活，同时一点点偿还欠款。即便生活并不宽裕，她仍会参与一些志愿活动，也会尽力帮助比自己更困难的人。'],
     ['低谷时期｜重新想起桃原市','生活陷入低谷后，郑秀琴再次想起年轻时在工厂听过的“桃原市”。与过去不同的是，她开始认真相信，只要持续积累福报，或许真的能够去往一个没有痛苦、可以重新开始的地方。她也曾向身边人提起，自己正在完成一件“必须做完的事”。'],
-    ['2008年｜离世','2008年5月12日，郑秀琴于云阳市城南区一处出租屋内离世，年仅33岁。']
+    ['2011年｜离世','2011年5月12日，郑秀琴于云阳市城南区一处出租屋内离世，年仅36岁。']
   ];
   const fortuneRecords=[
     {title:'帮助拾荒老人 / 环卫工人',paragraphs:['郑秀琴平时遇到附近拾荒的老人或环卫工人，会主动送水、送饭，有时也会把店里不要的纸箱和旧物整理好交给他们。'],verdict:'获得福报'},
@@ -885,7 +885,7 @@ function zhengxiuqinMemorial(initialTab='story'){
   ];
   const dark=document.body.classList.contains('invite-theme');
   const portrait=dark?'assets/zheng-xiuqin-taoyuan.png':'assets/zheng-xiuqin-portrait.png';
-  app.innerHTML=`<div class="life-memorial-shell"><aside class="life-profile"><img class="life-portrait" src="${portrait}" alt="郑秀琴"><h1>郑秀琴</h1><p class="life-dates">1975　—　2008.05.12</p><p class="life-wish">愿记忆与思念长存。</p><dl><div><dt>性别</dt><dd>女</dd></div><div><dt>出生</dt><dd>1975年</dd></div><div><dt>籍贯</dt><dd>云阳</dd></div><div><dt>离世</dt><dd>2008年5月12日</dd></div><div><dt>${dark?'登记地':'安葬地'}</dt><dd>${dark?'桃原市纪念馆':'云阳市纪念馆'}</dd></div></dl>${dark?'':'<button class="life-flower" type="button">✿　献花</button>'}</aside><section class="life-story"><nav class="life-tabs" aria-label="纪念馆栏目"><button class="active" data-life-tab="story">过往记事</button><button data-life-tab="tributes">${dark?'福报记录':'祭奠记录'}</button><button data-life-tab="messages">留言板</button><span>／ 生者记忆 · 让爱延续 ／</span></nav><div class="life-pane active" data-life-pane="story"><div class="life-timeline">${timeline.map(([title,body])=>`<article><i></i><h2>${esc(title)}</h2><p>${esc(body)}</p></article>`).join('')}</div></div><div class="life-pane" data-life-pane="tributes"><div class="tribute-heading"><h2>${dark?'福报记录':'祭奠记录'}</h2></div><div class="tribute-list"></div></div><div class="life-pane" data-life-pane="messages"><div class="tribute-heading"><h2>留言板</h2></div></div></section></div><div class="flower-confirm" hidden><section role="dialog" aria-modal="true" aria-labelledby="flower-confirm-title"><button class="flower-confirm-close" type="button" aria-label="关闭">×</button><div class="flower-confirm-icon">✿</div><h2 id="flower-confirm-title">已献花</h2><p>愿这一束花承载思念，长伴她安眠。</p><button class="flower-confirm-ok" type="button">确定</button></section></div>`;
+  app.innerHTML=`<div class="life-memorial-shell"><aside class="life-profile"><img class="life-portrait" src="${portrait}" alt="郑秀琴"><h1>郑秀琴</h1><p class="life-dates">1975　—　2011.05.12</p><p class="life-wish">愿记忆与思念长存。</p><dl><div><dt>性别</dt><dd>女</dd></div><div><dt>出生</dt><dd>1975年</dd></div><div><dt>籍贯</dt><dd>云阳</dd></div><div><dt>离世</dt><dd>2011年5月12日</dd></div><div><dt>${dark?'登记地':'安葬地'}</dt><dd>${dark?'桃原市纪念馆':'云阳市纪念馆'}</dd></div></dl>${dark?'':'<button class="life-flower" type="button">✿　献花</button>'}</aside><section class="life-story"><nav class="life-tabs" aria-label="纪念馆栏目"><button class="active" data-life-tab="story">过往记事</button><button data-life-tab="tributes">${dark?'福报记录':'祭奠记录'}</button><button data-life-tab="messages">留言板</button><span>／ 生者记忆 · 让爱延续 ／</span></nav><div class="life-pane active" data-life-pane="story"><div class="life-timeline">${timeline.map(([title,body])=>`<article><i></i><h2>${esc(title)}</h2><p>${esc(body)}</p></article>`).join('')}</div></div><div class="life-pane" data-life-pane="tributes"><div class="tribute-heading"><h2>${dark?'福报记录':'祭奠记录'}</h2></div><div class="tribute-list"></div></div><div class="life-pane" data-life-pane="messages"><div class="tribute-heading"><h2>留言板</h2></div></div></section></div><div class="flower-confirm" hidden><section role="dialog" aria-modal="true" aria-labelledby="flower-confirm-title"><button class="flower-confirm-close" type="button" aria-label="关闭">×</button><div class="flower-confirm-icon">✿</div><h2 id="flower-confirm-title">已献花</h2><p>愿这一束花承载思念，长伴她安眠。</p><button class="flower-confirm-ok" type="button">确定</button></section></div>`;
   if(dark){
     app.querySelector('.life-timeline').innerHTML=taoyuanTimeline.map(([title,body])=>`<article><i></i><h2>${esc(title)}</h2><p>${esc(body)}</p></article>`).join('');
     app.querySelector('[data-life-pane="tributes"] .tribute-heading').insertAdjacentHTML('beforeend','<p>以下为已记录的福报事项。</p>');
