@@ -132,4 +132,35 @@
   new MutationObserver(() => {
     documents.forEach(item => { item.onDesktop = [...icons.children].some(icon => icon.dataset.documentId === item.id); }); persist();
   }).observe(icons, { childList: true });
+
+  // Match the desktop grid, not icon names or a fixed screen location.
+  const zCells = [[0,0],[1,0],[2,0],[3,0],[4,0],[3,1],[2,2],[1,3],[0,4],[1,4],[2,4],[3,4],[4,4]];
+  let blackedOut = false;
+  function checkDesktopZ() {
+    if (blackedOut) return;
+    const entries = [...icons.querySelectorAll('.desktop-icon')].filter(icon => icon.getClientRects().length);
+    const positions = entries.map(icon => [icon.offsetLeft, icon.offsetTop]);
+    const matches = positions.some(([left, top]) => zCells.every(([x, y]) =>
+      positions.some(([ix, iy]) => Math.abs(ix - left - x * 126) <= 4 && Math.abs(iy - top - y * 111) <= 4)));
+    if (!matches) return;
+    blackedOut = true;
+    hideMenu();
+    const blackout = document.createElement('div');
+    blackout.id = 'desktop-z-blackout';
+    blackout.setAttribute('aria-label', 'Z 字形彩蛋：屏幕已关闭，刷新页面恢复');
+    blackout.tabIndex = -1;
+    Object.assign(blackout.style, {position:'fixed',inset:'0',background:'#000',zIndex:'2147483647',cursor:'none'});
+    document.body.appendChild(blackout);
+    blackout.focus();
+    for (const type of ['keydown','keyup','pointerdown','pointerup','click','dblclick','contextmenu','wheel']) {
+      blackout.addEventListener(type, event => {
+        // Leave browser refresh shortcuts available during this test.
+        if (event.key === 'F5' || ((event.ctrlKey || event.metaKey) && event.key?.toLowerCase() === 'r')) return;
+        event.preventDefault(); event.stopPropagation();
+      }, {passive:false});
+    }
+  }
+  icons.addEventListener('pointerup', event => {
+    if (event.button === 0 && event.target.closest('.desktop-icon')) checkDesktopZ();
+  });
 })();
