@@ -150,9 +150,11 @@
     hideMenu();
     const blackout = document.createElement('div');
     blackout.id = 'desktop-z-blackout';
-    blackout.setAttribute('aria-label', 'Z 字形彩蛋：屏幕已关闭，刷新页面恢复');
+    blackout.setAttribute('aria-label', '系统错误蓝屏，正在转入维护环境');
+    blackout.className = 'desktop-system-fault';
+    blackout.innerHTML = '<div class="system-fault-copy"><h1>Windows</h1><pre>A fatal exception 0E has occurred at 0028:C0013A7F in VXD ZYCORE(01).\nThe current application will be terminated.\n\n*  The desktop shell has performed an illegal operation.\n*  A protected memory region could not be read.\n*  Unsaved information in the current session may be lost.\n\nSYSTEM_INTEGRITY_CHECK_FAILURE\n\nTechnical information:\n\n*** STOP: 0x0000000E (0x0000005A, 0x0000000D, 0x00000000)\n*** ZYCORE.VXD - Address C0013A7F base at C0000000\n\nChecking recovery environment ........ FOUND\nTransferring control to protected maintenance mode ...</pre><p>Please wait<span class="fault-cursor">_</span></p></div>';
     blackout.tabIndex = -1;
-    Object.assign(blackout.style, {position:'fixed',inset:'0',background:'#000',zIndex:'2147483647',cursor:'none'});
+    Object.assign(blackout.style, {position:'fixed',inset:'0',background:'#0000aa',zIndex:'2147483647',cursor:'none'});
     document.body.appendChild(blackout);
     blackout.focus();
     // Reuse the workstation's existing night scene and distance-mixed soundtrack.
@@ -162,7 +164,7 @@
     setTimeout(() => {
       blackout.remove();
       window.openPrivateMaintenance?.(() => { blackedOut = false; });
-    }, 650);
+    }, 2200);
     for (const type of ['keydown','keyup','pointerdown','pointerup','click','dblclick','contextmenu','wheel']) {
       blackout.addEventListener(type, event => {
         // Leave browser refresh shortcuts available during this test.
