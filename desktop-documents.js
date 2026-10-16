@@ -197,27 +197,43 @@ DO NOT CLOSE THIS SESSION.</pre><p>AWAITING HANDOFF<span class="fault-cursor">_<
     const cursor = document.createElement('span'); cursor.className = 'fault-cursor'; cursor.textContent = '_';
     const started = performance.now();
     const blocks = copy[1].split('\n\n');
+    // Short messages type visibly; diagnostic tables arrive in fast bursts.
+    const durations = [850, 100, 180, 100, 650, 420, 180];
+    const typedBlocks = new Set([0, 4, 5, 6]);
+    const bodyDuration = blocks.reduce((sum, block, i) => sum + (durations[i] || 180), 0);
     sections[0].hidden = false; sections[0].appendChild(cursor);
     function typeFault(now) {
       if (!blackout.isConnected) return;
       const elapsed = now - started;
-      sections[0].textContent = copy[0].slice(0, Math.floor(elapsed / 8));
+      sections[0].textContent = copy[0].slice(0, Math.floor(elapsed / 10));
       if (elapsed < 250) sections[0].appendChild(cursor);
       else {
         sections[1].hidden = false;
-        const count = Math.min(blocks.length, 1 + Math.floor(Math.max(0, elapsed - 700) / 160));
-        const first = blocks[0].slice(0, Math.floor((elapsed - 250) * 0.6));
-        sections[1].textContent = count === 1 ? first : blocks.slice(0, count).join('\n\n');
+        let remaining = elapsed - 250;
+        const visible = [];
+        for (let i = 0; i < blocks.length; i++) {
+          const duration = durations[i] || 180;
+          if (remaining >= duration) { visible.push(blocks[i]); remaining -= duration; continue; }
+          if (typedBlocks.has(i)) visible.push(blocks[i].slice(0, Math.floor(blocks[i].length * remaining / duration)));
+          else if (remaining >= duration * .35) visible.push(blocks[i]);
+          break;
+        }
+        sections[1].textContent = visible.join('\n\n');
         sections[1].appendChild(cursor);
       }
-      if (elapsed >= 2200) {
+      if (elapsed >= 250 + bodyDuration) {
+        sections[2].hidden = false;
+        sections[2].textContent = copy[2].slice(0, Math.floor((elapsed - 250 - bodyDuration) / 12));
+        sections[2].appendChild(cursor);
+      }
+      if (elapsed >= 250 + bodyDuration + copy[2].length * 12) {
         sections[1].textContent = copy[1];
         sections[2].hidden = false; sections[2].textContent = copy[2]; sections[2].appendChild(cursor);
         blackout.dataset.typingComplete = 'true';
         setTimeout(() => {
           window.openPrivateMaintenance?.(() => { blackedOut = false; });
           blackout.remove();
-        }, 800);
+        }, 600);
         return;
       }
       blackout.scrollTop = blackout.scrollHeight;

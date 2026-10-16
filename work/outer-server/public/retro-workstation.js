@@ -683,7 +683,7 @@
    const updateDistanceSound=()=>{
     const distance=app.camera.instance.position.length();
     // Match the original office ambience's per-frame camera-distance mix.
-    const volume=Math.min(Math.max((distance-1200)/8800*.2,.05),.1)*1.5625;
+    const volume=Math.min(Math.max((distance-1200)/8800*.2,.05),.1)*3.125;
     const cutoff=Math.max(0,Math.min(22050,100+distance/10000*21900-3000));
     distanceGain.gain.setTargetAtTime(volume,context.currentTime,.01);
     lowpass.frequency.setValueAtTime(cutoff,context.currentTime);
