@@ -103,4 +103,5 @@
 .case-archive-window .archive-toolbar i{width:36px;height:36px;background-size:36px 36px;filter:contrast(.62) brightness(1.18);image-rendering:pixelated}
 .case-archive-window .archive-toolbar button:hover{border-color:#aeb5b7;background:#e7eaea}
 .case-archive-window .archive-toolbar button:active{border-color:#7a8183;background:#c9cecf}
+.case-archive-window .archive-ghost-link .archive-file-icon{transform:scale(1.22);transform-origin:center}
 

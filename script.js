@@ -200,7 +200,7 @@ const apps = {
   "case-archive": { title: "档案整理.zip - 压缩文件夹", path: "桌面\\档案整理.zip" },
   "case-pdf": { title: "案件整理.pdf - PDF 阅读器", path: "档案整理.zip\\图片资料\\案件整理.pdf" },
   "archive-note": { title: "说明.txt - 记事本", path: "档案整理.zip\\说明.txt" },
-  "ghost-link": { title: "GhostLink.exe - 旧址转换器 98", path: "桌面\\GhostLink.exe" }
+  "ghost-link": { title: "Ghost link", path: "桌面\\GhostLink.exe" }
 };
 let forumFavoriteThisDesktopSession = false;
 let skyGameInstalledThisPage = false;
@@ -985,14 +985,13 @@ function showGhostLinkSaveDialog() {
 }
 function setupGhostLinkWindow(win) {
   win.classList.add("ghost-link-window");win.style.width=`${Math.min(690,innerWidth-40)}px`;win.style.height=`${Math.min(650,innerHeight-85)}px`;
-  win.querySelector("h2").textContent="旧址转换器 98";
+  win.querySelector("h2").textContent="Ghost link";
   win.querySelector(".menu-bar").remove();
   win.querySelector('[data-action="maximize"]').remove();
   win.querySelector(".toolbar").remove();
-  const content=win.querySelector(".window-content");content.innerHTML='<form class="ghost-converter" autocomplete="off"><div class="ghost-converter-lead"><strong>旧址转换</strong><span>输入失效网址，查找可访问的历史节点。</span></div><section class="ghost-entry-panel"><div class="ghost-url-row"><label for="ghost-original-url">原始网址</label><div class="ghost-input-wrap"><input id="ghost-original-url" type="text" inputmode="url" value="" placeholder="输入旧址，例如 http://annian.yunyang.cn/" spellcheck="false" autocomplete="off" required><button type="button" class="ghost-url-suggestion" hidden>http://annian.yunyang.cn/</button></div></div><div class="ghost-convert-row"><label>转换方式：<select><option>自动检测</option></select></label><button type="submit">开始转换</button></div></section><fieldset><legend>转换结果</legend><div><span>站点状态：</span><span data-ghost-status>等待检测</span></div><div><span>历史节点：</span><span data-ghost-node>尚未发现</span></div><div><span>转换地址：</span><input data-ghost-url type="text" value="—" readonly title="转换后可单击选中完整网址"></div><div><span>访问级别：</span><span data-ghost-access>—</span></div></fieldset><div class="ghost-actions"><button type="button" data-ghost-visit disabled>打开页面</button><button type="button" data-ghost-exit>关闭</button></div></form>';
+  const content=win.querySelector(".window-content");content.innerHTML='<form class="ghost-converter" autocomplete="off"><div class="ghost-converter-lead"><strong>旧址转换</strong><span>输入失效网址，查找可访问的历史节点。</span></div><section class="ghost-entry-panel"><div class="ghost-url-row"><label for="ghost-original-url">原始网址</label><div class="ghost-input-wrap"><input id="ghost-original-url" type="text" inputmode="url" value="" placeholder="输入旧址，例如 http://annian.yunyang.cn/" spellcheck="false" autocomplete="off" required><button type="button" class="ghost-url-suggestion" hidden>http://annian.yunyang.cn/</button></div></div><div class="ghost-convert-row"><label>转换方式：<select><option>自动检测</option></select></label><button type="submit">开始转换</button></div></section><fieldset><legend>转换结果</legend><div><span>站点状态：</span><span data-ghost-status>等待检测</span></div><div><span>历史节点：</span><span data-ghost-node>尚未发现</span></div><div><span>转换地址：</span><a data-ghost-url target="_blank" rel="noopener noreferrer" aria-disabled="true" tabindex="-1">—</a></div><div><span>访问级别：</span><span data-ghost-access>—</span></div></fieldset><div class="ghost-actions"><button type="button" data-ghost-visit disabled>打开页面</button><button type="button" data-ghost-exit>关闭</button></div></form>';
   const form=content.querySelector("form"),target="https://furnace0418-crypto.github.io/my-website/memorial/#home";
   const eyePanel=document.createElement("div");eyePanel.className="ghost-eye-panel";eyePanel.innerHTML='<img class="ghost-eye-open" src="assets/ghost-eye-open.png" alt=""><div class="ghost-progress" hidden><div class="ghost-progress-heading"><strong>正在转换旧址</strong><output data-ghost-percent>0%</output></div><div class="ghost-progress-track" role="progressbar" aria-label="转换进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div><small>正在检索历史节点，请稍候…</small></div>';form.appendChild(eyePanel);
-  form.querySelector("[data-ghost-url]").addEventListener("focus",event=>event.target.select());
   const original=form.querySelector("#ghost-original-url"),suggestion=form.querySelector(".ghost-url-suggestion"),oldUrl="http://annian.yunyang.cn/";
   const updateSuggestion=()=>{suggestion.hidden=!!original.value.trim()&&!oldUrl.startsWith(original.value.trim().toLowerCase());};original.addEventListener("focus",updateSuggestion);original.addEventListener("input",updateSuggestion);original.addEventListener("blur",()=>setTimeout(()=>suggestion.hidden=true,120));suggestion.addEventListener("mousedown",event=>event.preventDefault());suggestion.addEventListener("click",()=>{original.value=oldUrl;suggestion.hidden=true;original.focus();});
   const submitButton=form.querySelector('button[type="submit"]'),mode=form.querySelector("select");
@@ -1006,7 +1005,7 @@ function setupGhostLinkWindow(win) {
     submitButton.disabled=true;submitButton.textContent="转换完成";
     form.classList.add("converted");eyePanel.classList.remove("loading");eyePanel.classList.add("active");progress.hidden=true;
     status.textContent="已停止公开解析";node.textContent="已发现";
-    result.value=target;result.title=target;access.textContent="只读镜像";visit.disabled=false;
+    result.textContent=target;result.href=target;result.title="打开 "+target;result.removeAttribute("aria-disabled");result.tabIndex=0;access.textContent="只读镜像";visit.disabled=false;
     win.querySelector(".statusbar span:first-child").textContent="状态：转换完成";
   };
   if(ghostConvertedThisPage)renderCompleted();
@@ -1019,7 +1018,7 @@ function setupGhostLinkWindow(win) {
     const matched=url.protocol==="http:"&&url.hostname.toLowerCase()==="annian.yunyang.cn"&&(url.pathname==="/"||url.pathname==="")&&!url.search&&!url.hash;
     submitButton.disabled=true;original.readOnly=true;mode.disabled=true;
     eyePanel.classList.remove("active");eyePanel.classList.add("loading");progress.hidden=false;
-    status.textContent="正在检测";node.textContent="检索中…";result.value="—";result.title="";access.textContent="—";visit.disabled=true;
+    status.textContent="正在检测";node.textContent="检索中…";result.textContent="—";result.removeAttribute("href");result.setAttribute("aria-disabled","true");result.tabIndex=-1;result.title="";access.textContent="—";visit.disabled=true;
     win.querySelector(".statusbar span:first-child").textContent="状态：正在转换";
     let value=0;
     const timer=setInterval(()=>{
