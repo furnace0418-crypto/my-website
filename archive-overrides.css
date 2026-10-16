@@ -80,4 +80,13 @@
 .desktop-icons.desktop-free-layout>.desktop-icon.recycle-drop-ready{outline:2px dashed #fff;background:rgba(0,0,80,.28)}
 .recycle-item .explorer-item-icon.shortcut,.property-file-icon.shortcut{background:url("assets/icons/ghost-link-pixel.png") center/110px 110px no-repeat;image-rendering:pixelated}
 .recycle-item .explorer-item-icon.shortcut:before,.recycle-item .explorer-item-icon.shortcut:after,.property-file-icon.shortcut:before,.property-file-icon.shortcut:after{display:none}
+.case-archive-window>.archive-toolbar{min-height:73px;padding:5px 9px;background:#d8dadb;border-bottom:1px solid #a5aaad}
+.case-archive-window .archive-toolbar button{min-width:76px;gap:2px;padding:3px 7px;color:#3f4548;font:14px SimSun,"MS Sans Serif",sans-serif}
+.case-archive-window .archive-toolbar button:hover{border:1px solid #afb5b8;background:#e4e7e8}
+.case-archive-window .archive-toolbar i{width:38px;height:38px;border:0;border-radius:0;background-color:transparent;background-size:29px 29px;box-shadow:none;filter:brightness(1.36)}
+.case-archive-window .archive-toolbar button:hover i{background-color:transparent}
+.case-archive-window .archive-toolbar button:active i{border:0;background-color:transparent;box-shadow:none;transform:translate(1px,1px)}
+.case-archive-window .archive-address>button img,.case-archive-window .case-folder-note button img{filter:grayscale(1) brightness(.64)}
+.case-archive-window .case-folder-note button{background:#d7d9da;border-color:#92999c}
+.case-archive-window .case-folder-note button:hover{background:#e5e7e8}
 
