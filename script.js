@@ -883,11 +883,27 @@ function setupGhostLinkWindow(win) {
   win.querySelector(".toolbar").remove();
   const content=win.querySelector(".window-content");content.innerHTML='<form class="ghost-converter" autocomplete="off"><div class="ghost-converter-lead"><strong>旧址转换</strong><span>输入失效网址，查找可访问的历史节点。</span></div><section class="ghost-entry-panel"><div class="ghost-url-row"><label for="ghost-original-url">原始网址</label><div class="ghost-input-wrap"><input id="ghost-original-url" type="text" inputmode="url" value="" placeholder="输入旧址，例如 http://annian.yunyang.cn/" spellcheck="false" autocomplete="off" required><button type="button" class="ghost-url-suggestion" hidden>http://annian.yunyang.cn/</button></div></div><div class="ghost-convert-row"><label>转换方式：<select><option>自动检测</option></select></label><button type="submit">开始转换</button></div></section><fieldset><legend>转换结果</legend><div><span>站点状态：</span><span data-ghost-status>等待检测</span></div><div><span>历史节点：</span><span data-ghost-node>尚未发现</span></div><div><span>转换地址：</span><input data-ghost-url type="text" value="—" readonly title="转换后可单击选中完整网址"></div><div><span>访问级别：</span><span data-ghost-access>—</span></div></fieldset><div class="ghost-actions"><button type="button" data-ghost-visit disabled>打开页面</button><button type="button" data-ghost-exit>关闭</button></div></form>';
   const form=content.querySelector("form"),target="https://furnace0418-crypto.github.io/my-website/memorial/#home";
-  const eyePanel=document.createElement("div");eyePanel.className="ghost-eye-panel";eyePanel.setAttribute("aria-hidden","true");eyePanel.innerHTML='<img class="ghost-eye-open" src="assets/ghost-eye-open.png" alt=""><img class="ghost-eye-lid ghost-eye-lid-top" src="assets/ghost-eye-closed.png" alt=""><img class="ghost-eye-lid ghost-eye-lid-bottom" src="assets/ghost-eye-closed.png" alt="">';form.appendChild(eyePanel);
+  const eyePanel=document.createElement("div");eyePanel.className="ghost-eye-panel";eyePanel.setAttribute("aria-hidden","true");eyePanel.innerHTML='<img class="ghost-eye-open" src="assets/ghost-eye-open.png" alt="">';form.appendChild(eyePanel);
   form.querySelector("[data-ghost-url]").addEventListener("focus",event=>event.target.select());
   const original=form.querySelector("#ghost-original-url"),suggestion=form.querySelector(".ghost-url-suggestion"),oldUrl="http://annian.yunyang.cn/";
   const updateSuggestion=()=>{suggestion.hidden=!!original.value.trim()&&!oldUrl.startsWith(original.value.trim().toLowerCase());};original.addEventListener("focus",updateSuggestion);original.addEventListener("input",updateSuggestion);original.addEventListener("blur",()=>setTimeout(()=>suggestion.hidden=true,120));suggestion.addEventListener("mousedown",event=>event.preventDefault());suggestion.addEventListener("click",()=>{original.value=oldUrl;suggestion.hidden=true;original.focus();});
-  form.addEventListener("submit",event=>{event.preventDefault();suggestion.hidden=true;let url;try{url=new URL(original.value.trim());}catch{form.classList.remove("converted");eyePanel.classList.remove("active","opening");form.querySelector("[data-ghost-status]").textContent="网址格式无效";return;}const matched=url.protocol==="http:"&&url.hostname.toLowerCase()==="annian.yunyang.cn"&&(url.pathname==="/"||url.pathname==="")&&!url.search&&!url.hash;form.classList.toggle("converted",matched);eyePanel.classList.remove("active","opening");if(matched){void eyePanel.offsetWidth;eyePanel.classList.add("active");setTimeout(()=>{if(eyePanel.isConnected&&eyePanel.classList.contains("active"))eyePanel.classList.add("opening");},260);}form.querySelector("[data-ghost-status]").textContent=matched?"已停止公开解析":"未找到对应旧址";form.querySelector("[data-ghost-node]").textContent=matched?"已发现":"未发现";const result=form.querySelector("[data-ghost-url]");result.value=matched?target:"—";result.title=matched?target:"";form.querySelector("[data-ghost-access]").textContent=matched?"只读镜像":"—";form.querySelector("[data-ghost-visit]").disabled=!matched;win.querySelector(".statusbar span:first-child").textContent=matched?"状态：转换完成":"状态：未找到历史节点";});
+  let flashTimer;
+  form.addEventListener("submit",event=>{
+    event.preventDefault();suggestion.hidden=true;
+    clearTimeout(flashTimer);win.classList.remove("ghost-screen-flash");
+    let url;
+    try{url=new URL(original.value.trim());}
+    catch{form.classList.remove("converted");eyePanel.classList.remove("active");form.querySelector("[data-ghost-status]").textContent="网址格式无效";return;}
+    const matched=url.protocol==="http:"&&url.hostname.toLowerCase()==="annian.yunyang.cn"&&(url.pathname==="/"||url.pathname==="")&&!url.search&&!url.hash;
+    form.classList.toggle("converted",matched);eyePanel.classList.toggle("active",matched);
+    if(matched){void win.offsetWidth;win.classList.add("ghost-screen-flash");flashTimer=setTimeout(()=>win.classList.remove("ghost-screen-flash"),780);}
+    form.querySelector("[data-ghost-status]").textContent=matched?"已停止公开解析":"未找到对应旧址";
+    form.querySelector("[data-ghost-node]").textContent=matched?"已发现":"未发现";
+    const result=form.querySelector("[data-ghost-url]");result.value=matched?target:"—";result.title=matched?target:"";
+    form.querySelector("[data-ghost-access]").textContent=matched?"只读镜像":"—";
+    form.querySelector("[data-ghost-visit]").disabled=!matched;
+    win.querySelector(".statusbar span:first-child").textContent=matched?"状态：转换完成":"状态：未找到历史节点";
+  });
   form.querySelector("[data-ghost-visit]").addEventListener("click",()=>window.open(target,"_blank","noopener,noreferrer"));
   form.querySelector("[data-ghost-exit]").addEventListener("click",()=>win.querySelector('[data-action="close"]').click());
   win.querySelector(".statusbar span:first-child").textContent="状态：等待输入";
