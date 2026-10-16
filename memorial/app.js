@@ -595,6 +595,11 @@ function addPersonalArchive(name){
   const pane=document.createElement('div');
   pane.className='life-pane personal-archive-pane';
   pane.dataset.lifePane='personal';
+  if(name==='张文华'&&!document.body.classList.contains('invite-theme')){
+    pane.innerHTML='<div class="personal-archive-details"><h2>个人信息留存</h2><a href="assets/zhang-wenhua-divorce-agreement.webp" target="_blank" rel="noopener" aria-label="查看离婚协议书完整图片"><img src="assets/zhang-wenhua-divorce-agreement.webp" alt="张文华个人信息留存：离婚协议书" style="display:block;width:100%;height:auto;margin-top:20px"></a></div>';
+    app.querySelector('.life-story').append(pane);
+    return;
+  }
   if(name!=='陈珍珍'){
     pane.innerHTML='<div class="personal-archive-empty">暂无个人信息留存</div>';
     app.querySelector('.life-story').append(pane);
