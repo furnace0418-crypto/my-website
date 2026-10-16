@@ -26,15 +26,44 @@ const memorialBulletins=[
   ]}
 ];
 
+const returnPathFirst = {
+  title:'《归途录·初篇》',
+  paragraphs:[
+    '世人皆有二身。',
+    '一身行于尘世，受父母所生，历贫富、得失、爱憎、病苦，此为<strong>现世之身</strong>。',
+    '一身藏于心念之间，由所愿、所憾、所失、所求而生。凡人每一次悔恨，每一次对另一种人生的想望，皆在滋养此身。此为<strong>愿身</strong>。',
+    '现世之身承受已发生之事，愿身则保存尚未实现之可能。',
+    '二者本为一人，只因尘世阻隔，不能相见。',
+    '桃原，便是二身相通之所。'
+  ]
+};
+function returnPathSidebar(){
+  return '<h2>归途录</h2><a href="#articles/return-path-first" aria-current="page"><span>《归途录·初篇》</span></a><h2 class="bulletin-subheading">纪念文化</h2><a href="#articles/fortune"><span>福报说明</span><small>善念与善行</small></a><h2 class="bulletin-subheading">服务支持</h2><a href="#articles/contact"><span>联系管理员</span><small>咨询与反馈</small></a>';
+}
+function returnPathPage(){
+  app.innerHTML=`<div class="page-shell bulletin-page"><div class="bulletin-layout"><nav class="bulletin-sidebar" aria-label="归途录选择">${returnPathSidebar()}</nav><article class="bulletin-reader" aria-labelledby="bulletin-title"><header class="bulletin-article-header"><p>归途录</p><h2 id="bulletin-title">${returnPathFirst.title}</h2></header><div class="bulletin-article-body">${returnPathFirst.paragraphs.map(text=>`<p>${text}</p>`).join('')}</div></article></div></div>`;
+  app.querySelector('a[href="#articles/contact"]').onclick=event=>{event.preventDefault();showAdminBusyDialog();};
+}
 function wireHomeBulletins(){
   const panel=app.querySelector('.notice-panel');
   if(!panel)return;
+  if(document.body.classList.contains('invite-theme')){
+    panel.querySelector('h2').innerHTML='<span>︽</span> 归途录 <span>︾</span>';
+    panel.querySelector('.section-heading p').textContent='世人皆有二身。';
+    panel.querySelector('ul').innerHTML='<li><a href="#articles/return-path-first">《归途录·初篇》</a></li>';
+    return;
+  }
   panel.querySelector('h2').innerHTML='<span>︽</span> 资讯 <span>︾</span>';
   panel.querySelector('.section-heading p').textContent='研究会公告、平台说明与纪念文化';
   panel.querySelector('ul').innerHTML=memorialBulletins.map(item=>`<li><a href="#articles/${item.id}">${esc(item.title)}</a><time datetime="${item.date}">${item.date}</time></li>`).join('');
 }
 
 function bulletinPage(id='launch'){
+  if(document.body.classList.contains('invite-theme')&&id!=='fortune'){
+    returnPathPage();
+    if(id==='contact')showAdminBusyDialog();
+    return;
+  }
   if(id==='contact'&&document.body.classList.contains('invite-theme')){
     bulletinPage('launch');
     showAdminBusyDialog();
@@ -47,6 +76,9 @@ function bulletinPage(id='launch'){
   app.innerHTML=`<div class="page-shell bulletin-page"><div class="bulletin-layout"><nav class="bulletin-sidebar" aria-label="资讯选择"><h2>研究会公告</h2>${memorialBulletins.map(item=>`<a href="#articles/${item.id}" ${!fortune&&!contact&&item.id===selected.id?'aria-current="page"':''}><span>${esc(item.title)}</span><time datetime="${item.date}">${item.date}</time></a>`).join('')}<h2 class="bulletin-subheading">纪念文化</h2><a href="#articles/fortune" ${fortune?'aria-current="page"':''}><span>福报说明</span><small>善念与善行</small></a><h2 class="bulletin-subheading">服务支持</h2><a href="#articles/contact" ${contact?'aria-current="page"':''}><span>联系管理员</span><small>咨询与反馈</small></a></nav><article class="bulletin-reader" aria-labelledby="bulletin-title"><header class="bulletin-article-header"><p>${fortune?'纪念文化':'研究会公告'}</p><h2 id="bulletin-title">${fortune?'福报说明':esc(selected.title)}</h2><div>福善文化研究会${fortune?'':`<span>发布于 <time datetime="${selected.date}">${selected.date.replaceAll('-','.')}</time></span>`}</div></header><div class="bulletin-article-body">${fortune?'':`<p class="bulletin-intro">${esc(selected.intro)}</p>${selected.sections.map(([title,body])=>`<section><h3>${esc(title)}</h3><p>${esc(body).replace("可联系管理员48270619","<strong>可联系管理员48270619</strong>")}</p></section>`).join('')}<footer class="bulletin-signature"><p>福善文化研究会</p><time datetime="${selected.date}">${selected.date.replaceAll('-','.')}</time></footer>`}</div></article></div></div>`;
   if(fortuneBody)app.querySelector('.bulletin-article-body').appendChild(fortuneBody);
   if(document.body.classList.contains('invite-theme')){
+    app.querySelector('.bulletin-sidebar').innerHTML=returnPathSidebar();
+    app.querySelector('.bulletin-sidebar a[aria-current]')?.removeAttribute('aria-current');
+    app.querySelector('.bulletin-sidebar a[href="#articles/fortune"]').setAttribute('aria-current','page');
     app.querySelector('.bulletin-sidebar a[href="#articles/contact"]').onclick=event=>{
       event.preventDefault();
       showAdminBusyDialog();
