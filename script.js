@@ -308,6 +308,11 @@ let recycleBinItems = [
   { name: "旧照片.jpg", original: "D:\\我的文件\\重要", deleted: "2001-07-16 18:42", type: "jpeg", size: "94 KB", src: "assets/photos/old-photo.webp" },
   { name: "常用网站.txt", original: "D:\\我的文件", deleted: "2001-07-17 21:08", type: "txt", size: "2 KB", content: "浮光论坛：http://bbs.fuguang.cn/\n云阳新闻网：http://news.yunyang.cn/\n咳咳：http://88Av.Gv.cn/" }
 ];
+function refreshRecycleDesktopIcon() {
+  const filled=recycleBinItems.length>0;
+  document.querySelectorAll('.desktop-icon[data-app="recycle"] .recycle-icon').forEach(icon=>icon.classList.toggle("recycle-full",filled));
+  document.querySelectorAll('.window-mini-icon.recycle,.task-app-icon.recycle,.recycle-large-icon').forEach(icon=>icon.classList.toggle("recycle-full",filled));
+}
 const qqConversations = {
   "gzx（郭梓轩）": {
     type: "direct", avatarSrc: "assets/avatars/twostroke-user.webp", status: "离线", identity: "QQ：6620401",
@@ -792,6 +797,7 @@ function moveDesktopIconToRecycle(button) {
   const app=button.dataset.app||"",icon=button.querySelector(".pixel-icon");
   const iconImage=icon?getComputedStyle(icon).backgroundImage:"";
   recycleBinItems.unshift({name,original:"桌面",deleted:new Date().toLocaleString("zh-CN"),type:"shortcut",size:"快捷方式",desktopElement:button,desktopApp:app,iconImage});
+  refreshRecycleDesktopIcon();
   button.remove();
   document.querySelectorAll(".recycle-window").forEach(win=>win._recycleRender?.());
 }
@@ -1372,7 +1378,7 @@ function setupRecycleBinWindow(win) {
   }).observe(list,{childList:true});
   const render = () => { const list = shell.querySelector(".recycle-list"); list.replaceChildren(); recycleBinItems.forEach((item, index) => { const button = document.createElement("button"); button.type = "button"; button.className = "recycle-item"; button.innerHTML = `<span class="explorer-item-icon ${item.type}" aria-hidden="true"></span><span><strong></strong><small></small><small></small></span>`; button.querySelector("strong").textContent = item.name; const details = button.querySelectorAll("small"); details[0].textContent = item.original; details[1].textContent = `删除日期：${item.deleted}　${item.size}`; button.addEventListener("click", () => { selected = index; list.querySelectorAll(".recycle-item").forEach(entry => entry.classList.toggle("selected", entry === button)); shell.querySelector(".recycle-detail").innerHTML = `<b>${item.name}</b><span>原位置：${item.original}</span><span>${item.size}</span>`; }); button.addEventListener("dblclick", () => { selected = index; openRecycleRestoreDialog(item, win, () => { selected = null; render(); }); }); list.appendChild(button); }); win.querySelector(".statusbar span:first-child").textContent = `${recycleBinItems.length} 个对象`; if (!recycleBinItems.length) { const empty = document.createElement("p"); empty.className = "recycle-empty"; empty.textContent = "回收站是空的。"; list.appendChild(empty); } };
   toolbar.querySelector('[data-recycle-action="restore"]').addEventListener("click", () => { if (selected === null || !recycleBinItems[selected]) { win.querySelector(".statusbar span:first-child").textContent = "请先选择要还原的项目"; return; } openRecycleRestoreDialog(recycleBinItems[selected], win, () => { selected = null; render(); }); });
-  toolbar.querySelector('[data-recycle-action="empty"]').addEventListener("click", () => { recycleBinItems = []; selected = null; shell.querySelector(".recycle-detail").textContent = "回收站已清空。"; render(); });
+  toolbar.querySelector('[data-recycle-action="empty"]').addEventListener("click", () => { recycleBinItems = []; selected = null; shell.querySelector(".recycle-detail").textContent = "回收站已清空。"; refreshRecycleDesktopIcon(); render(); });
   win._recycleRender = render;
   render();
 }
@@ -1411,7 +1417,7 @@ function openRecycleRestoreDialog(item, recycleWindow, onDialogClosed) {
   }
   const cancel = () => { onDialogClosed?.(false); closeWindow(win); }; pane.querySelector('[data-property-action="ok"]').addEventListener("click", cancel); pane.querySelector('[data-property-action="cancel"]').addEventListener("click", cancel);
   win.querySelector('[data-action="close"]').addEventListener("click", () => onDialogClosed?.(false), { once:true });
-  pane.querySelector(".property-restore").addEventListener("click", () => { const index = recycleBinItems.indexOf(item); if (index >= 0) recycleBinItems.splice(index,1); addRestoredDesktopItem(item); onDialogClosed?.(true); closeWindow(win); if (recycleWindow?.isConnected) { recycleWindow.querySelector(".recycle-detail").textContent = `“${item.name}”已还原到桌面。`; focusWindow(recycleWindow); } });
+  pane.querySelector(".property-restore").addEventListener("click", () => { const index = recycleBinItems.indexOf(item); if (index >= 0) recycleBinItems.splice(index,1); addRestoredDesktopItem(item); refreshRecycleDesktopIcon(); onDialogClosed?.(true); closeWindow(win); if (recycleWindow?.isConnected) { recycleWindow.querySelector(".recycle-detail").textContent = `“${item.name}”已还原到桌面。`; focusWindow(recycleWindow); } });
   win.querySelector(".window-content").replaceChildren(pane); layer.appendChild(win); bindWindow(win); focusWindow(win); win.classList.add("opening"); win.addEventListener("animationend", () => win.classList.remove("opening"), { once:true });
 }
 function setupBrowserWindow(win) {
@@ -2156,6 +2162,7 @@ document.querySelectorAll(".desktop-icon[data-app]").forEach(button => {
   bindDesktopAppIcon(button);
 });
 initializeDesktopFreeLayout();
+refreshRecycleDesktopIcon();
 document.querySelectorAll("[data-app]:not(.desktop-icon)").forEach(button => button.addEventListener("click", event => { event.stopPropagation(); openApp(button.dataset.app); setStartMenu(false); }));
 document.querySelector(".shutdown").addEventListener("click", () => { setStartMenu(false); const cover=document.createElement("div");cover.className="shutdown-cover";cover.innerHTML="<strong>现在可以安全地关闭计算机了。</strong><small>单击任意位置返回桌面</small>";cover.addEventListener("click",()=>cover.remove());document.body.appendChild(cover); });
 
