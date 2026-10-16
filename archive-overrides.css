@@ -89,4 +89,7 @@
 .case-archive-window .archive-address>button img,.case-archive-window .case-folder-note button img{filter:grayscale(1) brightness(.64)}
 .case-archive-window .case-folder-note button{background:#d7d9da;border-color:#92999c}
 .case-archive-window .case-folder-note button:hover{background:#e5e7e8}
+.recycle-native-icon{display:grid!important;place-items:center;flex:0 0 74px;width:74px;height:68px;min-height:0;margin:0;padding:0;border:0;background:transparent;text-shadow:none;pointer-events:none}
+.recycle-native-icon>.pixel-icon,.recycle-native-icon>.restored-file-icon{display:block;flex:none;width:58px;height:58px;margin:0;background-size:52px 52px;transform:none;image-rendering:pixelated}
+.recycle-native-icon.recycle-property-icon{flex-basis:58px;width:58px;height:58px}
 

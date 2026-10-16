@@ -770,6 +770,22 @@ function initializeDesktopFreeLayout() {
   icons.forEach((icon,index)=>{icon.style.left=positions[index].left+"px";icon.style.top=positions[index].top+"px";});
   desktopFreeLayoutReady=true;
 }
+function snapDesktopIconToGrid(button, fallbackLeft=button.offsetLeft, fallbackTop=button.offsetTop) {
+  const container=document.querySelector(".desktop-icons");
+  const stepX=126,stepY=111;
+  const maxColumn=Math.max(0,Math.floor((container.clientWidth-button.offsetWidth)/stepX));
+  const maxRow=Math.max(0,Math.floor((container.clientHeight-button.offsetHeight)/stepY));
+  const others=[...container.querySelectorAll(".desktop-icon")].filter(icon=>icon!==button);
+  const slots=[];
+  for(let column=0;column<=maxColumn;column++)for(let row=0;row<=maxRow;row++){
+    const left=column*stepX,top=row*stepY;
+    if(others.some(icon=>Math.abs(icon.offsetLeft-left)<stepX/2&&Math.abs(icon.offsetTop-top)<stepY/2))continue;
+    slots.push({left,top,distance:(left-button.offsetLeft)**2+(top-button.offsetTop)**2});
+  }
+  slots.sort((a,b)=>a.distance-b.distance);
+  button.style.left=(slots[0]?.left??fallbackLeft)+"px";
+  button.style.top=(slots[0]?.top??fallbackTop)+"px";
+}
 function moveDesktopIconToRecycle(button) {
   if(button.dataset.app==="recycle")return;
   const name=button.querySelector(".icon-label")?.textContent?.trim()||button.dataset.fileName||"桌面项目";
@@ -806,6 +822,7 @@ function enableDesktopIconDrag(button) {
       if(!moved)return;
       suppressClick=true;setTimeout(()=>suppressClick=false,0);
       if(overRecycle(e.clientX,e.clientY))moveDesktopIconToRecycle(button);
+      else snapDesktopIconToGrid(button,startLeft,startTop);
     };
     button.addEventListener("pointermove",move);button.addEventListener("pointerup",up);button.addEventListener("pointercancel",up);
   });
@@ -1330,12 +1347,29 @@ function setupNotepadWindow(win) {
   document.addEventListener("pointerdown", event => { if (!menu.contains(event.target)) closeMenus(); });
   win.querySelector("h2").textContent = `${textarea.dataset.fileName} - 记事本`; updateNotepadPosition(win);
 }
+function createOriginalRecycleIcon(item, property=false) {
+  const source=item?.desktopElement?.querySelector(".pixel-icon,.restored-file-icon");
+  if(!source)return null;
+  const icon=document.createElement("span");
+  icon.className=`recycle-native-icon${property?" recycle-property-icon":""}`;
+  item.desktopElement.classList.forEach(name=>{if(name!=="desktop-icon"&&name!=="selected"&&name!=="dragging")icon.classList.add(name);});
+  icon.appendChild(source.cloneNode(true));
+  return icon;
+}
 function setupRecycleBinWindow(win) {
   win.classList.add("recycle-window"); win.style.width = `${Math.min(760, innerWidth - 90)}px`; win.style.height = `${Math.min(520, innerHeight - 90)}px`;
   const toolbar = win.querySelector(".toolbar"); toolbar.innerHTML = '<button type="button" class="recycle-nav" title="后退"></button><button type="button" class="recycle-nav" title="前进"></button><span class="address-label">地址</span><div class="address-field">回收站</div><button type="button" data-recycle-action="restore">还原</button><button type="button" data-recycle-action="empty">清空</button>';
   const recycleNav = toolbar.querySelectorAll(".recycle-nav"); applyRetroNavigationButton(recycleNav[0], "back"); applyRetroNavigationButton(recycleNav[1], "forward");
   const shell = document.createElement("section"); shell.className = "recycle-shell"; shell.innerHTML = '<aside><span class="recycle-large-icon" aria-hidden="true"></span><strong>回收站</strong><hr><p>回收站包含已经删除的文件。选择项目后可以还原到原来的位置。</p><div class="recycle-detail"></div></aside><main class="recycle-list"></main>';
   win.querySelector(".window-content").replaceChildren(shell); let selected = null;
+  const list=shell.querySelector(".recycle-list");
+  new MutationObserver(()=>{
+    [...list.querySelectorAll(".recycle-item")].forEach((button,index)=>{
+      const placeholder=button.querySelector(".explorer-item-icon.shortcut");
+      const original=placeholder&&createOriginalRecycleIcon(recycleBinItems[index]);
+      if(original)placeholder.replaceWith(original);
+    });
+  }).observe(list,{childList:true});
   const render = () => { const list = shell.querySelector(".recycle-list"); list.replaceChildren(); recycleBinItems.forEach((item, index) => { const button = document.createElement("button"); button.type = "button"; button.className = "recycle-item"; button.innerHTML = `<span class="explorer-item-icon ${item.type}" aria-hidden="true"></span><span><strong></strong><small></small><small></small></span>`; button.querySelector("strong").textContent = item.name; const details = button.querySelectorAll("small"); details[0].textContent = item.original; details[1].textContent = `删除日期：${item.deleted}　${item.size}`; button.addEventListener("click", () => { selected = index; list.querySelectorAll(".recycle-item").forEach(entry => entry.classList.toggle("selected", entry === button)); shell.querySelector(".recycle-detail").innerHTML = `<b>${item.name}</b><span>原位置：${item.original}</span><span>${item.size}</span>`; }); button.addEventListener("dblclick", () => { selected = index; openRecycleRestoreDialog(item, win, () => { selected = null; render(); }); }); list.appendChild(button); }); win.querySelector(".statusbar span:first-child").textContent = `${recycleBinItems.length} 个对象`; if (!recycleBinItems.length) { const empty = document.createElement("p"); empty.className = "recycle-empty"; empty.textContent = "回收站是空的。"; list.appendChild(empty); } };
   toolbar.querySelector('[data-recycle-action="restore"]').addEventListener("click", () => { if (selected === null || !recycleBinItems[selected]) { win.querySelector(".statusbar span:first-child").textContent = "请先选择要还原的项目"; return; } openRecycleRestoreDialog(recycleBinItems[selected], win, () => { selected = null; render(); }); });
   toolbar.querySelector('[data-recycle-action="empty"]').addEventListener("click", () => { recycleBinItems = []; selected = null; shell.querySelector(".recycle-detail").textContent = "回收站已清空。"; render(); });
@@ -1371,6 +1405,10 @@ function openRecycleRestoreDialog(item, recycleWindow, onDialogClosed) {
   const pane = document.createElement("section"); pane.className = "recycle-properties";
   pane.innerHTML = `<div class="property-tab">常规</div><main><header><span class="property-file-icon ${item.type}" aria-hidden="true"></span><strong></strong></header><hr><dl><dt>类型：</dt><dd>${typeLabel}</dd><dt>原位置：</dt><dd></dd><dt>大小：</dt><dd>${item.size}</dd></dl><hr><dl><dt>删除时间：</dt><dd>${item.deleted}</dd><dt>创建时间：</dt><dd>2001-07-12 17:30:25</dd></dl><hr><fieldset><legend>属性：</legend><label><input type="checkbox" /> 只读</label><label><input type="checkbox" /> 隐藏</label><label><input type="checkbox" checked disabled /> 存档</label><label><input type="checkbox" /> 压缩</label></fieldset><button type="button" class="property-restore">还原(<u>R</u>)</button></main><footer><button type="button" data-property-action="ok">确定</button><button type="button" data-property-action="cancel">取消</button><button type="button" disabled>应用(<u>A</u>)</button></footer>`;
   pane.querySelector("header strong").textContent = item.name; pane.querySelector("dl dd:nth-of-type(2)").textContent = item.original;
+  if(item.type==="shortcut"){
+    const original=createOriginalRecycleIcon(item,true);
+    if(original)pane.querySelector(".property-file-icon.shortcut").replaceWith(original);
+  }
   const cancel = () => { onDialogClosed?.(false); closeWindow(win); }; pane.querySelector('[data-property-action="ok"]').addEventListener("click", cancel); pane.querySelector('[data-property-action="cancel"]').addEventListener("click", cancel);
   win.querySelector('[data-action="close"]').addEventListener("click", () => onDialogClosed?.(false), { once:true });
   pane.querySelector(".property-restore").addEventListener("click", () => { const index = recycleBinItems.indexOf(item); if (index >= 0) recycleBinItems.splice(index,1); addRestoredDesktopItem(item); onDialogClosed?.(true); closeWindow(win); if (recycleWindow?.isConnected) { recycleWindow.querySelector(".recycle-detail").textContent = `“${item.name}”已还原到桌面。`; focusWindow(recycleWindow); } });
