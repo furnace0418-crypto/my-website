@@ -37,11 +37,25 @@ const returnPathFirst = {
     '桃原，便是二身相通之所。'
   ]
 };
-function returnPathSidebar(){
-  return '<h2>归途录</h2><a href="#articles/return-path-first" aria-current="page"><span>《归途录·初篇》</span></a><h2 class="bulletin-subheading">纪念文化</h2><a href="#articles/fortune"><span>福报说明</span><small>善念与善行</small></a><h2 class="bulletin-subheading">服务支持</h2><a href="#articles/contact"><span>联系管理员</span><small>咨询与反馈</small></a>';
+const returnPathChapters = [
+  {id:'return-path-first',...returnPathFirst},
+  {id:'return-path-about',title:'关于桃原',part:'第一部分',paragraphs:[
+    '桃原并非寻常城邑，亦非世间地图所能标记之地。',
+    '凡心中无愿、无憾、无所求者，即使遍寻千山万水，也不得其门。',
+    '唯有真正生出“愿往桃原”之念者，方能与彼处建立微弱联系。',
+    '初时，这种联系往往只出现于梦中。',
+    '有人梦见陌生街道，有人看见从未住过的房屋，有人在镜中看见与自己相同、却过着另一种人生的人。',
+    '不必惊惧。',
+    '那并非邪祟，也并非他人。',
+    '那是你自己。'
+  ]}
+];
+function returnPathSidebar(id='return-path-first'){
+  return '<h2>归途录</h2>'+returnPathChapters.map(chapter=>`<a href="#articles/${chapter.id}" ${chapter.id===id?'aria-current="page"':''}><span>${chapter.title}</span>${chapter.part?`<small>${chapter.part}</small>`:''}</a>`).join('')+'<h2 class="bulletin-subheading">纪念文化</h2><a href="#articles/fortune"><span>福报说明</span><small>善念与善行</small></a><h2 class="bulletin-subheading">服务支持</h2><a href="#articles/contact"><span>联系管理员</span><small>咨询与反馈</small></a>';
 }
-function returnPathPage(){
-  app.innerHTML=`<div class="page-shell bulletin-page"><div class="bulletin-layout"><nav class="bulletin-sidebar" aria-label="归途录选择">${returnPathSidebar()}</nav><article class="bulletin-reader" aria-labelledby="bulletin-title"><header class="bulletin-article-header"><p>归途录</p><h2 id="bulletin-title">${returnPathFirst.title}</h2></header><div class="bulletin-article-body">${returnPathFirst.paragraphs.map(text=>`<p>${text}</p>`).join('')}</div></article></div></div>`;
+function returnPathPage(id){
+  const chapter=returnPathChapters.find(item=>item.id===id)||returnPathChapters[0];
+  app.innerHTML=`<div class="page-shell bulletin-page"><div class="bulletin-layout"><nav class="bulletin-sidebar" aria-label="归途录选择">${returnPathSidebar(chapter.id)}</nav><article class="bulletin-reader" aria-labelledby="bulletin-title"><header class="bulletin-article-header"><p>归途录${chapter.part?' · '+chapter.part:''}</p><h2 id="bulletin-title">${chapter.title}</h2></header><div class="bulletin-article-body">${chapter.paragraphs.map(text=>`<p>${text}</p>`).join('')}</div></article></div></div>`;
   app.querySelector('a[href="#articles/contact"]').onclick=event=>{event.preventDefault();showAdminBusyDialog();};
 }
 function wireHomeBulletins(){
@@ -50,7 +64,7 @@ function wireHomeBulletins(){
   if(document.body.classList.contains('invite-theme')){
     panel.querySelector('h2').innerHTML='<span>︽</span> 归途录 <span>︾</span>';
     panel.querySelector('.section-heading p').textContent='世人皆有二身。';
-    panel.querySelector('ul').innerHTML='<li><a href="#articles/return-path-first">《归途录·初篇》</a></li>';
+    panel.querySelector('ul').innerHTML=returnPathChapters.map(chapter=>`<li><a href="#articles/${chapter.id}">${chapter.title}</a></li>`).join('');
     return;
   }
   panel.querySelector('h2').innerHTML='<span>︽</span> 资讯 <span>︾</span>';
@@ -60,7 +74,7 @@ function wireHomeBulletins(){
 
 function bulletinPage(id='launch'){
   if(document.body.classList.contains('invite-theme')&&id!=='fortune'){
-    returnPathPage();
+    returnPathPage(id);
     if(id==='contact')showAdminBusyDialog();
     return;
   }
