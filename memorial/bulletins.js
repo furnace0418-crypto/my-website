@@ -38,7 +38,7 @@ const returnPathFirst = {
   ]
 };
 const returnPathChapters = [
-  {id:'return-path-first',...returnPathFirst},
+  {id:'return-path-first',...returnPathFirst,part:'序篇'},
   {id:'return-path-about',title:'关于桃原',part:'第一部分',paragraphs:[
     '桃原并非寻常城邑，亦非世间地图所能标记之地。',
     '凡心中无愿、无憾、无所求者，即使遍寻千山万水，也不得其门。',
@@ -48,6 +48,40 @@ const returnPathChapters = [
     '不必惊惧。',
     '那并非邪祟，也并非他人。',
     '那是你自己。'
+  ]},
+  {id:'return-path-wish',title:'关于愿身',part:'第二部分',paragraphs:[
+    '愿身并非凭空而生。',
+    '它由一个人一生未能完成之事所聚。',
+    '未曾拥有的家庭，未能留下的人，未曾走完的路，未能说出口的话，皆可能成为愿身的一部分。',
+    '故有人在桃原中仍与故人相聚，有人拥有现世未曾得到的孩子，有人重新回到未曾破碎的家庭。',
+    '愿身并不知虚假。',
+    '于它而言，那些生活同样真实。',
+    '随着人与桃原的联系加深，愿身亦会逐渐清晰。',
+    '最初只可于梦中窥见。',
+    '其后或可听见声音，见其背影，甚至在极短时间内与之相望。',
+    '福报既足，二身之间的界限亦将愈发薄弱。'
+  ]},
+  {id:'return-path-unity',title:'关于归一',part:'第三部分',paragraphs:[
+    '福报既成，现世之身与愿身便已具备归一之缘。',
+    '然而归一并非由人自行决定。',
+    '现世尚有因果，尚有寿数，尚有未尽之事。',
+    '故不可强求，不可妄断自身性命。',
+    '未至其时，强行断绝现世，只会使二身失其联系。',
+    '真正的归一，只会在现世生命终结之时发生。',
+    '到那一刻，现世之身所经历的一切，与愿身所保存的一切，将不再分离。',
+    '二身合为一人。',
+    '此后，尘世所失，皆可在桃原重新拥有。',
+    '尘世未成，皆可在桃原继续完成。',
+    '此即所谓：'
+  ],quote:'归一。'},
+  {id:'return-path-remains',title:'关于遗身',part:'第四部分',paragraphs:[
+    '归一之后，真正的“人”已不再停留于现世。',
+    '然而二身曾同时与现世相接，故有时会留下相同之遗身。',
+    '世人不知其理，常以双生、冒名、异象称之。',
+    '无需争辩。',
+    '空壳虽有二，归者仍只一人。',
+    '此事不得向未受引导之人轻言。',
+    '见者若无缘，只会徒增恐惧。'
   ]}
 ];
 function returnPathSidebar(id='return-path-first'){
@@ -57,6 +91,28 @@ function returnPathPage(id){
   const chapter=returnPathChapters.find(item=>item.id===id)||returnPathChapters[0];
   app.innerHTML=`<div class="page-shell bulletin-page"><div class="bulletin-layout"><nav class="bulletin-sidebar" aria-label="归途录选择">${returnPathSidebar(chapter.id)}</nav><article class="bulletin-reader" aria-labelledby="bulletin-title"><header class="bulletin-article-header"><p>归途录${chapter.part?' · '+chapter.part:''}</p><h2 id="bulletin-title">${chapter.title}</h2></header><div class="bulletin-article-body">${chapter.paragraphs.map(text=>`<p>${text}</p>`).join('')}</div></article></div></div>`;
   app.querySelector('a[href="#articles/contact"]').onclick=event=>{event.preventDefault();showAdminBusyDialog();};
+  const chapterIndex=returnPathChapters.indexOf(chapter);
+  const heading=app.querySelector('.bulletin-article-header');
+  heading.querySelector('p').textContent='《归途录》 · '+chapter.part;
+  const position=document.createElement('div');position.textContent=`第 ${chapterIndex+1} 篇 / 共 ${returnPathChapters.length} 篇`;heading.appendChild(position);
+  const sidebar=app.querySelector('.bulletin-sidebar');
+  sidebar.setAttribute('aria-label','归途录篇章目录');
+  sidebar.querySelector('h2').textContent='《归途录》目录';
+  sidebar.querySelectorAll('a[href^="#articles/return-path-"]').forEach((link,i)=>{
+    link.querySelector('span').textContent=returnPathChapters[i].part+' · '+returnPathChapters[i].title.replace('《归途录·初篇》','初篇');
+    link.querySelector('small')?.remove();
+  });
+  if(chapter.quote){
+    const quote=document.createElement('blockquote'),strong=document.createElement('strong');
+    strong.textContent=chapter.quote;quote.appendChild(strong);
+    app.querySelector('.bulletin-article-body').appendChild(quote);
+  }
+  const navigation=document.createElement('nav');navigation.className='return-path-navigation';navigation.setAttribute('aria-label','归途录前后篇');
+  for(const [index,label] of [[chapterIndex-1,'上一篇'],[chapterIndex+1,'下一篇']]){
+    const adjacent=returnPathChapters[index];if(!adjacent)continue;
+    const link=document.createElement('a');link.href='#articles/'+adjacent.id;link.textContent=label+'：'+adjacent.part+' · '+adjacent.title.replace('《归途录·初篇》','初篇');navigation.appendChild(link);
+  }
+  app.querySelector('.bulletin-reader').appendChild(navigation);
 }
 function wireHomeBulletins(){
   const panel=app.querySelector('.notice-panel');
@@ -64,7 +120,7 @@ function wireHomeBulletins(){
   if(document.body.classList.contains('invite-theme')){
     panel.querySelector('h2').innerHTML='<span>︽</span> 归途录 <span>︾</span>';
     panel.querySelector('.section-heading p').textContent='世人皆有二身。';
-    panel.querySelector('ul').innerHTML=returnPathChapters.map(chapter=>`<li><a href="#articles/${chapter.id}">${chapter.title}</a></li>`).join('');
+    panel.querySelector('ul').innerHTML=returnPathChapters.map(chapter=>`<li><a href="#articles/${chapter.id}">《归途录》${chapter.part} · ${chapter.title.replace('《归途录·初篇》','初篇')}</a></li>`).join('');
     return;
   }
   panel.querySelector('h2').innerHTML='<span>︽</span> 资讯 <span>︾</span>';
