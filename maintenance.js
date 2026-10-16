@@ -1,6 +1,8 @@
 (() => {
   // Fictional narrative files: replace these placeholders when story content is ready.
   const files = [
+    {name:'陈珍珍死亡事件_补充调查情况说明.pdf', folder:'调查资料', pdf:'assets/documents/chen-supplementary-investigation.pdf'},
+    {name:'音频节点 1.mp3', folder:'音频资料', audio:'assets/sounds/private-audio-node-1.mp3'},
     {name:'个人记录.txt', folder:'私人文档', body:'[内容待补充]\n\n这里预留郑愿自己的记录。\n正式剧情尚未写入。'},
     {name:'未发送的信.txt', folder:'私人文档', body:'[内容待补充]\n\n这里预留一封未发送的信。\n收件人和正文待确定。'},
     {name:'照片索引.txt', folder:'影像资料', body:'[内容待补充]\n\n尚未导入照片。\n这里将列出郑愿保存的私人影像。'},
@@ -13,17 +15,18 @@
     root.tabIndex=-1; root.setAttribute('role','dialog'); root.setAttribute('aria-modal','true'); root.setAttribute('aria-label','郑愿私人维护终端');
     const desktop=document.querySelector('#desktop'), wasInert=desktop.inert; desktop.inert=true;
     document.body.appendChild(root); root.focus();
-    let closed=false, screen='boot', selected=0, timer, saved={scanlines:true};
+    let closed=false, screen='boot', selected=0, timer, saved={scanlines:true}, disposePlayer=()=>{};
     try { const value=JSON.parse(localStorage.getItem('retroMaintenanceSettings')); if(typeof value?.scanlines==='boolean') saved=value; } catch {}
     let settings={...saved}; const logs=['Z-PATTERN / 已验证','桌面会话 / 已挂起','私人资料索引 / 已载入'];
     const escapeHtml = value => String(value).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     function exit(save=false) {
       if(closed)return;
       if(save) {try {localStorage.setItem('retroMaintenanceSettings',JSON.stringify(settings));} catch {showText('设置未保存','浏览器存储不可用。\n请返回主菜单，选择不保存并返回桌面。');return;}}
-      closed=true; clearTimeout(timer); root.remove(); desktop.inert=wasInert; onExit?.();
+      closed=true; disposePlayer(); clearTimeout(timer); root.remove(); desktop.inert=wasInert; onExit?.();
       if(previous?.isConnected) previous.focus();
     }
     function frame(title, content, help) {
+      disposePlayer(); disposePlayer=()=>{};
       root.className='maintenance'+(settings.scanlines?' scanlines':'');
       root.innerHTML=`<header>ZHENG YUAN PRIVATE MAINTENANCE <span>REV 0.1</span></header><div class="maintenance-frame"><div class="maintenance-heading">${escapeHtml(title)}<span>LOCAL SESSION / 本机会话</span></div><main>${content}</main><footer><span>↑ ↓ ← → 选择　 Enter 打开</span><span>Esc 返回　 F10 保存并退出</span></footer><div class="maintenance-help">${escapeHtml(help)}</div></div><div class="maintenance-bottom">USER: 郑愿　 /　 ACCESS: PRIVATE<span>网页内置维护环境</span></div>`;
     }
@@ -40,7 +43,7 @@
     function main() {
       screen='main';
       frame('内置维护程序 / MAIN MENU',`<div class="maintenance-columns"><nav>${item('私人资料 / PRIVATE FILES',0)}${item('系统状态 / SYSTEM STATUS',1)}${item('运行诊断 / DIAGNOSTICS',2)}${item('会话日志 / SESSION LOG',3)}</nav><nav>${item('显示设置 / DISPLAY SETUP',4)}${item('使用说明 / HELP',5)}${item('保存设置并返回桌面',6)}${item('不保存并返回桌面',7)}</nav></div>`, '选择一个项目。鼠标和键盘均可操作；退出后保留原桌面与窗口。');
-      actions=[showFiles,showStatus,diagnose,()=>showText('会话日志',logs.join('\n')),showSettings,()=>showText('使用说明',files[3].body),()=>exit(true),()=>exit(false)];bindActions();
+      actions=[showFiles,showStatus,diagnose,()=>showText('会话日志',logs.join('\n')),showSettings,()=>showText('使用说明',files.find(file=>file.name==='维护说明.txt').body),()=>exit(true),()=>exit(false)];bindActions();
     }
     function showText(title,text,back=main) {
       screen='detail';frame(title,`<div class="maintenance-text"><pre>${escapeHtml(text)}</pre>${item('返回',0)}</div>`,'只读视图 / Esc 返回上一层');
@@ -48,7 +51,31 @@
     }
     function showFiles() {
       screen='files';frame('郑愿 / 私人资料',`<div class="maintenance-files"><div class="maintenance-path">Z:\\PRIVATE\\　 [READ ONLY]</div>${files.map((file,i)=>item(`${file.name}　 [${file.folder}]`,i)).join('')}${item('返回主菜单',files.length)}<p>资料入口已建立 · 剧情内容待补充</p></div>`,'Enter 阅读文件；此隐藏入口不等同于真实加密存储，请勿放入真实敏感资料。');
-      actions=files.map(file=>()=>showText(file.name,file.body,showFiles));actions.push(main);root._back=main;bindActions();
+      actions=files.map(file=>()=>file.pdf?window.open(file.pdf,'_blank','noopener'):file.audio?showAudio(file):showText(file.name,file.body,showFiles));actions.push(main);root._back=main;bindActions();
+    }
+    function showAudio(file) {
+      screen='audio';
+      frame('私人资料 / AUDIO ARCHIVE',`<div class="maintenance-text"><div class="maintenance-path">Z:\\PRIVATE\\AUDIO\\　 [READ ONLY]</div><section class="private-player" aria-label="复古音频播放器"><div class="private-player-title">ZY AUDIO PLAYER <span>LOCAL FILE / 01</span></div><div class="private-player-lcd"><div class="private-player-track">01. ${escapeHtml(file.name)}</div><div class="private-player-clock">00:00 <small>/ --:--</small></div><div class="private-player-status" role="status">正在读取音频…</div></div><label class="private-player-seek">播放进度<input aria-label="播放进度" type="range" min="0" max="100" step="0.1" value="0" disabled></label><div class="private-player-controls"><button type="button" data-play disabled>▶ 播放</button><button type="button" data-stop disabled>■ 停止</button><button type="button" data-mute aria-pressed="false">♪ 静音</button></div><label class="private-player-volume">VOLUME <input aria-label="音量" type="range" min="0" max="100" value="80"><output>80%</output></label><div class="private-player-bottom">MPEG AUDIO　 /　 PRIVATE RECORDING</div></section><div class="private-player-return">${item('返回私人资料',0)}</div></div>`,'空格播放 / 暂停；方向键调节已选滑块；Esc 返回并停止播放。');
+      actions=[showFiles];root._back=showFiles;bindActions();
+      const player=root.querySelector('.private-player'), audio=new Audio(file.audio);
+      audio.preload='metadata';audio.volume=.8;
+      const play=player.querySelector('[data-play]'),stop=player.querySelector('[data-stop]'),mute=player.querySelector('[data-mute]'),seek=player.querySelector('.private-player-seek input'),volume=player.querySelector('.private-player-volume input'),status=player.querySelector('[role=status]');
+      let disposed=false;
+      const time=value=>Number.isFinite(value)?`${Math.floor(value/60).toString().padStart(2,'0')}:${Math.floor(value%60).toString().padStart(2,'0')}`:'--:--';
+      const update=()=>{player.querySelector('.private-player-clock').innerHTML=`${time(audio.currentTime)} <small>/ ${time(audio.duration)}</small>`;if(Number.isFinite(audio.duration)&&audio.duration>0){seek.disabled=false;seek.max=audio.duration;seek.value=audio.currentTime;}play.textContent=audio.paused?'▶ 播放':'Ⅱ 暂停';};
+      const toggle=async()=>{if(!audio.paused){audio.pause();return;}try{await audio.play();}catch{if(!disposed)status.textContent='播放未能开始，请重试。';}};
+      audio.addEventListener('loadedmetadata',()=>{play.disabled=false;stop.disabled=false;status.textContent='READY / 就绪';update();});
+      audio.addEventListener('timeupdate',update);
+      audio.addEventListener('play',()=>{status.textContent='PLAYING / 播放中';update();});
+      audio.addEventListener('pause',()=>{status.textContent='PAUSED / 已暂停';update();});
+      audio.addEventListener('ended',()=>{status.textContent='END / 播放完毕';update();});
+      audio.addEventListener('error',()=>{if(disposed)return;status.textContent='音频读取失败，请返回后重试。';play.disabled=stop.disabled=seek.disabled=true;});
+      play.onclick=toggle;stop.onclick=()=>{audio.pause();audio.currentTime=0;update();status.textContent='STOPPED / 已停止';};
+      seek.oninput=()=>{audio.currentTime=Number(seek.value);update();};
+      volume.oninput=()=>{audio.volume=Number(volume.value)/100;player.querySelector('output').textContent=volume.value+'%';};
+      mute.onclick=()=>{audio.muted=!audio.muted;mute.setAttribute('aria-pressed',String(audio.muted));mute.textContent=audio.muted?'♪ 取消静音':'♪ 静音';};
+      disposePlayer=()=>{disposed=true;audio.pause();audio.removeAttribute('src');audio.load();};
+      play.focus();
     }
     function showStatus() {
       showText('系统状态 / SYSTEM STATUS',`会话用户        郑愿\n维护入口        Z-PATTERN\n页面尺寸        ${innerWidth} × ${innerHeight}\n桌面图标        ${desktop.querySelectorAll('.desktop-icon').length}\n打开的窗口      ${desktop.querySelectorAll('.retro-window').length}\n浏览器联网提示  ${navigator.onLine?'在线（不代表目标网站可访问）':'离线'}\n资料索引        ${files.length} 个文件\n\n以上为当前网页状态，不是物理电脑硬件信息。`);
@@ -56,7 +83,7 @@
     function diagnose() {
       let storage='不可用';const key='retroMaintenanceProbe';
       try { localStorage.setItem(key,'ok');storage=localStorage.getItem(key)==='ok'?'正常':'读写不一致';localStorage.removeItem(key); } catch {}
-      const results=[`桌面容器        ${desktop.isConnected?'PASS':'FAIL'}`,`资料索引        ${files.length===4?'PASS':'FAIL'}`,`本地存储        ${storage}`,`图标布局        ${desktop.querySelectorAll('.desktop-icon').length} 个对象`];
+      const results=[`桌面容器        ${desktop.isConnected?'PASS':'FAIL'}`,`资料索引        ${files.every(file=>file.name&&(file.body||file.audio||file.pdf))?'PASS':'FAIL'}`,`本地存储        ${storage}`,`图标布局        ${desktop.querySelectorAll('.desktop-icon').length} 个对象`];
       logs.push('诊断 / '+new Date().toLocaleTimeString('zh-CN')+' / 本地存储：'+storage);
       showText('诊断结果 / DIAGNOSTICS',results.join('\n')+'\n\n诊断完成。未修改桌面文件。');
     }
@@ -67,6 +94,11 @@
     root.addEventListener('keydown',event=>{
       if(event.key==='Escape'){event.preventDefault();event.stopPropagation();if(screen==='main'||screen==='boot')exit(false);else(root._back||main)();return;}
       if(event.key==='F10'){event.preventDefault();event.stopPropagation();exit(true);return;}
+      if(screen==='audio'){
+        if(event.key==='Tab'){const controls=[...root.querySelectorAll('button:not(:disabled),input:not(:disabled)')];event.preventDefault();const index=controls.indexOf(document.activeElement);controls[(index+(event.shiftKey?-1:1)+controls.length)%controls.length]?.focus();}
+        if(event.key===' '&&event.target.tagName!=='BUTTON'&&event.target.tagName!=='INPUT'){event.preventDefault();root.querySelector('[data-play]')?.click();}
+        event.stopPropagation();return;
+      }
       const buttons=[...root.querySelectorAll('[data-maint-action]')];
       if(event.key==='Tab'){event.preventDefault();buttons[(selected+(event.shiftKey?-1:1)+buttons.length)%buttons.length]?.focus();return;}
       if(event.key.startsWith('Arrow')){event.preventDefault();event.stopPropagation();let step=event.key==='ArrowUp'?-1:event.key==='ArrowDown'?1:event.key==='ArrowLeft'?-4:4;if(screen!=='main')step=step<0?-1:1;buttons[(selected+step+buttons.length)%buttons.length]?.focus();}
@@ -74,3 +106,4 @@
     main();
   };
 })();
+
