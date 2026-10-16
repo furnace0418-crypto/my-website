@@ -274,20 +274,12 @@ for (const record of readGhostFolderRecords().slice(0,40)) {
   explorerNodes[record.id]={title:name,path:`${parent.path.replace(/\\$/,"")}\\${name}`,parent:record.parent,items:[]};
   parent.items.push({name,detail:"文件夹",type:"folder",target:record.id});
 }
-function readGhostFileLocations() {
-  try { const ids=JSON.parse(localStorage.getItem("retroGhostFileLocations") || "[]");return Array.isArray(ids)?ids.filter(id=>typeof id==="string"&&explorerNodes[id]):[]; }
-  catch { return []; }
-}
-const savedGhostFileLocations=[...new Set(readGhostFileLocations())];
-for (const nodeId of savedGhostFileLocations) {
-  explorerNodes[nodeId].items.push({name:"GhostLink.exe",detail:"312 KB　应用程序",type:"exe"});
-}
-if (savedGhostFileLocations.length) apps["ghost-link"].path=`${explorerNodes[savedGhostFileLocations.at(-1)].path.replace(/\\$/,"")}\\GhostLink.exe`;
+const savedGhostFileLocations=[];
+try { localStorage.removeItem("retroGhostFileLocations"); } catch {}
 function saveGhostFileToExplorer(nodeId) {
   const node=explorerNodes[nodeId];if(!node)return false;
   if(!node.items.some(item=>item.name==="GhostLink.exe"&&item.type==="exe"))node.items.push({name:"GhostLink.exe",detail:"312 KB　应用程序",type:"exe"});
   if(!savedGhostFileLocations.includes(nodeId))savedGhostFileLocations.push(nodeId);
-  try{localStorage.setItem("retroGhostFileLocations",JSON.stringify(savedGhostFileLocations));}catch{}
   apps["ghost-link"].path=`${node.path.replace(/\\$/,"")}\\GhostLink.exe`;
   installGhostLinkDesktopIcon();
   refreshExplorerNode(nodeId);return true;
@@ -1992,7 +1984,6 @@ function bindWindow(win) {
 document.querySelectorAll(".desktop-icon[data-app]").forEach(button => {
   bindDesktopAppIcon(button);
 });
-if (savedGhostFileLocations.length) installGhostLinkDesktopIcon();
 document.querySelectorAll("[data-app]:not(.desktop-icon)").forEach(button => button.addEventListener("click", event => { event.stopPropagation(); openApp(button.dataset.app); setStartMenu(false); }));
 document.querySelector(".shutdown").addEventListener("click", () => { setStartMenu(false); const cover=document.createElement("div");cover.className="shutdown-cover";cover.innerHTML="<strong>现在可以安全地关闭计算机了。</strong><small>单击任意位置返回桌面</small>";cover.addEventListener("click",()=>cover.remove());document.body.appendChild(cover); });
 
