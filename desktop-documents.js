@@ -136,13 +136,16 @@
   // Match the desktop grid, not icon names or a fixed screen location.
   const zCells = [[0,0],[1,0],[2,0],[3,0],[4,0],[3,1],[2,2],[1,3],[0,4],[1,4],[2,4],[3,4],[4,4]];
   let blackedOut = false;
+  let zLatched = false;
   function checkDesktopZ() {
     if (blackedOut) return;
     const entries = [...icons.querySelectorAll('.desktop-icon')].filter(icon => icon.getClientRects().length);
     const positions = entries.map(icon => [icon.offsetLeft, icon.offsetTop]);
     const matches = positions.some(([left, top]) => zCells.every(([x, y]) =>
       positions.some(([ix, iy]) => Math.abs(ix - left - x * 126) <= 4 && Math.abs(iy - top - y * 111) <= 4)));
-    if (!matches) return;
+    if (!matches) { zLatched = false; return; }
+    if (zLatched) return;
+    zLatched = true;
     blackedOut = true;
     hideMenu();
     const blackout = document.createElement('div');
@@ -152,6 +155,10 @@
     Object.assign(blackout.style, {position:'fixed',inset:'0',background:'#000',zIndex:'2147483647',cursor:'none'});
     document.body.appendChild(blackout);
     blackout.focus();
+    setTimeout(() => {
+      blackout.remove();
+      window.openPrivateMaintenance?.(() => { blackedOut = false; });
+    }, 650);
     for (const type of ['keydown','keyup','pointerdown','pointerup','click','dblclick','contextmenu','wheel']) {
       blackout.addEventListener(type, event => {
         // Leave browser refresh shortcuts available during this test.
