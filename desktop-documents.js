@@ -195,31 +195,32 @@ DO NOT CLOSE THIS SESSION.</pre><p>AWAITING HANDOFF<span class="fault-cursor">_<
     const copy = sections.map(node => node.textContent.replace(/_$/, ''));
     sections.forEach(node => { node.textContent = ''; node.hidden = true; });
     const cursor = document.createElement('span'); cursor.className = 'fault-cursor'; cursor.textContent = '_';
-    let section = 0, character = 0, lastTime = performance.now();
+    const started = performance.now();
+    const blocks = copy[1].split('\n\n');
     sections[0].hidden = false; sections[0].appendChild(cursor);
     function typeFault(now) {
       if (!blackout.isConnected) return;
-      // Time-based output stays consistent across different display refresh rates.
-      const count = Math.floor((now - lastTime) / 7);
-      if (count > 0) {
-        lastTime = now;
-        const end = Math.min(copy[section].length, character + count);
-        cursor.before(document.createTextNode(copy[section].slice(character, end)));
-        character = end;
-        if (character === copy[section].length) {
-          section++; character = 0;
-          if (section === sections.length) {
-            blackout.dataset.typingComplete = 'true';
-            setTimeout(() => {
-              window.openPrivateMaintenance?.(() => { blackedOut = false; });
-              blackout.remove();
-            }, 800);
-            return;
-          }
-          sections[section].hidden = false; sections[section].appendChild(cursor);
-        }
-        blackout.scrollTop = blackout.scrollHeight;
+      const elapsed = now - started;
+      sections[0].textContent = copy[0].slice(0, Math.floor(elapsed / 8));
+      if (elapsed < 250) sections[0].appendChild(cursor);
+      else {
+        sections[1].hidden = false;
+        const count = Math.min(blocks.length, 1 + Math.floor(Math.max(0, elapsed - 700) / 160));
+        const first = blocks[0].slice(0, Math.floor((elapsed - 250) * 0.6));
+        sections[1].textContent = count === 1 ? first : blocks.slice(0, count).join('\n\n');
+        sections[1].appendChild(cursor);
       }
+      if (elapsed >= 2200) {
+        sections[1].textContent = copy[1];
+        sections[2].hidden = false; sections[2].textContent = copy[2]; sections[2].appendChild(cursor);
+        blackout.dataset.typingComplete = 'true';
+        setTimeout(() => {
+          window.openPrivateMaintenance?.(() => { blackedOut = false; });
+          blackout.remove();
+        }, 800);
+        return;
+      }
+      blackout.scrollTop = blackout.scrollHeight;
       requestAnimationFrame(typeFault);
     }
     requestAnimationFrame(typeFault);
