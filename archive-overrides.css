@@ -45,4 +45,39 @@
 .ghost-download-icon{background:#e5e5e5 url("assets/icons/ghost-link-16.svg") center/26px 26px no-repeat;image-rendering:pixelated}
 .explorer-item-icon.exe{background:url("assets/icons/ghost-link-16.svg") center/54px 54px no-repeat;image-rendering:pixelated}
 .explorer-item-icon.exe:before,.explorer-item-icon.exe:after{display:none}
+.case-archive-window .archive-toolbar i{border:1px solid #6b7174;border-radius:2px;background:#d8dbdc center/27px 27px no-repeat;box-shadow:inset 1px 1px #fff,1px 1px #a4a8aa}
+.case-archive-window .archive-toolbar [data-tool="add"] i{background-image:url("assets/icons/archive-add.svg")}
+.case-archive-window .archive-toolbar [data-tool="extract"] i{background-image:url("assets/icons/archive-extract.svg")}
+.case-archive-window .archive-toolbar [data-tool="unpack"] i{background-image:url("assets/icons/archive-unpack.svg")}
+.case-archive-window .archive-toolbar [data-tool="delete"] i{background-image:url("assets/icons/archive-delete.svg")}
+.case-archive-window .archive-toolbar [data-tool="compress"] i{background-image:url("assets/icons/archive-compress.svg")}
+.case-archive-window .archive-toolbar button:hover i{background-color:#eef0f0}
+.case-archive-window .archive-toolbar button:active i{border-color:#444;background-color:#c4c9cb;box-shadow:inset 1px 1px #84898c}
+.case-archive-window .archive-address>button:disabled img{opacity:.78}
+.case-archive-window .case-folder-note button{background:#d7d9da}
+.case-archive-window .case-folder-note button:hover{background:#eceeee}
+.case-archive-window .archive-file-icon[src$="ghost-link-16.svg"]{content:url("assets/icons/ghost-link-pixel.png");object-fit:cover;object-position:center}
+.ghost-link-desktop-entry .ghost-link-icon{background-image:url("assets/icons/ghost-link-pixel.png")!important;background-size:92px 92px!important}
+.window-mini-icon.ghost-link,.task-app-icon.ghost-link{background-image:url("assets/icons/ghost-link-pixel.png")!important;background-size:32px 32px!important}
+.ghost-download-icon{background-image:url("assets/icons/ghost-link-pixel.png");background-size:58px 58px}
+.explorer-item-icon.exe{background-image:url("assets/icons/ghost-link-pixel.png");background-size:130px 130px}
+.ghost-installer{width:min(520px,calc(100vw - 28px));font-family:SimSun,"MS Sans Serif",sans-serif}
+.ghost-installer>main{padding:0 24px 16px;background:#dedfdf}
+.ghost-installer-brand{display:flex;align-items:center;justify-content:center;gap:18px;min-height:120px;margin:0 -24px 18px;border-bottom:1px solid #a3a7a8;background:#eeefef}
+.ghost-installer-brand img{width:84px;height:84px;object-fit:cover;image-rendering:pixelated}
+.ghost-installer-brand>div{display:flex;flex-direction:column;gap:5px}.ghost-installer-brand strong{font:bold 25px/1 Arial,sans-serif;color:#1e2c32}.ghost-installer-brand span{font:16px SimSun,sans-serif;color:#5d666a}
+.ghost-installer h3{margin:0 0 10px;font:normal 20px SimSun,sans-serif;color:#222}
+.ghost-installer main>p:not(.ghost-install-complete){margin:0 0 17px;color:#525b5f;font-size:15px}
+.ghost-installer main>label{display:grid;grid-template-columns:88px minmax(0,1fr);align-items:center;gap:10px;margin:9px 0;font-size:16px}
+.ghost-installer main>label input,.ghost-installer main>label select{height:32px;padding:3px 7px;box-sizing:border-box;border:2px solid;border-color:#777 #fff #fff #777;background:#f5f5f5;color:#303638;font:16px Arial,SimSun,sans-serif}
+.ghost-installer main>label select{color:#555}.ghost-installer main>small{display:block;margin:5px 0 13px 98px;color:#666;font-size:13px}
+.ghost-installer .ghost-install-progress{margin:13px 0 0;font-size:15px}.ghost-installer .ghost-install-progress .ghost-download-progress{margin-top:7px}.ghost-installer .ghost-install-progress output{display:block;margin-top:5px;text-align:right;font:15px Arial,sans-serif}
+.ghost-installer .ghost-install-complete{margin:16px 0 0;color:#235238;font-size:15px;line-height:1.45}
+.ghost-installer>footer{padding-top:12px}
+.desktop-icons.desktop-free-layout{display:block;top:18px;left:14px;right:0;bottom:var(--bar-h);pointer-events:none}
+.desktop-icons.desktop-free-layout>.desktop-icon{position:absolute;pointer-events:auto;touch-action:none;cursor:default}
+.desktop-icons.desktop-free-layout>.desktop-icon.dragging{z-index:20;opacity:.86;cursor:grabbing;transform:none;filter:drop-shadow(3px 4px 2px rgba(0,0,0,.35))}
+.desktop-icons.desktop-free-layout>.desktop-icon.recycle-drop-ready{outline:2px dashed #fff;background:rgba(0,0,80,.28)}
+.recycle-item .explorer-item-icon.shortcut,.property-file-icon.shortcut{background:url("assets/icons/ghost-link-pixel.png") center/110px 110px no-repeat;image-rendering:pixelated}
+.recycle-item .explorer-item-icon.shortcut:before,.recycle-item .explorer-item-icon.shortcut:after,.property-file-icon.shortcut:before,.property-file-icon.shortcut:after{display:none}
 

@@ -277,6 +277,15 @@ for (const record of readGhostFolderRecords().slice(0,40)) {
 }
 const savedGhostFileLocations=[];
 try { localStorage.removeItem("retroGhostFileLocations"); } catch {}
+function ensureGhostProgramFolder() {
+  const id="ghost-program-folder";
+  if(!explorerNodes[id]) {
+    explorerNodes[id]={title:"GhostLink",path:"C:\\Program Files\\GhostLink",parent:"program-files",items:[]};
+    explorerNodes["program-files"].items.push({name:"GhostLink",detail:"文件夹",type:"folder",target:id});
+    refreshExplorerNode("program-files");
+  }
+  return id;
+}
 function saveGhostFileToExplorer(nodeId) {
   const node=explorerNodes[nodeId];if(!node)return false;
   if(!node.items.some(item=>item.name==="GhostLink.exe"&&item.type==="exe"))node.items.push({name:"GhostLink.exe",detail:"312 KB　应用程序",type:"exe"});
@@ -742,7 +751,69 @@ function openApp(appId) {
   task.addEventListener("click", () => { if (win.classList.contains("minimized")) focusWindow(win); else if (task.classList.contains("active")) minimizeWindow(win); else focusWindow(win); }); taskItems.appendChild(task);
   bindWindow(win); focusWindow(win); win.classList.add("opening"); win.addEventListener("animationend", () => win.classList.remove("opening"), { once: true });
 }
+let desktopFreeLayoutReady=false;
+function placeDesktopIcon(button) {
+  if(!desktopFreeLayoutReady)return;
+  const container=document.querySelector(".desktop-icons"),others=[...container.querySelectorAll(".desktop-icon")].filter(icon=>icon!==button);
+  const rowStep=111,columnStep=126,maxRows=Math.max(1,Math.floor((container.clientHeight-18)/rowStep));
+  for(let column=0;column<12;column++)for(let row=0;row<maxRows;row++){
+    const left=column*columnStep,top=row*rowStep;
+    if(others.some(icon=>Math.abs(icon.offsetLeft-left)<48&&Math.abs(icon.offsetTop-top)<48))continue;
+    button.style.left=left+"px";button.style.top=top+"px";return;
+  }
+  button.style.left="0px";button.style.top="0px";
+}
+function initializeDesktopFreeLayout() {
+  const container=document.querySelector(".desktop-icons"),icons=[...container.querySelectorAll(".desktop-icon")];
+  const positions=icons.map(icon=>({left:icon.offsetLeft,top:icon.offsetTop}));
+  container.classList.add("desktop-free-layout");
+  icons.forEach((icon,index)=>{icon.style.left=positions[index].left+"px";icon.style.top=positions[index].top+"px";});
+  desktopFreeLayoutReady=true;
+}
+function moveDesktopIconToRecycle(button) {
+  if(button.dataset.app==="recycle")return;
+  const name=button.querySelector(".icon-label")?.textContent?.trim()||button.dataset.fileName||"桌面项目";
+  const app=button.dataset.app||"",icon=button.querySelector(".pixel-icon");
+  const iconImage=icon?getComputedStyle(icon).backgroundImage:"";
+  recycleBinItems.unshift({name,original:"桌面",deleted:new Date().toLocaleString("zh-CN"),type:"shortcut",size:"快捷方式",desktopElement:button,desktopApp:app,iconImage});
+  button.remove();
+  document.querySelectorAll(".recycle-window").forEach(win=>win._recycleRender?.());
+}
+function enableDesktopIconDrag(button) {
+  if(button.dataset.dragBound==="1")return;
+  button.dataset.dragBound="1";
+  let suppressClick=false;
+  button.addEventListener("pointerdown",event=>{
+    if(event.button!==0||!desktopFreeLayoutReady)return;
+    const container=document.querySelector(".desktop-icons");
+    const startX=event.clientX,startY=event.clientY,startLeft=button.offsetLeft,startTop=button.offsetTop;
+    let moved=false;
+    button.setPointerCapture(event.pointerId);
+    const recycle=()=>document.querySelector('.desktop-icon[data-app="recycle"]');
+    const overRecycle=(x,y)=>{const bin=recycle();if(!bin||bin===button)return false;const rect=bin.getBoundingClientRect();return x>=rect.left&&x<=rect.right&&y>=rect.top&&y<=rect.bottom;};
+    const move=e=>{
+      if(!moved&&Math.hypot(e.clientX-startX,e.clientY-startY)<5)return;
+      moved=true;button.classList.add("dragging");
+      button.style.left=Math.max(0,Math.min(container.clientWidth-button.offsetWidth,startLeft+e.clientX-startX))+"px";
+      button.style.top=Math.max(0,Math.min(container.clientHeight-button.offsetHeight,startTop+e.clientY-startY))+"px";
+      recycle()?.classList.toggle("recycle-drop-ready",overRecycle(e.clientX,e.clientY));
+    };
+    const up=e=>{
+      button.removeEventListener("pointermove",move);button.removeEventListener("pointerup",up);button.removeEventListener("pointercancel",up);
+      if(button.hasPointerCapture(e.pointerId))button.releasePointerCapture(e.pointerId);
+      recycle()?.classList.remove("recycle-drop-ready");
+      button.classList.remove("dragging");
+      if(!moved)return;
+      suppressClick=true;setTimeout(()=>suppressClick=false,0);
+      if(overRecycle(e.clientX,e.clientY))moveDesktopIconToRecycle(button);
+    };
+    button.addEventListener("pointermove",move);button.addEventListener("pointerup",up);button.addEventListener("pointercancel",up);
+  });
+  button.addEventListener("click",event=>{if(!suppressClick)return;event.preventDefault();event.stopImmediatePropagation();suppressClick=false;},true);
+}
 function bindDesktopAppIcon(button) {
+  if(desktopFreeLayoutReady)placeDesktopIcon(button);
+  enableDesktopIconDrag(button);
   button.addEventListener("click", event => { event.stopPropagation(); document.querySelectorAll(".desktop-icon").forEach(icon => icon.classList.remove("selected")); button.classList.add("selected"); });
   button.addEventListener("dblclick", event => { event.stopPropagation(); openApp(button.dataset.app); button.classList.remove("selected"); });
 }
@@ -860,21 +931,34 @@ function installGhostLinkDesktopIcon() {
 }
 function showGhostLinkSaveDialog() {
   const existing=document.querySelector(".ghost-save-dialog");if(existing){existing.style.zIndex=++highestZ;return;}
-  const dialog=document.createElement("section");dialog.className="ghost-save-dialog";dialog.setAttribute("role","dialog");dialog.setAttribute("aria-label","保存 GhostLink.exe");dialog.style.zIndex=++highestZ;
-  dialog.innerHTML='<header><strong>文件下载</strong><button type="button" data-ghost-close aria-label="关闭">×</button></header><main><section class="ghost-download-start"><div class="ghost-download-intro"><span class="ghost-download-icon" aria-hidden="true"></span><p>您要将此文件保存到计算机吗？</p></div><dl><dt>文件名：</dt><dd>GhostLink.exe</dd><dt>文件类型：</dt><dd>应用程序（312 KB）</dd><dt>来源：</dt><dd>档案整理.zip</dd></dl></section><section class="ghost-save-picker" hidden><div class="ghost-picker-toolbar"><label>保存到：<select data-ghost-location><option value="desktop-folder">桌面</option><option value="my-documents">我的文档</option><option value="drive-c">本地磁盘 (C:)</option><option value="drive-d">本地磁盘 (D:)</option></select></label><button type="button" data-ghost-up title="向上一级" aria-label="向上一级">↑</button><button type="button" data-ghost-new title="新建文件夹">新建文件夹</button></div><div class="ghost-folder-list" role="list"></div><div class="ghost-new-folder" hidden><input type="text" maxlength="40" placeholder="文件夹名称" aria-label="新文件夹名称"><button type="button" data-ghost-create-folder>创建</button><button type="button" data-ghost-cancel-folder>取消</button></div><small class="ghost-folder-hint">双击文件夹进入，再点击“保存”。</small><div class="ghost-picker-bottom"><label>文件名：<input value="GhostLink.exe" data-ghost-name autocomplete="off"></label><label>文件类型：<span>应用程序 (*.exe)</span></label><p>完整路径：<output data-ghost-fullpath></output></p></div></section><section class="ghost-download-finish" hidden><p data-ghost-progress-label>正在保存文件…</p><div class="ghost-download-progress"><span></span></div><p class="ghost-save-result" role="status"></p></section></main><footer><button type="button" data-ghost-choose>保存...</button><button type="button" data-ghost-save hidden>保存</button><button type="button" data-ghost-open hidden>打开文件</button><button type="button" data-ghost-close>取消</button></footer>';
+  const dialog=document.createElement("section");
+  dialog.className="ghost-save-dialog ghost-installer";dialog.setAttribute("role","dialog");
+  dialog.setAttribute("aria-label","GhostLink 安装程序");dialog.style.zIndex=++highestZ;
+  dialog.innerHTML='<header><strong>GhostLink 安装程序</strong><button type="button" data-ghost-close aria-label="关闭">×</button></header><main><div class="ghost-installer-brand"><img src="assets/icons/ghost-link-pixel.png" alt=""><div><strong>GhostLink</strong><span>旧址转换器 98</span></div></div><h3>安装选项</h3><p>将程序安装到这台电脑，以便访问失效网址的历史节点。</p><label>语言<select disabled><option>简体中文</option></select></label><label>安装位置<input data-install-path readonly></label><small>安装位置固定为本地磁盘 (C:)</small><div class="ghost-install-progress" hidden><span data-install-status>正在安装…</span><div class="ghost-download-progress"><span></span></div><output>0%</output></div><p class="ghost-install-complete" role="status" hidden>安装完成。程序已保存至 C:\\Program Files\\GhostLink，并已创建桌面快捷方式。</p></main><footer><button type="button" data-ghost-install>安装</button><button type="button" data-ghost-open hidden>运行程序</button><button type="button" data-ghost-close>取消</button></footer>';
   document.querySelector("#desktop").appendChild(dialog);
-  dialog.querySelectorAll("[data-ghost-close]").forEach(button=>button.addEventListener("click",()=>dialog.remove()));
-  let current="desktop-folder";const location=dialog.querySelector("[data-ghost-location]"),fileName=dialog.querySelector("[data-ghost-name]");
-  const pathFor=()=>`${explorerNodes[current].path.replace(/\\$/,"")}\\${fileName.value.trim()}`;
-  const render=()=>{const folder=explorerNodes[current],list=dialog.querySelector(".ghost-folder-list");const roots=["desktop-folder","my-documents","drive-c","drive-d"];let root=current;while(!roots.includes(root)&&explorerNodes[root]?.parent)root=explorerNodes[root].parent;location.value=roots.includes(root)?root:"desktop-folder";list.replaceChildren();folder.items.filter(item=>item.target&&explorerNodes[item.target]).forEach(entry=>{const item=document.createElement("button");item.type="button";item.className="ghost-folder-item";item.innerHTML='<span class="ghost-folder-glyph" aria-hidden="true"></span><span></span>';item.lastElementChild.textContent=entry.name;item.addEventListener("dblclick",()=>{current=entry.target;render();});item.addEventListener("click",()=>{list.querySelectorAll(".selected").forEach(el=>el.classList.remove("selected"));item.classList.add("selected");});list.appendChild(item);});if(!list.children.length){const empty=document.createElement("p");empty.textContent="此文件夹为空";list.appendChild(empty);}dialog.querySelector("[data-ghost-fullpath]").textContent=pathFor();dialog.querySelector("[data-ghost-up]").disabled=!folder.parent||folder.parent==="computer";};
-  dialog.querySelector("[data-ghost-choose]").addEventListener("click",()=>{dialog.querySelector("header strong").textContent="另存为";dialog.querySelector(".ghost-download-start").hidden=true;dialog.querySelector(".ghost-save-picker").hidden=false;dialog.querySelector("[data-ghost-choose]").hidden=true;dialog.querySelector("[data-ghost-save]").hidden=false;render();});
-  location.addEventListener("change",()=>{current=location.value;render();});fileName.addEventListener("input",render);dialog.querySelector("[data-ghost-up]").addEventListener("click",()=>{const parent=explorerNodes[current].parent;if(parent&&parent!=="computer"){current=parent;render();}});
-  const newFolderRow=dialog.querySelector(".ghost-new-folder"),newFolderInput=newFolderRow.querySelector("input");
-  dialog.querySelector("[data-ghost-new]").addEventListener("click",()=>{newFolderRow.hidden=false;newFolderInput.value="";newFolderInput.focus();});
-  dialog.querySelector("[data-ghost-cancel-folder]").addEventListener("click",()=>newFolderRow.hidden=true);
-  dialog.querySelector("[data-ghost-create-folder]").addEventListener("click",()=>{const name=newFolderInput.value.trim();if(!name||/[\\/:*?"<>|]/.test(name)||explorerNodes[current].items.some(item=>item.name.toLowerCase()===name.toLowerCase())){newFolderInput.setCustomValidity("请输入有效且未使用的文件夹名称");newFolderInput.reportValidity();return;}newFolderInput.setCustomValidity("");const id=`ghost-folder-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,7)}`,parent=explorerNodes[current];explorerNodes[id]={title:name,path:`${parent.path.replace(/\\$/,"")}\\${name}`,parent:current,items:[]};parent.items.push({name,detail:"文件夹",type:"folder",target:id});try{const records=readGhostFolderRecords();records.push({id,parent:current,name});localStorage.setItem("retroGhostFolders",JSON.stringify(records));}catch{}refreshExplorerNode(current);current=id;newFolderRow.hidden=true;render();});
-  dialog.querySelector("[data-ghost-save]").addEventListener("click",()=>{const name=fileName.value.trim();if(!/^GhostLink\.exe$/i.test(name)){fileName.setCustomValidity("请保留文件名 GhostLink.exe");fileName.reportValidity();return;}fileName.setCustomValidity("");const destination=current,path=pathFor();dialog.querySelector("header strong").textContent="正在下载 GhostLink.exe";dialog.querySelector(".ghost-save-picker").hidden=true;dialog.querySelector(".ghost-download-finish").hidden=false;dialog.querySelector("[data-ghost-save]").hidden=true;setTimeout(()=>{if(!dialog.isConnected)return;saveGhostFileToExplorer(destination);dialog.querySelector("header strong").textContent="下载完成";dialog.querySelector("[data-ghost-progress-label]").textContent="文件已保存";dialog.querySelector(".ghost-download-progress span").style.width="100%";dialog.querySelector(".ghost-save-result").textContent=`保存位置：${path}。可以在该文件夹中双击运行。`;dialog.querySelector("[data-ghost-open]").hidden=false;},650);});
-  dialog.querySelector("[data-ghost-open]").addEventListener("click",()=>{dialog.remove();openApp("ghost-link");});
+  dialog.querySelector("[data-install-path]").value="C:\\Program Files\\GhostLink";
+  let timer;
+  const close=()=>{clearInterval(timer);dialog.remove();};
+  dialog.querySelectorAll("[data-ghost-close]").forEach(button=>button.addEventListener("click",close));
+  dialog.querySelector("[data-ghost-install]").addEventListener("click",()=>{
+    const install=dialog.querySelector("[data-ghost-install]"),progress=dialog.querySelector(".ghost-install-progress");
+    install.hidden=true;progress.hidden=false;dialog.querySelector("h3").textContent="正在安装";
+    let value=0;
+    timer=setInterval(()=>{
+      if(!dialog.isConnected){clearInterval(timer);return;}
+      value=Math.min(100,value+20);
+      progress.querySelector(".ghost-download-progress span").style.width=value+"%";
+      progress.querySelector("output").textContent=value+"%";
+      if(value<100)return;
+      clearInterval(timer);
+      saveGhostFileToExplorer(ensureGhostProgramFolder());
+      dialog.querySelector("h3").textContent="安装完成";
+      progress.hidden=true;dialog.querySelector(".ghost-install-complete").hidden=false;
+      dialog.querySelector("[data-ghost-open]").hidden=false;
+      dialog.querySelector("footer [data-ghost-close]").textContent="关闭";
+    },180);
+  });
+  dialog.querySelector("[data-ghost-open]").addEventListener("click",()=>{close();openApp("ghost-link");});
 }
 function setupGhostLinkWindow(win) {
   win.classList.add("ghost-link-window");win.style.width=`${Math.min(690,innerWidth-40)}px`;win.style.height=`${Math.min(650,innerHeight-85)}px`;
@@ -934,14 +1018,14 @@ function setupGhostLinkWindow(win) {
 function setupCaseArchiveWindow(win) {
   win.classList.add("case-archive-window");win.style.width=`${Math.min(720,innerWidth-50)}px`;win.style.height=`${Math.min(520,innerHeight-80)}px`;win.querySelector(".window-mini-icon").classList.add("case-archive");
   win.querySelector(".menu-bar").innerHTML='<button>文件(<u>F</u>)</button><button>操作(<u>A</u>)</button><button>设置(<u>S</u>)</button><button>帮助(<u>H</u>)</button>';
-  win.querySelector(".toolbar").className="archive-toolbar";win.querySelector(".archive-toolbar").innerHTML='<button type="button"><i>＋</i><span>添加</span></button><button type="button"><i>↥</i><span>解压到</span></button><button type="button"><i>▣</i><span>一键解压</span></button><button type="button"><i>×</i><span>删除</span></button><button type="button"><i>▧</i><span>图片压缩</span></button>';
+  win.querySelector(".toolbar").className="archive-toolbar";win.querySelector(".archive-toolbar").innerHTML='<button type="button" data-tool="add"><i aria-hidden="true"></i><span>添加</span></button><button type="button" data-tool="extract"><i aria-hidden="true"></i><span>解压到</span></button><button type="button" data-tool="unpack"><i aria-hidden="true"></i><span>一键解压</span></button><button type="button" data-tool="delete"><i aria-hidden="true"></i><span>删除</span></button><button type="button" data-tool="compress"><i aria-hidden="true"></i><span>图片压缩</span></button>';
   const content=win.querySelector(".window-content"),status=win.querySelector(".statusbar span:first-child");
   const showMissingSoftware=()=>{if(content.querySelector(".archive-missing-dialog"))return;const dialog=document.createElement("section");dialog.className="archive-missing-dialog";dialog.setAttribute("role","alertdialog");dialog.innerHTML='<header><strong>错误</strong><button type="button" aria-label="关闭">×</button></header><main><span aria-hidden="true">×</span><p>没有安装解压软件。</p></main><footer><button type="button">确定</button></footer>';content.appendChild(dialog);const close=()=>dialog.remove();dialog.querySelector("header button").addEventListener("click",close);dialog.querySelector("footer button").addEventListener("click",close);playFaultAlert();};
   const showCorruptImage=()=>{if(content.querySelector(".archive-missing-dialog"))return;const dialog=document.createElement("section");dialog.className="archive-missing-dialog";dialog.setAttribute("role","alertdialog");dialog.innerHTML='<header><strong>错误</strong><button type="button" aria-label="关闭">×</button></header><main><span aria-hidden="true">×</span><p>文件已损坏。</p></main><footer><button type="button">确定</button></footer>';content.appendChild(dialog);const close=()=>dialog.remove();dialog.querySelector("header button").addEventListener("click",close);dialog.querySelector("footer button").addEventListener("click",close);playFaultAlert();};
   win.querySelectorAll(".archive-toolbar button").forEach(button=>button.addEventListener("click",showMissingSoftware));
 const showFolder=()=>{content.innerHTML='<section class="case-archive-folder"><div class="case-folder-note"><button type="button" data-archive-back aria-label="返回上一级"><img src="assets/icons/up-folder-16.svg" alt=""></button><span>档案整理.zip　&gt;　图片资料</span></div><div class="case-image-grid"><button type="button" class="explorer-item case-pdf-file" aria-label="打开案件整理.pdf"><span class="explorer-item-icon pdf" aria-hidden="true"></span><span class="explorer-item-copy"><strong>案件整理.pdf</strong><small>189 KB　PDF 文档</small></span></button><button type="button" class="explorer-item case-corrupt-file" aria-label="打开云阳市城区示意图"><span class="explorer-item-icon jpeg" aria-hidden="true"></span><span class="explorer-item-copy"><strong>云阳市城区示意图.png</strong><small>PNG 图像</small></span></button></div></section>';content.querySelector("[data-archive-back]").addEventListener("click",showRoot);const pdf=content.querySelector(".case-pdf-file");pdf.addEventListener("click",()=>pdf.classList.add("selected"));pdf.addEventListener("dblclick",()=>openApp("case-pdf"));content.querySelector(".case-corrupt-file").addEventListener("click",showCorruptImage);status.textContent="共 2 个文件";};
 const showPassword=()=>{if(caseArchiveUnlockedThisPage){showFolder();return;}if(content.querySelector(".case-password-dialog"))return;const form=document.createElement("form");form.className="case-password-dialog";form.autocomplete="off";form.innerHTML='<header><strong>请输入密令</strong><button type="button" data-archive-cancel aria-label="关闭">×</button></header><main><h3>文件夹已加密</h3><p>请输入密令以打开“图片资料”。</p><label>passcode：<input type="password" name="archivePassword" autocomplete="off" autofocus></label><small role="alert"></small></main><footer><button type="submit">确定</button><button type="button" data-archive-cancel>取消</button></footer>';content.appendChild(form);const input=form.elements.archivePassword,error=form.querySelector("small"),close=()=>{form.remove();status.textContent="共 3 个文件和 1 个文件夹　压缩率 39.3%";};form.addEventListener("submit",event=>{event.preventDefault();const normalizePasscode=value=>value.trim().toUpperCase().replace(/[\s-]/g, "");if(normalizePasscode(input.value) === normalizePasscode(window.skyGameArchivePasscode)){caseArchiveUnlockedThisPage=true;form.remove();showFolder();return;}error.textContent="密令不正确，请重新输入。";input.value="";input.focus();playFaultAlert();});form.querySelectorAll("[data-archive-cancel]").forEach(button=>button.addEventListener("click",close));setTimeout(()=>input.focus(),0);status.textContent="请输入加密文件夹密令";};
-  function showRoot(){content.innerHTML='<section class="archive-root"><div class="archive-address"><button type="button" disabled aria-label="上一级"><img src="assets/icons/up-folder-16.svg" alt=""></button><span><img src="assets/icons/case-archive-transparent.webp" alt="">档案整理.zip　-　解包大小 8.4 MB</span><label>搜索包内文件 <b>⌕</b></label></div><div class="archive-columns"><b>名称</b><b>压缩前</b><b>压缩后</b><b>类型</b></div><div class="archive-row archive-up"><span><img class="archive-file-icon" src="assets/icons/folder-16.webp" alt="">..（上级目录）</span><span></span><span></span><span>文件夹</span></div><button type="button" class="archive-row archive-protected-folder"><span><img class="archive-file-icon" src="assets/icons/folder-16.webp" alt="">图片资料 <i class="archive-lock" aria-label="加密"></i></span><span>8.4 MB</span><span>5.1 MB</span><span>加密文件夹</span></button><button type="button" class="archive-row archive-readme" aria-label="打开说明.txt"><span><img class="archive-file-icon" src="assets/icons/notepad-16.webp" alt="">说明.txt</span><span>2 KB</span><span>1 KB</span><span>文本文档</span></button><button type="button" class="archive-row archive-ghost-link" aria-label="保存 GhostLink.exe"><span><img class="archive-file-icon" src="assets/icons/ghost-link-16.svg" alt="">GhostLink.exe</span><span>312 KB</span><span>178 KB</span><span>应用程序</span></button></section>';content.querySelector(".archive-protected-folder").addEventListener("click",showPassword);const readme=content.querySelector(".archive-readme");readme.addEventListener("click",()=>readme.classList.add("selected"));readme.addEventListener("dblclick",()=>openApp("archive-note"));const ghost=content.querySelector(".archive-ghost-link");ghost.addEventListener("click",()=>{content.querySelectorAll(".archive-row").forEach(row=>row.classList.remove("selected"));ghost.classList.add("selected");});ghost.addEventListener("dblclick",()=>savedGhostFileLocations.length?openApp("ghost-link"):showGhostLinkSaveDialog());status.textContent="共 3 个文件和 1 个文件夹　压缩率 39.3%";}
+  function showRoot(){content.innerHTML='<section class="archive-root"><div class="archive-address"><button type="button" disabled aria-label="上一级"><img src="assets/icons/up-folder-16.svg" alt=""></button><span><img src="assets/icons/case-archive-transparent.webp" alt="">档案整理.zip　-　解包大小 8.4 MB</span><label>搜索包内文件 <b>⌕</b></label></div><div class="archive-columns"><b>名称</b><b>压缩前</b><b>压缩后</b><b>类型</b></div><div class="archive-row archive-up"><span><img class="archive-file-icon" src="assets/icons/folder-16.webp" alt="">..（上级目录）</span><span></span><span></span><span>文件夹</span></div><button type="button" class="archive-row archive-protected-folder"><span><img class="archive-file-icon" src="assets/icons/folder-16.webp" alt="">图片资料 <i class="archive-lock" aria-label="加密"></i></span><span>8.4 MB</span><span>5.1 MB</span><span>加密文件夹</span></button><button type="button" class="archive-row archive-readme" aria-label="打开说明.txt"><span><img class="archive-file-icon" src="assets/icons/notepad-16.webp" alt="">说明.txt</span><span>2 KB</span><span>1 KB</span><span>文本文档</span></button><button type="button" class="archive-row archive-ghost-link" aria-label="安装 GhostLink.exe"><span><img class="archive-file-icon" src="assets/icons/ghost-link-pixel.png" alt="">GhostLink.exe</span><span>312 KB</span><span>178 KB</span><span>应用程序</span></button></section>';content.querySelector(".archive-protected-folder").addEventListener("click",showPassword);const readme=content.querySelector(".archive-readme");readme.addEventListener("click",()=>readme.classList.add("selected"));readme.addEventListener("dblclick",()=>openApp("archive-note"));const ghost=content.querySelector(".archive-ghost-link");ghost.addEventListener("click",()=>{content.querySelectorAll(".archive-row").forEach(row=>row.classList.remove("selected"));ghost.classList.add("selected");});ghost.addEventListener("dblclick",()=>savedGhostFileLocations.length?openApp("ghost-link"):showGhostLinkSaveDialog());status.textContent="共 3 个文件和 1 个文件夹　压缩率 39.3%";}
   showRoot();
 }
 function setupCasePdfWindow(win) {
@@ -1255,10 +1339,18 @@ function setupRecycleBinWindow(win) {
   const render = () => { const list = shell.querySelector(".recycle-list"); list.replaceChildren(); recycleBinItems.forEach((item, index) => { const button = document.createElement("button"); button.type = "button"; button.className = "recycle-item"; button.innerHTML = `<span class="explorer-item-icon ${item.type}" aria-hidden="true"></span><span><strong></strong><small></small><small></small></span>`; button.querySelector("strong").textContent = item.name; const details = button.querySelectorAll("small"); details[0].textContent = item.original; details[1].textContent = `删除日期：${item.deleted}　${item.size}`; button.addEventListener("click", () => { selected = index; list.querySelectorAll(".recycle-item").forEach(entry => entry.classList.toggle("selected", entry === button)); shell.querySelector(".recycle-detail").innerHTML = `<b>${item.name}</b><span>原位置：${item.original}</span><span>${item.size}</span>`; }); button.addEventListener("dblclick", () => { selected = index; openRecycleRestoreDialog(item, win, () => { selected = null; render(); }); }); list.appendChild(button); }); win.querySelector(".statusbar span:first-child").textContent = `${recycleBinItems.length} 个对象`; if (!recycleBinItems.length) { const empty = document.createElement("p"); empty.className = "recycle-empty"; empty.textContent = "回收站是空的。"; list.appendChild(empty); } };
   toolbar.querySelector('[data-recycle-action="restore"]').addEventListener("click", () => { if (selected === null || !recycleBinItems[selected]) { win.querySelector(".statusbar span:first-child").textContent = "请先选择要还原的项目"; return; } openRecycleRestoreDialog(recycleBinItems[selected], win, () => { selected = null; render(); }); });
   toolbar.querySelector('[data-recycle-action="empty"]').addEventListener("click", () => { recycleBinItems = []; selected = null; shell.querySelector(".recycle-detail").textContent = "回收站已清空。"; render(); });
+  win._recycleRender = render;
   render();
 }
 function addRestoredDesktopItem(item) {
   const container = document.querySelector(".desktop-icons");
+  if (item.desktopElement) {
+    const button = item.desktopElement;
+    button.classList.remove("selected", "dragging", "recycle-drop-ready");
+    container.appendChild(button);
+    placeDesktopIcon(button);
+    return;
+  }
   const existing = [...container.querySelectorAll(".restored-desktop-item")].find(button => button.dataset.fileName === item.name); if (existing) existing.remove();
   const button = document.createElement("button"); button.type = "button"; button.className = "desktop-icon restored-desktop-item"; button.dataset.fileName = item.name;
   const iconClass = item.type === "folder" ? "folder" : item.type === "jpeg" ? "jpeg" : "txt";
@@ -1267,13 +1359,15 @@ function addRestoredDesktopItem(item) {
   if (item.type === "txt") button.addEventListener("dblclick", () => openExplorerTextFile({ ...item, content: item.content || "已从回收站还原。" }));
   if (item.type === "jpeg") button.addEventListener("dblclick", () => openPhotoViewer({ name:item.name, source:"桌面", src:item.src }));
   container.appendChild(button);
+  placeDesktopIcon(button);
+  enableDesktopIconDrag(button);
 }
 function openRecycleRestoreDialog(item, recycleWindow, onDialogClosed) {
   document.querySelector("#recycle-restore-dialog")?.remove();
   const win = template.content.firstElementChild.cloneNode(true); win.id = "recycle-restore-dialog"; win.dataset.app = "recycle-properties"; win.classList.add("recycle-properties-window");
   win.querySelector("h2").textContent = `${item.name} 属性`; win.querySelector(".window-mini-icon").classList.add(item.type === "folder" ? "folder" : "notes"); win.querySelector(".menu-bar").remove(); win.querySelector(".toolbar").remove(); win.querySelector(".statusbar").remove(); win.querySelector('[data-action="minimize"]').remove(); win.querySelector('[data-action="maximize"]').remove();
   win.style.width = `${Math.min(520, innerWidth - 24)}px`; win.style.height = `${Math.min(570, innerHeight - 70)}px`; win.style.left = `${Math.max(12, Math.round((innerWidth - Math.min(520, innerWidth - 24)) / 2))}px`; win.style.top = "38px";
-  const typeLabel = item.type === "folder" ? "文件夹" : item.type === "jpeg" ? "JPEG 图像" : "文本文档";
+  const typeLabel = item.type === "folder" ? "文件夹" : item.type === "jpeg" ? "JPEG 图像" : item.type === "shortcut" ? "快捷方式" : "文本文档";
   const pane = document.createElement("section"); pane.className = "recycle-properties";
   pane.innerHTML = `<div class="property-tab">常规</div><main><header><span class="property-file-icon ${item.type}" aria-hidden="true"></span><strong></strong></header><hr><dl><dt>类型：</dt><dd>${typeLabel}</dd><dt>原位置：</dt><dd></dd><dt>大小：</dt><dd>${item.size}</dd></dl><hr><dl><dt>删除时间：</dt><dd>${item.deleted}</dd><dt>创建时间：</dt><dd>2001-07-12 17:30:25</dd></dl><hr><fieldset><legend>属性：</legend><label><input type="checkbox" /> 只读</label><label><input type="checkbox" /> 隐藏</label><label><input type="checkbox" checked disabled /> 存档</label><label><input type="checkbox" /> 压缩</label></fieldset><button type="button" class="property-restore">还原(<u>R</u>)</button></main><footer><button type="button" data-property-action="ok">确定</button><button type="button" data-property-action="cancel">取消</button><button type="button" disabled>应用(<u>A</u>)</button></footer>`;
   pane.querySelector("header strong").textContent = item.name; pane.querySelector("dl dd:nth-of-type(2)").textContent = item.original;
@@ -2023,6 +2117,7 @@ function bindWindow(win) {
 document.querySelectorAll(".desktop-icon[data-app]").forEach(button => {
   bindDesktopAppIcon(button);
 });
+initializeDesktopFreeLayout();
 document.querySelectorAll("[data-app]:not(.desktop-icon)").forEach(button => button.addEventListener("click", event => { event.stopPropagation(); openApp(button.dataset.app); setStartMenu(false); }));
 document.querySelector(".shutdown").addEventListener("click", () => { setStartMenu(false); const cover=document.createElement("div");cover.className="shutdown-cover";cover.innerHTML="<strong>现在可以安全地关闭计算机了。</strong><small>单击任意位置返回桌面</small>";cover.addEventListener("click",()=>cover.remove());document.body.appendChild(cover); });
 
