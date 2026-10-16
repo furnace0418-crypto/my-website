@@ -107,9 +107,8 @@
 .desktop-icons>.ghost-link-desktop-entry .ghost-link-icon{transform:scale(1.17);transform-origin:center}
 .browser-window .forum-ad-error{display:block;background:#fff;color:#202124;font:14px/1.6 Arial,"Microsoft YaHei",sans-serif;letter-spacing:normal;text-align:left}
 .browser-window .forum-ad-error-message{display:block;box-sizing:border-box;width:min(600px,calc(100% - 64px));margin:clamp(44px,12vh,110px) auto 40px;padding:0}
-.browser-window .browser-error-page-icon{display:block;width:32px;height:42px;margin:0 0 32px;color:#5f6368}
+.browser-window .browser-error-page-icon{display:block;width:32px;height:42px;margin:0 0 32px;object-fit:contain;image-rendering:pixelated}
 .browser-window .forum-ad-error h2{margin:0 0 18px;color:#202124;font:500 24px/1.4 Arial,"Microsoft YaHei",sans-serif}
 .browser-window .forum-ad-error p{margin:0 0 8px;color:#5f6368;font:14px/1.8 Arial,"Microsoft YaHei",sans-serif}
 .browser-window .forum-ad-error hr{display:none}
 .browser-window .forum-ad-error small{display:block;margin-top:20px;color:#6f7378;font:12px/1.6 Arial,"Microsoft YaHei",sans-serif}
-
