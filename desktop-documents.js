@@ -152,7 +152,37 @@
     blackout.id = 'desktop-z-blackout';
     blackout.setAttribute('aria-label', '系统错误蓝屏，正在转入维护环境');
     blackout.className = 'desktop-system-fault';
-    blackout.innerHTML = '<div class="system-fault-copy"><h1>Windows</h1><pre>A fatal exception 0E has occurred at 0028:C0013A7F in VXD ZYCORE(01).\nThe current application will be terminated.\n\n*  The desktop shell has performed an illegal operation.\n*  A protected memory region could not be read.\n*  Unsaved information in the current session may be lost.\n\nSYSTEM_INTEGRITY_CHECK_FAILURE\n\nTechnical information:\n\n*** STOP: 0x0000000E (0x0000005A, 0x0000000D, 0x00000000)\n*** ZYCORE.VXD - Address C0013A7F base at C0000000\n\nChecking recovery environment ........ FOUND\nTransferring control to protected maintenance mode ...</pre><p>Please wait<span class="fault-cursor">_</span></p></div>';
+    blackout.innerHTML = `<div class="system-fault-copy"><h1>ZY / SYSTEM EXCEPTION</h1><pre>PROTECTED MODE MONITOR                               REV. 00.13
+----------------------------------------------------------------
+AN UNHANDLED EXCEPTION HAS OCCURRED.
+DESKTOP_SHELL HAS STOPPED RESPONDING.
+
++------------------+--------------------+-----------------------+
+| MODULE           | ADDRESS            | STATE                 |
++------------------+--------------------+-----------------------+
+| ZYCORE.VXD       | 0028:C0013A7F      | ACCESS VIOLATION      |
+| DESKTOP.SYS      | 0000:0000005A      | SUSPENDED             |
+| PRIVATE.SYS      | ----:--------      | RECOVERY PENDING      |
++------------------+--------------------+-----------------------+
+
+STACK TRACE
+  00  C0013A7F  ->  CHECK_PATTERN        [ 13 / 13 ]
+  01  C000005A  ->  READ_PROTECTED_PAGE  [ DENIED  ]
+  02  ????????  ->  UNKNOWN_ENTRY        [ ??????  ]
+
+MEMORY DUMP / SEGMENT 0E
+00000000  5A 59 00 0D FF FF 00 01  50 52 49 56 41 54 45 00
+00000010  01011010 01011001 00001101 00000000 11111111 00000001
+00000020  ..::..::..::????????????????::..::..::..::..::..::..
+
+[FAIL] NORMAL EXECUTION PATH
+[ OK ] DESKTOP SESSION RETAINED
+[ OK ] RECOVERY VOLUME FOUND
+
+RECONNECTING TO LOCAL MAINTENANCE INTERFACE
+[########################........]  75%
+
+DO NOT CLOSE THIS SESSION.</pre><p>AWAITING HANDOFF<span class="fault-cursor">_</span></p></div>`;
     blackout.tabIndex = -1;
     Object.assign(blackout.style, {position:'fixed',inset:'0',background:'#0000aa',zIndex:'2147483647',cursor:'none'});
     document.body.appendChild(blackout);
