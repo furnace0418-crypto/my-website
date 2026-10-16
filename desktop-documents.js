@@ -98,7 +98,8 @@
     menu.style.left = Math.max(0, Math.min(event.clientX, innerWidth - menu.offsetWidth - 8)) + 'px';
     menu.style.top = Math.max(0, Math.min(event.clientY, innerHeight - menu.offsetHeight - 8)) + 'px';
     menu.classList.toggle('submenu-left', event.clientX > innerWidth - 360);
-    menu.querySelector('button').focus();
+    menu.tabIndex = -1;
+    menu.focus({ preventScroll: true });
   }
   desktop.addEventListener('contextmenu', event => {
     if (event.target.closest('.retro-window,.taskbar')) return;

@@ -1,9 +1,9 @@
 .desktop-context-menu{position:fixed;z-index:100000;background:#c0c0c0;border:2px outset #eee;padding:3px;min-width:155px;box-shadow:2px 2px #333;font:14px SimSun,sans-serif}
 .desktop-context-menu[hidden]{display:none}
 .desktop-context-menu button{display:block;width:100%;border:0;background:transparent;text-align:left;padding:7px 16px;white-space:nowrap;color:#111;font:inherit}
-.desktop-context-menu button:hover,.desktop-context-menu button:focus{background:#000080;color:white;outline:0}
+.desktop-context-menu button:hover,.desktop-context-menu button:focus-visible{background:#707574;color:white;outline:0}
 .desktop-new-group{position:relative}
 .desktop-new-submenu{display:none;position:absolute;left:100%;top:-3px;background:#c0c0c0;border:2px outset #eee;padding:3px;min-width:145px}
-.desktop-new-group:hover .desktop-new-submenu,.desktop-new-group:focus-within .desktop-new-submenu,.desktop-new-group.open .desktop-new-submenu{display:block}
+.desktop-new-group:hover .desktop-new-submenu,.desktop-new-group:has(:focus-visible) .desktop-new-submenu,.desktop-new-group.open .desktop-new-submenu{display:block}
 .submenu-left .desktop-new-submenu{left:auto;right:100%}
 .desktop-icon .icon-label[contenteditable="true"]{background:white!important;color:#111!important;border:1px solid #000;outline:1px solid white;text-shadow:none;cursor:text;user-select:text;white-space:normal;overflow-wrap:anywhere}
