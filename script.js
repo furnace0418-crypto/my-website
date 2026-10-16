@@ -943,7 +943,7 @@ function setupArchiveNoteWindow(win) {
   win.querySelector(".window-mini-icon").classList.add("notes");
   win.querySelector(".toolbar")?.remove();
   win.querySelector(".menu-bar").innerHTML = '<button type="button">文件(<u>F</u>)</button><button type="button">编辑(<u>E</u>)</button><button type="button">帮助(<u>H</u>)</button>';
-  win.querySelector(".window-content").innerHTML = '<section class="notepad-shell"><div class="archive-note-document">档案整理\n\n部分旧址已停止公开解析。\n请先解压并运行 GhostLink.exe，再输入原始网址查找历史节点。</div></section>';
+  win.querySelector(".window-content").innerHTML = '<section class="notepad-shell"><div class="archive-note-document">档案整理\n\n部分网页无法访问，或已被限制访问。\n请先安装并运行 GhostLink.exe，再输入目标网址解除访问限制。</div></section>';
   win.querySelector(".statusbar span:first-child").textContent = "只读　说明.txt";
 }
 function installGhostLinkDesktopIcon() {
@@ -957,7 +957,7 @@ function showGhostLinkSaveDialog() {
   const dialog=document.createElement("section");
   dialog.className="ghost-save-dialog ghost-installer";dialog.setAttribute("role","dialog");
   dialog.setAttribute("aria-label","GhostLink 安装程序");dialog.style.zIndex=++highestZ;
-  dialog.innerHTML='<header><strong>GhostLink 安装程序</strong><button type="button" data-ghost-close aria-label="关闭">×</button></header><main><div class="ghost-installer-brand"><img src="assets/icons/ghost-link-cd.png" alt=""><div><strong>GhostLink</strong><span>旧址转换器 98</span></div></div><h3>安装选项</h3><p>将程序安装到这台电脑，以便访问失效网址的历史节点。</p><label>语言<select disabled><option>简体中文</option></select></label><label>安装位置<input data-install-path readonly></label><small>安装位置固定为本地磁盘 (C:)</small><div class="ghost-install-progress" hidden><span data-install-status>正在安装…</span><div class="ghost-download-progress"><span></span></div><output>0%</output></div><p class="ghost-install-complete" role="status" hidden>安装完成。程序已保存至 C:\\Program Files\\GhostLink，并已创建桌面快捷方式。</p></main><footer><button type="button" data-ghost-install>安装</button><button type="button" data-ghost-open hidden>运行程序</button><button type="button" data-ghost-close>取消</button></footer>';
+  dialog.innerHTML='<header><strong>GhostLink 安装程序</strong><button type="button" data-ghost-close aria-label="关闭">×</button></header><main><div class="ghost-installer-brand"><img src="assets/icons/ghost-link-cd.png" alt=""><div><strong>GhostLink</strong><span>网页解锁工具</span></div></div><h3>安装选项</h3><p>安装 GhostLink，打开无法访问或被限制访问的网页。</p><label>语言<select disabled><option>简体中文</option></select></label><label>安装位置<input data-install-path readonly></label><small>安装位置固定为本地磁盘 (C:)</small><div class="ghost-install-progress" hidden><span data-install-status>正在安装…</span><div class="ghost-download-progress"><span></span></div><output>0%</output></div><p class="ghost-install-complete" role="status" hidden>安装完成。程序已保存至 C:\\Program Files\\GhostLink，并已创建桌面快捷方式。</p></main><footer><button type="button" data-ghost-install>安装</button><button type="button" data-ghost-open hidden>运行程序</button><button type="button" data-ghost-close>取消</button></footer>';
   document.querySelector("#desktop").appendChild(dialog);
   dialog.querySelector("[data-install-path]").value="C:\\Program Files\\GhostLink";
   let timer;
@@ -989,9 +989,9 @@ function setupGhostLinkWindow(win) {
   win.querySelector(".menu-bar").remove();
   win.querySelector('[data-action="maximize"]').remove();
   win.querySelector(".toolbar").remove();
-  const content=win.querySelector(".window-content");content.innerHTML='<form class="ghost-converter" autocomplete="off"><div class="ghost-converter-lead"><strong>旧址转换</strong><span>输入失效网址，查找可访问的历史节点。</span></div><section class="ghost-entry-panel"><div class="ghost-url-row"><label for="ghost-original-url">原始网址</label><div class="ghost-input-wrap"><input id="ghost-original-url" type="text" inputmode="url" value="" placeholder="输入旧址，例如 http://annian.yunyang.cn/" spellcheck="false" autocomplete="off" required><button type="button" class="ghost-url-suggestion" hidden>http://annian.yunyang.cn/</button></div></div><div class="ghost-convert-row"><label>转换方式：<select><option>自动检测</option></select></label><button type="submit">开始转换</button></div></section><fieldset><legend>转换结果</legend><div><span>站点状态：</span><span data-ghost-status>等待检测</span></div><div><span>历史节点：</span><span data-ghost-node>尚未发现</span></div><div><span>转换地址：</span><a data-ghost-url target="_blank" rel="noopener noreferrer" aria-disabled="true" tabindex="-1">—</a></div><div><span>访问级别：</span><span data-ghost-access>—</span></div></fieldset><div class="ghost-actions"><button type="button" data-ghost-visit disabled>打开页面</button><button type="button" data-ghost-exit>关闭</button></div></form>';
+  const content=win.querySelector(".window-content");content.innerHTML='<form class="ghost-converter" autocomplete="off"><div class="ghost-converter-lead"><strong>网页解锁</strong><span>打开无法访问或被限制访问的网页。</span></div><section class="ghost-entry-panel"><div class="ghost-url-row"><label for="ghost-original-url">目标网址</label><div class="ghost-input-wrap"><input id="ghost-original-url" type="text" inputmode="url" value="" placeholder="输入网址，例如 http://annian.yunyang.cn/" spellcheck="false" autocomplete="off" required><button type="button" class="ghost-url-suggestion" hidden>http://annian.yunyang.cn/</button></div></div><div class="ghost-convert-row"><label>解锁方式：<select><option>自动检测</option></select></label><button type="submit">开始解锁</button></div></section><fieldset><legend>解锁结果</legend><div><span>站点状态：</span><span data-ghost-status>等待检测</span></div><div><span>访问限制：</span><span data-ghost-node>尚未检测</span></div><div><span>访问地址：</span><a data-ghost-url target="_blank" rel="noopener noreferrer" aria-disabled="true" tabindex="-1">—</a></div><div><span>连接方式：</span><span data-ghost-access>—</span></div></fieldset><div class="ghost-actions"><button type="button" data-ghost-visit disabled>打开页面</button><button type="button" data-ghost-exit>关闭</button></div></form>';
   const form=content.querySelector("form"),target="https://furnace0418-crypto.github.io/my-website/memorial/#home";
-  const eyePanel=document.createElement("div");eyePanel.className="ghost-eye-panel";eyePanel.innerHTML='<img class="ghost-eye-open" src="assets/ghost-eye-open.png" alt=""><div class="ghost-progress" hidden><div class="ghost-progress-heading"><strong>正在转换旧址</strong><output data-ghost-percent>0%</output></div><div class="ghost-progress-track" role="progressbar" aria-label="转换进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div><small>正在检索历史节点，请稍候…</small></div>';form.appendChild(eyePanel);
+  const eyePanel=document.createElement("div");eyePanel.className="ghost-eye-panel";eyePanel.innerHTML='<img class="ghost-eye-open" src="assets/ghost-eye-open.png" alt=""><div class="ghost-progress" hidden><div class="ghost-progress-heading"><strong>正在解锁网页</strong><output data-ghost-percent>0%</output></div><div class="ghost-progress-track" role="progressbar" aria-label="解锁进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div><small>正在检测访问限制，请稍候…</small></div>';form.appendChild(eyePanel);
   const original=form.querySelector("#ghost-original-url"),suggestion=form.querySelector(".ghost-url-suggestion"),oldUrl="http://annian.yunyang.cn/";
   const updateSuggestion=()=>{suggestion.hidden=!!original.value.trim()&&!oldUrl.startsWith(original.value.trim().toLowerCase());};original.addEventListener("focus",updateSuggestion);original.addEventListener("input",updateSuggestion);original.addEventListener("blur",()=>setTimeout(()=>suggestion.hidden=true,120));suggestion.addEventListener("mousedown",event=>event.preventDefault());suggestion.addEventListener("click",()=>{original.value=oldUrl;suggestion.hidden=true;original.focus();});
   const submitButton=form.querySelector('button[type="submit"]'),mode=form.querySelector("select");
@@ -1002,11 +1002,11 @@ function setupGhostLinkWindow(win) {
   const renderCompleted=()=>{
     ghostConvertedThisPage=true;
     original.value=oldUrl;original.readOnly=true;mode.disabled=true;
-    submitButton.disabled=true;submitButton.textContent="转换完成";
+    submitButton.disabled=true;submitButton.textContent="解锁完成";
     form.classList.add("converted");eyePanel.classList.remove("loading");eyePanel.classList.add("active");progress.hidden=true;
-    status.textContent="已停止公开解析";node.textContent="已发现";
-    result.textContent=target;result.href=target;result.title="打开 "+target;result.removeAttribute("aria-disabled");result.tabIndex=0;access.textContent="只读镜像";visit.disabled=false;
-    win.querySelector(".statusbar span:first-child").textContent="状态：转换完成";
+    status.textContent="已连接";node.textContent="已解除";
+    result.textContent=target;result.href=target;result.title="打开 "+target;result.removeAttribute("aria-disabled");result.tabIndex=0;access.textContent="解锁通道";visit.disabled=false;
+    win.querySelector(".statusbar span:first-child").textContent="状态：解锁完成";
   };
   if(ghostConvertedThisPage)renderCompleted();
   form.addEventListener("submit",event=>{
@@ -1018,8 +1018,8 @@ function setupGhostLinkWindow(win) {
     const matched=url.protocol==="http:"&&url.hostname.toLowerCase()==="annian.yunyang.cn"&&(url.pathname==="/"||url.pathname==="")&&!url.search&&!url.hash;
     submitButton.disabled=true;original.readOnly=true;mode.disabled=true;
     eyePanel.classList.remove("active");eyePanel.classList.add("loading");progress.hidden=false;
-    status.textContent="正在检测";node.textContent="检索中…";result.textContent="—";result.removeAttribute("href");result.setAttribute("aria-disabled","true");result.tabIndex=-1;result.title="";access.textContent="—";visit.disabled=true;
-    win.querySelector(".statusbar span:first-child").textContent="状态：正在转换";
+    status.textContent="正在检测";node.textContent="检测中…";result.textContent="—";result.removeAttribute("href");result.setAttribute("aria-disabled","true");result.tabIndex=-1;result.title="";access.textContent="—";visit.disabled=true;
+    win.querySelector(".statusbar span:first-child").textContent="状态：正在解锁";
     let value=0;
     const timer=setInterval(()=>{
       if(!win.isConnected){clearInterval(timer);return;}
@@ -1029,8 +1029,8 @@ function setupGhostLinkWindow(win) {
       clearInterval(timer);
       if(matched){renderCompleted();return;}
       eyePanel.classList.remove("loading");progress.hidden=true;original.readOnly=false;mode.disabled=false;submitButton.disabled=false;
-      status.textContent="未找到对应旧址";node.textContent="未发现";
-      win.querySelector(".statusbar span:first-child").textContent="状态：未找到历史节点";
+      status.textContent="暂不支持此网址";node.textContent="未解除";
+      win.querySelector(".statusbar span:first-child").textContent="状态：未找到可用访问通道";
     },130);
   });
   form.querySelector("[data-ghost-visit]").addEventListener("click",()=>window.open(target,"_blank","noopener,noreferrer"));
