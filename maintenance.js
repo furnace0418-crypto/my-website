@@ -51,7 +51,24 @@
     }
     function showFiles() {
       screen='files';frame('郑愿 / 私人资料',`<div class="maintenance-files"><div class="maintenance-path">Z:\\PRIVATE\\　 [READ ONLY]</div>${files.map((file,i)=>item(`${file.name}　 [${file.folder}]`,i)).join('')}${item('返回主菜单',files.length)}<p>资料入口已建立 · 剧情内容待补充</p></div>`,'Enter 阅读文件；此隐藏入口不等同于真实加密存储，请勿放入真实敏感资料。');
-      actions=files.map(file=>()=>file.pdf?window.open(file.pdf,'_blank','noopener'):file.audio?showAudio(file):showText(file.name,file.body,showFiles));actions.push(main);root._back=main;bindActions();
+      actions=files.map(file=>()=>file.pdf?showPdf(file):file.audio?showAudio(file):showText(file.name,file.body,showFiles));actions.push(main);root._back=main;bindActions();
+    }
+    function showPdf(file) {
+      screen='pdf';
+      frame('私人资料 / DOCUMENT READER',`<section class="maintenance-pdf case-pdf-window" aria-label="PDF 阅读器"><div class="maintenance-pdf-title">${escapeHtml(file.name)} — PDF 阅读器 <button type="button" data-close aria-label="关闭阅读器">×</button></div><div class="toolbar"><button type="button" data-prev>上一页</button><span class="case-pdf-page-count"></span><button type="button" data-next>下一页</button><button type="button" data-out aria-label="缩小">－</button><output>100%</output><button type="button" data-in aria-label="放大">＋</button><button type="button" data-fit>适合宽度</button></div><div class="case-pdf-viewport" tabindex="0" aria-label="文档页面"><img class="case-pdf-page" alt=""></div><div class="maintenance-pdf-status" role="status">只读文档</div></section>`,'Esc 关闭阅读器并返回私人资料；可翻页、缩放与滚动阅读。');
+      root._back=showFiles;
+      const viewer=root.querySelector('.maintenance-pdf'),page=viewer.querySelector('img'),viewport=viewer.querySelector('.case-pdf-viewport'),status=viewer.querySelector('[role=status]');
+      let number=1,zoom=1;
+      const updateZoom=()=>{page.style.width=Math.round(760*zoom)+'px';viewer.querySelector('output').textContent=Math.round(zoom*100)+'%';};
+      const updatePage=()=>{page.src=`assets/documents/chen-supplementary-page-${number}.jpg`;page.alt=`${file.name} 第 ${number} 页，共 3 页`;viewer.querySelector('.case-pdf-page-count').textContent=`第 ${number} 页 / 共 3 页`;viewer.querySelector('[data-prev]').disabled=number===1;viewer.querySelector('[data-next]').disabled=number===3;viewport.scrollTop=0;status.textContent='正在载入页面…';};
+      page.onload=()=>{status.textContent='只读　'+file.name;};page.onerror=()=>{status.textContent='页面载入失败，请关闭后重试。';};
+      viewer.querySelector('[data-close]').onclick=showFiles;
+      viewer.querySelector('[data-prev]').onclick=()=>{if(number>1){number--;updatePage();}};
+      viewer.querySelector('[data-next]').onclick=()=>{if(number<3){number++;updatePage();}};
+      viewer.querySelector('[data-out]').onclick=()=>{zoom=Math.max(.4,zoom-.2);updateZoom();};
+      viewer.querySelector('[data-in]').onclick=()=>{zoom=Math.min(3,zoom+.2);updateZoom();};
+      viewer.querySelector('[data-fit]').onclick=()=>{zoom=Math.max(.2,(viewport.clientWidth-36)/760);updateZoom();viewport.scrollLeft=0;};
+      updatePage();updateZoom();viewer.querySelector('[data-close]').focus();
     }
     function showAudio(file) {
       screen='audio';
@@ -94,8 +111,8 @@
     root.addEventListener('keydown',event=>{
       if(event.key==='Escape'){event.preventDefault();event.stopPropagation();if(screen==='main'||screen==='boot')exit(false);else(root._back||main)();return;}
       if(event.key==='F10'){event.preventDefault();event.stopPropagation();exit(true);return;}
-      if(screen==='audio'){
-        if(event.key==='Tab'){const controls=[...root.querySelectorAll('button:not(:disabled),input:not(:disabled)')];event.preventDefault();const index=controls.indexOf(document.activeElement);controls[(index+(event.shiftKey?-1:1)+controls.length)%controls.length]?.focus();}
+      if(screen==='audio'||screen==='pdf'){
+        if(event.key==='Tab'){const controls=[...root.querySelectorAll('button:not(:disabled),input:not(:disabled),[tabindex="0"]')];event.preventDefault();const index=controls.indexOf(document.activeElement);controls[(index+(event.shiftKey?-1:1)+controls.length)%controls.length]?.focus();}
         if(event.key===' '&&event.target.tagName!=='BUTTON'&&event.target.tagName!=='INPUT'){event.preventDefault();root.querySelector('[data-play]')?.click();}
         event.stopPropagation();return;
       }
