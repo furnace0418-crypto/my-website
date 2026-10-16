@@ -100,7 +100,7 @@
 .window-mini-icon.recycle.recycle-full,.task-app-icon.recycle.recycle-full{background-image:url("assets/icons/recycle-full-pixel.png")!important;background-size:29px 29px!important}
 .case-archive-window>.archive-toolbar{min-height:74px;gap:3px;padding:4px 10px;border-bottom:1px solid #969c9e;background:#d6d9d9}
 .case-archive-window .archive-toolbar button{min-width:80px;gap:3px;padding:3px 6px;color:#34393b;font:15px/20px SimSun,"MS Sans Serif",sans-serif}
-.case-archive-window .archive-toolbar i{width:36px;height:36px;background-size:36px 36px;filter:none;image-rendering:pixelated}
+.case-archive-window .archive-toolbar i{width:36px;height:36px;background-size:36px 36px;filter:contrast(.62) brightness(1.18);image-rendering:pixelated}
 .case-archive-window .archive-toolbar button:hover{border-color:#aeb5b7;background:#e7eaea}
 .case-archive-window .archive-toolbar button:active{border-color:#7a8183;background:#c9cecf}
 
