@@ -71,7 +71,6 @@
       if(event.key==='Tab'){event.preventDefault();buttons[(selected+(event.shiftKey?-1:1)+buttons.length)%buttons.length]?.focus();return;}
       if(event.key.startsWith('Arrow')){event.preventDefault();event.stopPropagation();let step=event.key==='ArrowUp'?-1:event.key==='ArrowDown'?1:event.key==='ArrowLeft'?-4:4;if(screen!=='main')step=step<0?-1:1;buttons[(selected+step+buttons.length)%buttons.length]?.focus();}
     });
-    root.innerHTML='<div class="maintenance-boot" role="status">ZY PRIVATE ENVIRONMENT<br><br><span>正在初始化维护接口...</span><br><br><span class="maintenance-cursor">_</span></div>';
-    timer=setTimeout(main,1300);
+    main();
   };
 })();

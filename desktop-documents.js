@@ -191,10 +191,38 @@ DO NOT CLOSE THIS SESSION.</pre><p>AWAITING HANDOFF<span class="fault-cursor">_<
     if (window.parent !== window) {
       window.parent.postMessage({ type: 'archive-night-glitch' }, '*');
     }
-    setTimeout(() => {
-      blackout.remove();
-      window.openPrivateMaintenance?.(() => { blackedOut = false; });
-    }, 2200);
+    const sections = [...blackout.querySelectorAll('h1,pre,p')];
+    const copy = sections.map(node => node.textContent.replace(/_$/, ''));
+    sections.forEach(node => { node.textContent = ''; node.hidden = true; });
+    const cursor = document.createElement('span'); cursor.className = 'fault-cursor'; cursor.textContent = '_';
+    let section = 0, character = 0, lastTime = performance.now();
+    sections[0].hidden = false; sections[0].appendChild(cursor);
+    function typeFault(now) {
+      if (!blackout.isConnected) return;
+      // Time-based output stays consistent across different display refresh rates.
+      const count = Math.floor((now - lastTime) / 7);
+      if (count > 0) {
+        lastTime = now;
+        const end = Math.min(copy[section].length, character + count);
+        cursor.before(document.createTextNode(copy[section].slice(character, end)));
+        character = end;
+        if (character === copy[section].length) {
+          section++; character = 0;
+          if (section === sections.length) {
+            blackout.dataset.typingComplete = 'true';
+            setTimeout(() => {
+              window.openPrivateMaintenance?.(() => { blackedOut = false; });
+              blackout.remove();
+            }, 800);
+            return;
+          }
+          sections[section].hidden = false; sections[section].appendChild(cursor);
+        }
+        blackout.scrollTop = blackout.scrollHeight;
+      }
+      requestAnimationFrame(typeFault);
+    }
+    requestAnimationFrame(typeFault);
     for (const type of ['keydown','keyup','pointerdown','pointerup','click','dblclick','contextmenu','wheel']) {
       blackout.addEventListener(type, event => {
         // Leave browser refresh shortcuts available during this test.
