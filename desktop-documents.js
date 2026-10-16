@@ -155,6 +155,10 @@
     Object.assign(blackout.style, {position:'fixed',inset:'0',background:'#000',zIndex:'2147483647',cursor:'none'});
     document.body.appendChild(blackout);
     blackout.focus();
+    // Reuse the workstation's existing night scene and distance-mixed soundtrack.
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: 'archive-night-glitch' }, '*');
+    }
     setTimeout(() => {
       blackout.remove();
       window.openPrivateMaintenance?.(() => { blackedOut = false; });
