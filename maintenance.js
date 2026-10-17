@@ -98,7 +98,7 @@
       const reveal=()=>{try{window.showPrivateFileOnDesktop(key,file.name);showVisibility(file,'已显示到桌面，退出维护界面后即可打开。');}catch{showVisibility(file,'无法保存显示状态，请检查浏览器存储设置后重试。');}};
       if(file===bundle){
         const pre=root.querySelector('.maintenance-text pre');
-        pre.outerHTML=`<section class="maintenance-manifest"><div class="manifest-kicker">PROTECTED DIRECTORY / 受保护目录</div><h2>私人资料 <small>4 FILES</small></h2><div class="manifest-status">桌面状态 <strong>${visible?'已显示':'隐藏'}</strong></div><ol>${bundleFiles().map((entry,index)=>`<li><span>${String(index+1).padStart(2,'0')}</span><b>${escapeHtml(entry.name)}</b><small>${entry.pdf?'PDF':entry.audio?'AUDIO':'IMAGE'}</small></li>`).join('')}</ol><p>${escapeHtml(message||(visible?'文件夹已显示在桌面。退出维护程序后即可访问。':'是否将以上文件以文件夹形式显示到桌面？'))}</p><small>仅当前会话有效 · 重新载入后恢复隐藏 · 原始文件保持不变</small></section>`;
+        pre.outerHTML=`<section class="maintenance-manifest"><div class="manifest-kicker">PROTECTED DIRECTORY / 受保护目录</div><h2>私人资料 <small>4 FILES</small></h2><div class="manifest-status">桌面状态 <strong>${visible?'已显示':'隐藏'}</strong></div><ol>${bundleFiles().map((entry,index)=>`<li><span>${String(index+1).padStart(2,'0')}</span><b>${escapeHtml(entry.name)}</b><small>${entry.pdf?'PDF':entry.audio?'AUDIO':'IMAGE'}</small></li>`).join('')}</ol><p>${escapeHtml(message||(visible?'文件夹已显示在桌面。退出维护程序后即可访问。':'是否将以上文件以文件夹形式显示到桌面？'))}</p></section>`;
       }
       actions=visible?[showFiles]:[reveal,showFiles];bindActions();
     }
