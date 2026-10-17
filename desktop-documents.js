@@ -74,6 +74,9 @@
       const glyph=icon.querySelector('.private-desktop-file-icon');glyph.textContent='';glyph.style.cssText='display:block;position:relative;width:48px;height:52px;overflow:hidden;';
       const image=document.createElement('img');image.src='assets/icons/private-audio-file.png';image.alt='';image.style.cssText='position:absolute;width:88px;max-width:none;height:auto;left:-12px;top:-29px;image-rendering:pixelated;mix-blend-mode:multiply;';glyph.appendChild(image);
     }
+    if(item.privateFile==='pdf'){
+      const glyph=icon.querySelector('.private-desktop-file-icon');glyph.textContent='';glyph.style.cssText='display:block;width:48px;height:48px;background:url("assets/icons/file-pdf-32.svg") center/contain no-repeat;image-rendering:pixelated;';
+    }
     icon.addEventListener('dblclick', event => { if (!event.target.isContentEditable) openDocument(item); });
     icons.appendChild(icon); placeDesktopIcon(icon); enableDesktopIconDrag(icon);
     return icon;
