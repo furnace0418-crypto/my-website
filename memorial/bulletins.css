@@ -59,4 +59,7 @@
 .invite-theme .return-path-page .bulletin-reader :is(.bulletin-article-body,.bulletin-article-body p,.bulletin-article-body strong,.bulletin-article-body a,.bulletin-article-header h2,.bulletin-article-header p,.bulletin-article-header div,.return-path-note,.return-path-footnote){color:var(--dwell-red)}
 .return-path-vignette{position:fixed;inset:0;z-index:99999;pointer-events:none;background:radial-gradient(ellipse at center,transparent 28%,rgba(0,0,0,.35) 65%,rgba(0,0,0,.92) 100%);opacity:var(--return-path-shadow,0)}
 .invite-theme .return-path-page .bulletin-article-body blockquote{border-left:2px solid #422522;background:rgba(66,37,34,.08)}
+.bulletin-sidebar .return-path-sidebar-entry{padding:13px}
+.bulletin-sidebar .return-path-sidebar-entry>small{display:block;margin-top:4px;font-size:13px}
+.bulletin-sidebar .return-path-sidebar-note{margin:6px 0 0;font:12px/1.65 STSong,SimSun,serif;color:#81958e}
 

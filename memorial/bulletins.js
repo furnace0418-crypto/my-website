@@ -107,7 +107,7 @@ const returnPathChapters = [
 const returnPathNotes=['现世之身、愿身与桃原之间的关系','桃原的存在方式，以及人与其建立联系的过程','愿身如何由人的遗憾与愿望逐渐形成','福报如何加深联系，并使愿身逐渐清晰','福报既成之后，二身如何于死亡之际归一','归一完成之后，为何现世仍可能留下两具相同遗身'];
 returnPathChapters.forEach((chapter,index)=>{chapter.part=`第${index+1}篇`;chapter.note=returnPathNotes[index];});
 function returnPathSidebar(id='return-path-first'){
-  return '<h2>归途录</h2>'+returnPathChapters.map(chapter=>`<a href="#articles/${chapter.id}" ${chapter.id===id?'aria-current="page"':''}><span>${chapter.title}</span>${chapter.part?`<small>${chapter.part}</small>`:''}</a>`).join('')+'<h2 class="bulletin-subheading">纪念文化</h2><a href="#articles/fortune"><span>福报说明</span><small>善念与善行</small></a><h2 class="bulletin-subheading">服务支持</h2><a href="#articles/contact"><span>联系管理员</span><small>咨询与反馈</small></a>';
+  return '<h2>归途录</h2>'+returnPathChapters.map(chapter=>`<a class="return-path-sidebar-entry" href="#articles/${chapter.id}" ${chapter.id===id?'aria-current="page"':''}><span>${chapter.title}</span><small>${chapter.part}</small><p class="return-path-sidebar-note">篇注 · ${chapter.note}</p></a>`).join('')+'<h2 class="bulletin-subheading">纪念文化</h2><a href="#articles/fortune"><span>福报说明</span><small>善念与善行</small></a><h2 class="bulletin-subheading">服务支持</h2><a href="#articles/contact"><span>联系管理员</span><small>咨询与反馈</small></a>';
 }
 function returnPathPage(id){
   const chapter=returnPathChapters.find(item=>item.id===id)||returnPathChapters[0];
@@ -121,11 +121,6 @@ function returnPathPage(id){
   const note=document.createElement('aside');note.className='return-path-note';note.textContent='篇注 · '+chapter.note;heading.after(note);
   const sidebar=app.querySelector('.bulletin-sidebar');
   sidebar.setAttribute('aria-label','归途录篇章目录');
-  sidebar.querySelector('h2').textContent='《归途录》目录';
-  sidebar.querySelectorAll('a[href^="#articles/return-path-"]').forEach((link,i)=>{
-    link.querySelector('span').textContent=returnPathChapters[i].part+' · '+returnPathChapters[i].title.replace('《归途录·初篇》','初篇');
-    link.querySelector('small')?.remove();
-  });
   if(chapter.quote){
     const quote=document.createElement('blockquote'),strong=document.createElement('strong');
     strong.textContent=chapter.quote;quote.appendChild(strong);
