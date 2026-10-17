@@ -142,7 +142,7 @@ function wireHomeBulletins(){
   if(document.body.classList.contains('invite-theme')){
     panel.classList.add('return-path-directory');
     panel.querySelector('h2').innerHTML='<span>︽</span> 归途录 <span>︾</span>';
-    panel.querySelector('.section-heading p').textContent='世人皆有二身。';
+    panel.querySelector('.section-heading p').textContent='为归者所录，述二身相合之道';
     panel.querySelector('ul').innerHTML=returnPathChapters.map((chapter,index)=>`<li><a href="#articles/${chapter.id}"><span class="return-path-number">${String(index+1).padStart(2,'0')}</span><span class="return-path-entry"><strong>${chapter.title.replace('《归途录·初篇》','初篇')}</strong><small>${chapter.note}</small></span><span class="return-path-arrow" aria-hidden="true">›</span></a></li>`).join('');
     return;
   }
