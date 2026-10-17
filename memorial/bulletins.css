@@ -33,4 +33,20 @@
 .return-path-footnote{margin-top:32px;padding-top:20px;border-top:1px solid #40514d;color:#9caf9f;font-size:15px}
 .return-path-footnote a{text-decoration:underline;text-underline-offset:5px;color:#d0b499}
 @media(max-width:600px){.invite-theme .return-path-directory li>a{grid-template-columns:32px 1fr 14px;gap:12px;padding:16px 4px}.return-path-entry strong{font-size:19px}.return-path-entry small{font-size:13px}.return-path-number{font-size:19px}.return-path-page .bulletin-article-body{font-size:17px}}
+/* Compact directory: retain the site's dark-red accents, without copper tones. */
+.invite-theme .notice-panel.return-path-directory{padding:22px clamp(18px,4vw,48px);background:#0d1b1b}
+.invite-theme .return-path-directory .section-heading{max-width:820px;margin:0 auto 10px;padding-bottom:14px;border-color:#78251f}
+.invite-theme .return-path-directory .section-heading h2{font-size:26px;margin:0 0 8px}
+.invite-theme .return-path-directory .section-heading p{font-size:15px;margin:0}
+.invite-theme .return-path-directory ul{max-width:820px}
+.invite-theme .return-path-directory li>a{grid-template-columns:36px 1fr 18px;gap:14px;padding:11px 10px}
+.invite-theme .return-path-directory li>a:hover,.invite-theme .return-path-directory li>a:focus-visible{background:#192927;color:#cbd4ce;outline-color:#78251f}
+.return-path-number{font-size:18px;color:#9eaca4;border-color:#78251f}
+.return-path-entry strong{font-size:18px;line-height:1.45;color:#bdc8c0}
+.return-path-entry small{margin-top:3px;font-size:13px;line-height:1.65;color:#91a39a}
+.return-path-arrow{font-size:21px;color:#9eaca4}
+.return-path-page .bulletin-reader{border-top-color:#78251f}
+.return-path-note{border-left-color:#78251f}
+.return-path-footnote a{color:#bac9be}
+@media(max-width:600px){.invite-theme .return-path-directory li>a{grid-template-columns:28px 1fr 12px;gap:10px;padding:10px 2px}.return-path-entry strong{font-size:17px}.return-path-entry small{font-size:12px}}
 
