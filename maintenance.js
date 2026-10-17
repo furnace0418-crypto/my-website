@@ -1,6 +1,7 @@
 (() => {
   // Fictional narrative files: replace these placeholders when story content is ready.
   const files = [
+    {name:'照片 1.png', folder:'影像资料', image:'assets/documents/private-photo-1.png'},
     {name:'陈珍珍死亡事件_补充调查情况说明.pdf', folder:'调查资料', pdf:'assets/documents/chen-supplementary-investigation.pdf'},
     {name:'音频节点 1.mp3', folder:'音频资料', audio:'assets/sounds/private-audio-node-1.mp3?v=20261017-2'},
     {name:'个人记录.txt', folder:'私人文档', body:'[内容待补充]\n\n这里预留郑愿自己的记录。\n正式剧情尚未写入。'},
@@ -8,10 +9,10 @@
     {name:'照片索引.txt', folder:'影像资料', body:'[内容待补充]\n\n尚未导入照片。\n这里将列出郑愿保存的私人影像。'},
     {name:'维护说明.txt', folder:'系统文件', body:'ZHENG YUAN / PRIVATE MAINTENANCE\n\n入口：桌面图标排列为 Z。\n返回：主菜单按 Esc，或选择返回桌面。\n\n此界面为网页内的隐藏维护终端。\n诊断只读取当前网页状态，不访问真实硬件。\n文件区域目前使用剧情占位内容。'}
   ];
-  window.openPrivateDesktopFile=key=>{const file=files.find(file=>key==='pdf'?file.pdf:file.audio);if(file)window.openPrivateMaintenance(null,file);};
+  window.openPrivateDesktopFile=key=>{const file=files.find(file=>['pdf','audio','image'].includes(key)&&file[key]);if(file)window.openPrivateMaintenance(null,file);};
   window.openPrivateMaintenance = function(onExit, desktopFile=null) {
     if(!desktopFile&&document.querySelector('#private-maintenance')) return;
-    const appId=desktopFile?(desktopFile.pdf?'private-pdf':'private-audio'):null;
+    const appId=desktopFile?(desktopFile.pdf?'private-pdf':desktopFile.image?'private-image':'private-audio'):null;
     if(appId&&document.querySelector(`[data-app="${appId}"]`)){openApp(appId);return;}
     const previous = document.activeElement;
     const root = document.createElement('section'); root.id=desktopFile?'desktop-'+appId:'private-maintenance'; root.className='maintenance booting';
@@ -19,7 +20,7 @@
     const desktop=document.querySelector('#desktop'), wasInert=desktop.inert;
     let hostWindow=null,closeObserver=null;
     if(desktopFile){
-      apps[appId]={title:desktopFile.name+' - '+(desktopFile.pdf?'PDF 阅读器':'音频播放器'),path:'桌面\\'+desktopFile.name};openApp(appId);
+      apps[appId]={title:desktopFile.name+' - '+(desktopFile.pdf?'PDF 阅读器':desktopFile.image?'图片查看器':'音频播放器'),path:'桌面\\'+desktopFile.name};openApp(appId);
       hostWindow=document.querySelector(`[data-app="${appId}"]`);hostWindow.classList.add('private-file-window');
       hostWindow.style.width=Math.min(1000,innerWidth-40)+'px';hostWindow.style.height=Math.min(760,innerHeight-80)+'px';hostWindow.style.left='20px';hostWindow.style.top='20px';
       hostWindow.querySelector('.window-content').replaceChildren(root);root.removeAttribute('aria-modal');
@@ -65,10 +66,10 @@
       screen='files';frame('郑愿 / 私人资料',`<div class="maintenance-files"><div class="maintenance-path">Z:\\PRIVATE\\　 [READ ONLY]</div>${files.map((file,i)=>item(`${file.name}　 [${file.folder}]`,i)).join('')}${item('返回主菜单',files.length)}<p>资料入口已建立 · 剧情内容待补充</p></div>`,'Enter 阅读文件；此隐藏入口不等同于真实加密存储，请勿放入真实敏感资料。');
       root.querySelector('.maintenance-files p').textContent='隐藏文件可显示到桌面，返回桌面后双击打开。';
       root.querySelector('.maintenance-help').textContent='Enter 选择文件；显示状态会保存在当前浏览器中。';
-      actions=files.map(file=>()=>file.pdf||file.audio?showVisibility(file):showText(file.name,file.body,showFiles));actions.push(main);root._back=main;bindActions();
+      actions=files.map(file=>()=>file.pdf||file.audio||file.image?showVisibility(file):showText(file.name,file.body,showFiles));actions.push(main);root._back=main;bindActions();
     }
     function showVisibility(file,message=''){
-      const key=file.pdf?'pdf':'audio',visible=window.isPrivateFileOnDesktop?.(key);
+      const key=file.pdf?'pdf':file.image?'image':'audio',visible=window.isPrivateFileOnDesktop?.(key);
       screen='visibility';root._back=showFiles;
       frame('隐藏文件 / DESKTOP VISIBILITY',`<div class="maintenance-text"><pre>${escapeHtml(file.name)}\n\n桌面状态：${visible?'已显示在桌面':'隐藏'}\n\n${escapeHtml(message||'文件保留在私人资料中。显示后可从桌面双击打开。')}</pre>${visible?'':item('显示到桌面',0)}${item('返回私人资料',visible?0:1)}</div>`,'这里只改变桌面可见性，不移动或删除原文件。');
       const reveal=()=>{try{window.showPrivateFileOnDesktop(key,file.name);showVisibility(file,'已显示到桌面，退出维护界面后即可打开。');}catch{showVisibility(file,'无法保存显示状态，请检查浏览器存储设置后重试。');}};
@@ -90,6 +91,13 @@
       viewer.querySelector('[data-in]').onclick=()=>{zoom=Math.min(3,zoom+.2);updateZoom();};
       viewer.querySelector('[data-fit]').onclick=()=>{zoom=Math.max(.2,(viewport.clientWidth-36)/760);updateZoom();viewport.scrollLeft=0;};
       updatePage();updateZoom();viewer.querySelector('[data-close]').focus();
+    }
+    function showImage(file){
+      screen='pdf';root._back=showFiles;
+      frame('图片查看器',`<section class="maintenance-pdf"><div class="toolbar"><button type="button" data-fit>适合窗口</button><button type="button" data-original>原始大小</button><button type="button" data-close>关闭图片</button></div><div class="private-image-viewport" tabindex="0"><img src="${escapeHtml(file.image)}" alt="${escapeHtml(file.name)}"></div><div class="maintenance-pdf-status" role="status">正在载入图片…</div></section>`,'');
+      const img=root.querySelector('img'),status=root.querySelector('[role=status]');
+      img.onload=()=>{status.textContent=`${file.name}　 ${img.naturalWidth} × ${img.naturalHeight}　只读`;};img.onerror=()=>{status.textContent='图片载入失败，请关闭后重试。';};
+      root.querySelector('[data-fit]').onclick=()=>img.classList.remove('original');root.querySelector('[data-original]').onclick=()=>img.classList.add('original');root.querySelector('[data-close]').onclick=showFiles;root.querySelector('[data-fit]').focus();
     }
     function showAudio(file) {
       screen='audio';
@@ -121,7 +129,7 @@
     function diagnose() {
       let storage='不可用';const key='retroMaintenanceProbe';
       try { localStorage.setItem(key,'ok');storage=localStorage.getItem(key)==='ok'?'正常':'读写不一致';localStorage.removeItem(key); } catch {}
-      const results=[`桌面容器        ${desktop.isConnected?'PASS':'FAIL'}`,`资料索引        ${files.every(file=>file.name&&(file.body||file.audio||file.pdf))?'PASS':'FAIL'}`,`本地存储        ${storage}`,`图标布局        ${desktop.querySelectorAll('.desktop-icon').length} 个对象`];
+      const results=[`桌面容器        ${desktop.isConnected?'PASS':'FAIL'}`,`资料索引        ${files.every(file=>file.name&&(file.body||file.audio||file.pdf||file.image))?'PASS':'FAIL'}`,`本地存储        ${storage}`,`图标布局        ${desktop.querySelectorAll('.desktop-icon').length} 个对象`];
       logs.push('诊断 / '+new Date().toLocaleTimeString('zh-CN')+' / 本地存储：'+storage);
       showText('诊断结果 / DIAGNOSTICS',results.join('\n')+'\n\n诊断完成。未修改桌面文件。');
     }
@@ -141,7 +149,7 @@
       if(event.key==='Tab'){event.preventDefault();buttons[(selected+(event.shiftKey?-1:1)+buttons.length)%buttons.length]?.focus();return;}
       if(event.key.startsWith('Arrow')){event.preventDefault();event.stopPropagation();let step=event.key==='ArrowUp'?-1:event.key==='ArrowDown'?1:event.key==='ArrowLeft'?-4:4;if(screen!=='main')step=step<0?-1:1;buttons[(selected+step+buttons.length)%buttons.length]?.focus();}
     });
-    if(desktopFile){if(desktopFile.pdf)showPdf(desktopFile);else showAudio(desktopFile);}else main();
+    if(desktopFile){if(desktopFile.pdf)showPdf(desktopFile);else if(desktopFile.image)showImage(desktopFile);else showAudio(desktopFile);}else main();
   };
 })();
 

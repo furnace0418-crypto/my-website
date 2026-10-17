@@ -68,8 +68,12 @@
     icon.dataset.documentId = item.id; icon.dataset.fileName = item.name;
     icon.innerHTML = '<span class="pixel-icon note-icon" aria-hidden="true"><i></i></span><span class="icon-label"></span>';
     icon.querySelector('.icon-label').textContent = item.name;
-    if(item.privateFile){const glyph=icon.querySelector('.pixel-icon');glyph.className='private-desktop-file-icon';glyph.textContent=item.privateFile==='pdf'?'PDF':'♪';glyph.style.cssText='display:grid;place-items:center;width:42px;height:48px;background:#e4e5df;color:#374c64;border:2px outset white;font:bold 18px/1 monospace;';}
+    if(item.privateFile){const glyph=icon.querySelector('.pixel-icon');glyph.className='private-desktop-file-icon';glyph.textContent=item.privateFile==='pdf'?'PDF':item.privateFile==='image'?'▧':'♪';glyph.style.cssText='display:grid;place-items:center;width:42px;height:48px;background:#e4e5df;color:#374c64;border:2px outset white;font:bold 18px/1 monospace;';}
     icon.addEventListener('click', event => { event.stopPropagation(); select(icon); });
+    if(item.privateFile==='audio'){
+      const glyph=icon.querySelector('.private-desktop-file-icon');glyph.textContent='';glyph.style.cssText='display:block;position:relative;width:48px;height:52px;overflow:hidden;';
+      const image=document.createElement('img');image.src='assets/icons/private-audio-file.png';image.alt='';image.style.cssText='position:absolute;width:88px;max-width:none;height:auto;left:-12px;top:-29px;image-rendering:pixelated;mix-blend-mode:multiply;';glyph.appendChild(image);
+    }
     icon.addEventListener('dblclick', event => { if (!event.target.isContentEditable) openDocument(item); });
     icons.appendChild(icon); placeDesktopIcon(icon); enableDesktopIconDrag(icon);
     return icon;
