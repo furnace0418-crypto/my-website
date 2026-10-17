@@ -5,11 +5,13 @@
     cancelAnimationFrame(frame);frame=0;started=null;
     overlay?.remove();overlay=null;
     document.documentElement.style.removeProperty('--return-path-dwell');
+    document.documentElement.style.removeProperty('--return-path-shadow');
   }
   function tick(now){
     if(!active()){reset();return;}
     if(started===null)started=now;
-    document.documentElement.style.setProperty('--return-path-dwell',String(Math.min(1,(now-started)/30000)));
+    document.documentElement.style.setProperty('--return-path-dwell',String(Math.min(1,(now-started)/25000)));
+    document.documentElement.style.setProperty('--return-path-shadow',String(Math.min(1,(now-started)/20000)));
     frame=requestAnimationFrame(tick);
   }
   function sync(){
