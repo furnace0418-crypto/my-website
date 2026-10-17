@@ -400,15 +400,17 @@ function login(){
     const title=document.createElement('p');title.textContent='最近登录';history.append(title);
     const list=document.createElement('div');list.className='login-account-list';history.append(list);
     for(const id of ids){
-      const item=document.createElement('button');item.className='login-account-item';item.type='button';
+      const item=document.createElement('div');item.className='login-account-item';item.tabIndex=0;item.setAttribute('role','button');
       const savedProfile=window.memorialLocalAuth.profile(id);
       const portrait=document.createElement('span');portrait.className='login-history-avatar';
       const source=avatarFor(id);
       if(source){const image=document.createElement('img');image.src=source;image.alt='';portrait.append(image)}
       const label=document.createElement('span');label.className='login-history-name';label.textContent=savedProfile.name;
-      const arrow=document.createElement('span');arrow.className='login-history-arrow';arrow.setAttribute('aria-hidden','true');
+      const arrow=document.createElement('button');arrow.type='button';arrow.className='login-history-delete';arrow.textContent='×';arrow.setAttribute('aria-label',`删除用户 ${savedProfile.name}`);
+      arrow.onclick=event=>{event.stopPropagation();if(!confirm(`确定删除用户“${savedProfile.name}”及其所有记录？\n将删除此浏览器内的账号、纪念馆、照片、长明灯及留言记录，此操作不可撤销。`))return;try{window.deleteMemorialLocalAccount(id);if(accountInput.value===savedProfile.name)accountInput.value='';renderLoginHistory();}catch(_){alert('删除失败，请检查浏览器存储权限后重试。');}};
       item.append(portrait,label,arrow);
       item.onclick=()=>{accountInput.value=savedProfile.name;closeHistory();form.elements.namedItem('password').focus()};
+      item.onkeydown=event=>{if(event.target===item&&['Enter',' '].includes(event.key)){event.preventDefault();item.click();}};
       list.append(item);
     }
   };
