@@ -20,6 +20,7 @@
     if (task) task.textContent = title;
   };
   function openDocument(item) {
+    if(item.privateFile){window.openPrivateDesktopFile?.(item.privateFile);return;}
     openExplorerTextFile(item);
     document.querySelector('.notepad-window').dataset.desktopDocumentId = item.id;
   }
@@ -67,6 +68,7 @@
     icon.dataset.documentId = item.id; icon.dataset.fileName = item.name;
     icon.innerHTML = '<span class="pixel-icon note-icon" aria-hidden="true"><i></i></span><span class="icon-label"></span>';
     icon.querySelector('.icon-label').textContent = item.name;
+    if(item.privateFile){const glyph=icon.querySelector('.pixel-icon');glyph.className='private-desktop-file-icon';glyph.textContent=item.privateFile==='pdf'?'PDF':'♪';glyph.style.cssText='display:grid;place-items:center;width:42px;height:48px;background:#e4e5df;color:#374c64;border:2px outset white;font:bold 18px/1 monospace;';}
     icon.addEventListener('click', event => { event.stopPropagation(); select(icon); });
     icon.addEventListener('dblclick', event => { if (!event.target.isContentEditable) openDocument(item); });
     icons.appendChild(icon); placeDesktopIcon(icon); enableDesktopIconDrag(icon);
@@ -129,6 +131,15 @@
     } else if (action === 'open') delete win.dataset.desktopDocumentId;
   }, true);
   documents.filter(item => item.onDesktop !== false).forEach(addIcon);
+  window.isPrivateFileOnDesktop=key=>documents.some(item=>item.privateFile===key&&item.onDesktop!==false);
+  window.showPrivateFileOnDesktop=(key,name)=>{
+    let item=documents.find(entry=>entry.privateFile===key);
+    if(item&&item.onDesktop!==false)return;
+    const next=item?{...item,onDesktop:true}:{id:crypto.randomUUID(),name,content:'',privateFile:key,onDesktop:true};
+    const updated=item?documents.map(entry=>entry===item?next:entry):[...documents,next];
+    localStorage.setItem(storageKey,JSON.stringify(updated));
+    documents=updated;addIcon(next);
+  };
   new MutationObserver(() => {
     documents.forEach(item => { item.onDesktop = [...icons.children].some(icon => icon.dataset.documentId === item.id); }); persist();
   }).observe(icons, { childList: true });
@@ -252,3 +263,4 @@ DO NOT CLOSE THIS SESSION.</pre><p>AWAITING HANDOFF<span class="fault-cursor">_<
     if (event.button === 0 && event.target.closest('.desktop-icon')) checkDesktopZ();
   });
 })();
+
