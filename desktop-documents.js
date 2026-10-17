@@ -12,7 +12,7 @@
   // Extra desktop files are visible only until this page is refreshed.
   // Keep stored contents intact; private originals remain in maintenance.
   // Temporary user-requested test hold. Resume refresh hiding only on approval.
-  const preserveDesktopTestDocuments = true;
+  const preserveDesktopTestDocuments = false;
   if (preserveDesktopTestDocuments) {
     try {
       if (!localStorage.getItem('retroDesktopDocumentsTestBackupV1'))

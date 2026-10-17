@@ -40,6 +40,17 @@
   }
   window.openPrivateDesktopFile=key=>{if(key===bundle.key){openPrivateFolder();return;}const file=files.find(file=>file.key===key||(!file.key&&['pdf','audio','image'].includes(key)&&file[key]));if(file)window.openPrivateMaintenance(null,file);};
   window.openPrivateMaintenance = function(onExit, desktopFile=null) {
+    if(desktopFile?.pdf){
+      const id='private-investigation-pdf';
+      const existing=document.querySelector(`[data-app="${id}"]`);
+      if(existing){openApp(id);return;}
+      apps[id]={title:desktopFile.name+' - PDF 阅读器',path:'桌面\\私人资料\\'+desktopFile.name};openApp(id);
+      const win=document.querySelector(`[data-app="${id}"]`);
+      setupCasePdfWindow(win,{name:desktopFile.name,pages:[1,2,3].map(number=>`assets/documents/investigation-supplement-page-${number}.jpg`)});
+      win.addEventListener('keydown',event=>{if(event.key==='Escape'){event.stopPropagation();closeWindow(win);}});
+      const viewport=win.querySelector('.case-pdf-viewport');viewport.tabIndex=0;viewport.focus();
+      return;
+    }
     if(desktopFile?.text){openExplorerTextFile({name:desktopFile.name,content:desktopFile.body});return;}
     if(desktopFile?.image){openPhotoViewer({name:desktopFile.name,src:desktopFile.image,source:'私人资料'});return;}
     if(!desktopFile&&document.querySelector('#private-maintenance')) return;

@@ -204,7 +204,7 @@ const apps = {
 };
 let forumFavoriteThisDesktopSession = false;
 let skyGameInstalledThisPage = false;
-let caseArchiveDownloadedThisPage = true;
+let caseArchiveDownloadedThisPage = false;
 let caseArchiveUnlockedThisPage = false;
 let ghostConvertedThisPage = false;
 const forumRepliesThisDesktopSession = {};
@@ -1049,7 +1049,7 @@ const showPassword=()=>{if(caseArchiveUnlockedThisPage){showFolder();return;}if(
   function showRoot(){content.innerHTML='<section class="archive-root"><div class="archive-address"><button type="button" disabled aria-label="上一级"><img src="assets/icons/up-folder-16.svg" alt=""></button><span><img src="assets/icons/case-archive-transparent.webp" alt="">档案整理.zip　-　解包大小 8.4 MB</span><label>搜索包内文件 <b>⌕</b></label></div><div class="archive-columns"><b>名称</b><b>压缩前</b><b>压缩后</b><b>类型</b></div><div class="archive-row archive-up"><span><img class="archive-file-icon" src="assets/icons/folder-16.webp" alt="">..（上级目录）</span><span></span><span></span><span>文件夹</span></div><button type="button" class="archive-row archive-protected-folder"><span><img class="archive-file-icon" src="assets/icons/folder-16.webp" alt="">案件资料 <i class="archive-lock" aria-label="加密"></i></span><span>8.4 MB</span><span>5.1 MB</span><span>加密文件夹</span></button><button type="button" class="archive-row archive-readme" aria-label="打开说明.txt"><span><img class="archive-file-icon" src="assets/icons/notepad-16.webp" alt="">说明.txt</span><span>2 KB</span><span>1 KB</span><span>文本文档</span></button><button type="button" class="archive-row archive-ghost-link" aria-label="安装 GhostLink.exe"><span><img class="archive-file-icon" src="assets/icons/ghost-link-cd.png" alt="">GhostLink.exe</span><span>312 KB</span><span>178 KB</span><span>应用程序</span></button></section>';content.querySelector(".archive-protected-folder").addEventListener("click",showPassword);const readme=content.querySelector(".archive-readme");readme.addEventListener("click",()=>readme.classList.add("selected"));readme.addEventListener("dblclick",()=>openApp("archive-note"));const ghost=content.querySelector(".archive-ghost-link");ghost.addEventListener("click",()=>{content.querySelectorAll(".archive-row").forEach(row=>row.classList.remove("selected"));ghost.classList.add("selected");});ghost.addEventListener("dblclick",()=>savedGhostFileLocations.length?openApp("ghost-link"):showGhostLinkSaveDialog());status.textContent="共 3 个文件和 1 个文件夹　压缩率 39.3%";}
   showRoot();
 }
-function setupCasePdfWindow(win) {
+function setupCasePdfWindow(win, documentInfo=null) {
   win.classList.add("case-pdf-window");
   win.style.width=`${Math.min(850,innerWidth-60)}px`;
   win.style.height=`${Math.min(650,innerHeight-76)}px`;
@@ -1058,13 +1058,18 @@ function setupCasePdfWindow(win) {
   const viewport=document.createElement("div");viewport.className="case-pdf-viewport";
   const page=document.createElement("img");page.className="case-pdf-page";page.src=window.__downloadedCasePage?.src || "assets/documents/case-archive-page-guide.webp?v=20261017-1";page.alt="案件整理 PDF 第 1 页的完整内容";viewport.appendChild(page);
   win.querySelector(".window-content").replaceChildren(viewport);
+  const pages=documentInfo?documentInfo.pages.map((src,index)=>{const image=document.createElement('img');image.className='case-pdf-page';image.src=src;image.alt=`${documentInfo.name} 第 ${index+1} 页`;image.style.marginBottom='18px';return image;}):[page];
+  if(documentInfo){viewport.replaceChildren(...pages);win.querySelector('.case-pdf-toolbar-label').textContent=documentInfo.name;}
+  const updateCount=()=>{const edge=viewport.getBoundingClientRect().top+viewport.clientHeight/2;let current=0;pages.forEach((image,index)=>{if(image.getBoundingClientRect().top<edge)current=index;});win.querySelector('.case-pdf-page-count').textContent=`第 ${current+1} 页 / 共 ${pages.length} 页`;};
+  viewport.addEventListener('scroll',updateCount);pages.forEach(image=>image.addEventListener('load',updateCount));updateCount();
   let zoom=1;const output=win.querySelector(".toolbar output");
-  const updateZoom=()=>{page.style.width=`${Math.round(760*zoom)}px`;output.textContent=`${Math.round(zoom*100)}%`;};
+  const updateZoom=()=>{pages.forEach(image=>{image.style.width=`${Math.round(760*zoom)}px`;});output.textContent=`${Math.round(zoom*100)}%`;updateCount();};
   win.querySelector('[data-pdf-zoom="out"]').addEventListener("click",()=>{zoom=Math.max(.5,Math.round((zoom-.25)*100)/100);updateZoom();});
   win.querySelector('[data-pdf-zoom="in"]').addEventListener("click",()=>{zoom=Math.min(2.5,Math.round((zoom+.25)*100)/100);updateZoom();});
   win.querySelector('[data-pdf-zoom="fit"]').addEventListener("click",()=>{zoom=Math.max(.5,Math.min(1.5,(viewport.clientWidth-36)/760));updateZoom();viewport.scrollLeft=0;});
   page.addEventListener("error",()=>{win.querySelector(".statusbar span:first-child").textContent="PDF 页面载入失败";});
-  updateZoom();win.querySelector(".statusbar span:first-child").textContent="只读　案件整理.pdf";
+  pages.forEach(image=>image.addEventListener('error',()=>{win.querySelector('.statusbar span:first-child').textContent='PDF 页面载入失败';}));
+  updateZoom();win.querySelector(".statusbar span:first-child").textContent="只读　"+(documentInfo?.name||'案件整理.pdf');
 }
 function applyRetroNavigationButton(button, direction) {
   if (!button) return;
