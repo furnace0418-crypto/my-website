@@ -36,7 +36,7 @@
 /* Compact directory: retain the site's dark-red accents, without copper tones. */
 .invite-theme .notice-panel.return-path-directory{padding:22px clamp(18px,4vw,48px);background:#0d1b1b}
 .invite-theme .return-path-directory .section-heading{max-width:820px;margin:0 auto 10px;padding-bottom:14px;border-color:#78251f}
-.invite-theme .return-path-directory .section-heading h2{font-size:26px;margin:0 0 8px}
+.invite-theme .return-path-directory .section-heading h2{margin:0 0 8px}
 .invite-theme .return-path-directory .section-heading p{font-size:15px;margin:0}
 .invite-theme .return-path-directory ul{max-width:820px}
 .invite-theme .return-path-directory li>a{grid-template-columns:36px 1fr 18px;gap:14px;padding:11px 10px}
@@ -51,7 +51,6 @@
 @media(max-width:600px){.invite-theme .return-path-directory li>a{grid-template-columns:28px 1fr 12px;gap:10px;padding:10px 2px}.return-path-entry strong{font-size:17px}.return-path-entry small{font-size:12px}}
 .invite-theme .notice-panel.return-path-directory{padding-top:18px;padding-bottom:18px}
 .invite-theme .return-path-directory .section-heading{padding-bottom:10px;margin-bottom:6px;border-color:#422522}
-.invite-theme .return-path-directory .section-heading h2{font-size:24px}
 .invite-theme .return-path-directory li>a{padding-top:8px;padding-bottom:8px}
 .return-path-number{border-color:#422522}
 .invite-theme .return-path-directory li>a:hover,.invite-theme .return-path-directory li>a:focus-visible{outline-color:#422522}
@@ -64,4 +63,5 @@
 .bulletin-sidebar .return-path-sidebar-note{margin:0;font:12px/1.65 STSong,SimSun,serif;color:#81958e;max-height:0;opacity:0;overflow:hidden;transition:max-height .22s ease,opacity .18s ease,margin-top .22s ease}
 .bulletin-sidebar .return-path-sidebar-entry:hover .return-path-sidebar-note,.bulletin-sidebar .return-path-sidebar-entry:focus-visible .return-path-sidebar-note{max-height:120px;opacity:1;margin-top:6px}
 @media(prefers-reduced-motion:reduce){.bulletin-sidebar .return-path-sidebar-note{transition:none}}
+.return-path-page .bulletin-article-body strong{font-weight:900;-webkit-text-stroke:.3px currentColor}
 
