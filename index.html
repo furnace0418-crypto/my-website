@@ -160,7 +160,7 @@
         <label><span>QQ号码：</span><input id="qqAccount" name="account" inputmode="numeric" maxlength="12" autofocus /></label>
         <label><span>QQ密码：</span><input id="qqPassword" name="password" type="password" maxlength="24" /></label>
         <label><span>登录状态：</span><select id="qqStatus"><option value="online">在线</option><option value="invisible">隐身</option><option value="away">离开</option></select></label>
-        <div class="qq-login-options"><a href="#" tabindex="-1">申请号码</a></div>
+        <div class="qq-login-options"><a href="#" tabindex="-1" onmousedown="event.preventDefault()" onclick="event.preventDefault();event.stopPropagation()">申请号码</a></div>
         <p class="qq-login-error" id="qqLoginError" role="alert"></p>
         <div class="qq-login-actions"><button type="button" data-login-action="settings">网络设置…</button><span></span><button type="submit" class="primary">登录</button><button type="button" data-login-action="cancel">取消</button></div>
       </section>
