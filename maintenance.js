@@ -14,7 +14,7 @@
     {name:'离婚协议书.png',folder:'影像资料',key:'agreement',image:'assets/documents/private-divorce-agreement.png'},
     {name:'照片 1.png', folder:'影像资料', image:'assets/documents/private-photo-1.png'},
     {name:'城北区住宅火灾新闻.jpeg', folder:'新闻剪报', key:'news', image:'assets/documents/private-news-1.jpeg'},
-    {name:'陈珍珍死亡事件_补充调查情况说明.pdf', folder:'调查资料', pdf:'assets/documents/chen-supplementary-investigation.pdf'},
+    {name:'调查补充说明.pdf', folder:'调查资料', pdf:'assets/documents/investigation-supplement.pdf'},
     {name:'音频节点 1.mp3', folder:'音频资料', audio:'assets/sounds/private-audio-node-1.mp3?v=20261017-2'},
     {name:'维护说明.txt', folder:'系统文件', body:'本机维护程序 — 使用说明\n版本 0.1 / 本地会话\n\n[01] 加密文件\n列出受保护目录中的可用资料。选择文件夹后，请核对文件清单，再执行“显示到桌面”。原始资料保持只读。\n\n[02] 桌面显示\n显示操作仅对当前会话有效。返回桌面后可双击文件夹查看内容；重新载入系统后，相关项目恢复隐藏。新闻剪报使用独立目录。\n\n[03] 系统检查\n系统状态与运行诊断用于检查本机会话和资源载入情况。会话日志记录本次维护操作。\n\n[04] 操作按键\n方向键：选择项目    Enter：确认\nEsc：返回上一层    F10：保存设置并退出\n\n[05] 退出维护\n选择“保存设置并返回桌面”保留显示设置；选择“不保存并返回桌面”放弃本次设置变更。退出不关闭原有桌面窗口。'}
   ];
@@ -120,7 +120,7 @@
       const viewer=root.querySelector('.maintenance-pdf'),page=viewer.querySelector('img'),viewport=viewer.querySelector('.case-pdf-viewport'),status=viewer.querySelector('[role=status]');
       let number=1,zoom=1;
       const updateZoom=()=>{page.style.width=Math.round(760*zoom)+'px';viewer.querySelector('output').textContent=Math.round(zoom*100)+'%';};
-      const updatePage=()=>{page.src=`assets/documents/chen-supplementary-page-${number}.jpg`;page.alt=`${file.name} 第 ${number} 页，共 3 页`;viewer.querySelector('.case-pdf-page-count').textContent=`第 ${number} 页 / 共 3 页`;viewer.querySelector('[data-prev]').disabled=number===1;viewer.querySelector('[data-next]').disabled=number===3;viewport.scrollTop=0;status.textContent='正在载入页面…';};
+      const updatePage=()=>{page.src=`assets/documents/investigation-supplement-page-${number}.jpg`;page.alt=`${file.name} 第 ${number} 页，共 3 页`;viewer.querySelector('.case-pdf-page-count').textContent=`第 ${number} 页 / 共 3 页`;viewer.querySelector('[data-prev]').disabled=number===1;viewer.querySelector('[data-next]').disabled=number===3;viewport.scrollTop=0;status.textContent='正在载入页面…';};
       page.onload=()=>{status.textContent='只读　'+file.name;};page.onerror=()=>{status.textContent='页面载入失败，请关闭后重试。';};
       viewer.querySelector('[data-close]').onclick=showFiles;
       viewer.querySelector('[data-prev]').onclick=()=>{if(number>1){number--;updatePage();}};
