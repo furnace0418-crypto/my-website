@@ -30,6 +30,7 @@
   };
   let state = {...defaults,base:memorialId==='zhang-wenhua'?'lotus':defaults.base,shade:memorialId==='zhang-wenhua'?'amber':dedicated?'cloud':defaults.shade}, lit = !dedicated, rotating = false, model, flame, glow, frame, stopped = false;
   let goldMaterial, blackMaterial, glassMaterial, wickMaterial, glassShader;
+  let endingStarted=false,endingRed=false;
   let burn = lit?1:0, lastTime = null, lampConfirmTimer = null;
   if(!dedicated&&customHall)try {
     const oldKey=owner?.accountId?`annian-glass-lamp-v3-${owner.accountId}`:'annian-glass-lamp-v2';
@@ -144,11 +145,12 @@
     // physical transmission. No uniform emissive coating on the whole shade.
     glass.onBeforeCompile=shader=>{
       shader.uniforms.candleScatter={value:burn*state.brightness};
+      shader.uniforms.candleTint={value:new T.Color(1,.65,.3)};
       shader.uniforms.shadeHeight={value:state.shade==='hammered'?1.3:state.shade==='cloud'?1.35:state.shade==='smoke'?1.6:1.77};
       shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nvarying float lampHeight;');
       shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nlampHeight = position.y;');
-      shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nvarying float lampHeight;\nuniform float candleScatter;\nuniform float shadeHeight;');
-      shader.fragmentShader=shader.fragmentShader.replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\nfloat scatterFalloff = exp(-pow((lampHeight / shadeHeight - 0.26) * 3.8, 2.0));\ntotalEmissiveRadiance += attenuationColor * vec3(1.0, 0.65, 0.3) * scatterFalloff * candleScatter * 0.22;');
+      shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nvarying float lampHeight;\nuniform float candleScatter;\nuniform float shadeHeight;\nuniform vec3 candleTint;');
+      shader.fragmentShader=shader.fragmentShader.replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\nfloat scatterFalloff = exp(-pow((lampHeight / shadeHeight - 0.26) * 3.8, 2.0));\ntotalEmissiveRadiance += attenuationColor * candleTint * scatterFalloff * candleScatter * 0.22;');
       glassShader=shader;
     };
     function mesh(geometry,material,y=0,shadow=true){const m=new T.Mesh(geometry,material);m.position.y=y;m.castShadow=shadow;m.receiveShadow=shadow;model.add(m);return m;}
@@ -250,7 +252,8 @@
     goldMaterial.envMapIntensity=.08+.95*energy;
     blackMaterial.envMapIntensity=.08+1.2*energy;
     glassMaterial.envMapIntensity=.08+1.2*energy;
-    if(glassShader)glassShader.uniforms.candleScatter.value=energy;
+    if(endingRed){goldMaterial.envMapIntensity=0;blackMaterial.envMapIntensity=0;glassMaterial.envMapIntensity=0;}
+    if(glassShader){glassShader.uniforms.candleScatter.value=energy;if(endingRed)glassShader.uniforms.candleTint.value.setRGB(1,0,0);}
   }
   function animate(t){if(stopped)return;frame=requestAnimationFrame(animate);const dt=lastTime===null?0:Math.min((t-lastTime)/1000,.1);lastTime=t;const previousBurn=burn;burn=lit?Math.min(1,burn+dt/1.6):Math.max(0,burn-dt/1.3);if(previousBurn!==burn&&(burn===0||burn===1))$('status').textContent=lit?'烛光已点亮。':'烛火已熄灭。';if(dedicated&&lit&&previousBurn<1&&burn===1&&!lampConfirmTimer)lampConfirmTimer=setTimeout(()=>{if(stopped)return;$('lampConfirm').hidden=false;$('lampConfirmOk').focus()},1000);controls.autoRotate=rotating;controls.update();updateLight(t);renderer.render(scene,camera);}
   frame=requestAnimationFrame(animate);
@@ -286,15 +289,15 @@
     input.value='';$('status').hidden=false;$('status').textContent='心愿已送至留言板。';
   };
   $('reset').onclick=()=>{state={...defaults,base:memorialId==='zhang-wenhua'?'lotus':defaults.base,shade:memorialId==='zhang-wenhua'?'amber':dedicated?'cloud':defaults.shade};for(const shade in shadeColors)delete shadeColors[shade];shadeColors[state.shade]=state.shadeColor;lit=!dedicated;lightButton();build();try{if(canSaveCustom||dedicated)localStorage.removeItem(storageKey);$('saveFeedback').textContent='已恢复默认设置。'}catch(_){$('saveFeedback').textContent='已恢复默认设置，但无法清除旧存档。'}};
-  let endingStarted=false;
   function showZhengEnding(){
     if(endingStarted)return;endingStarted=true;
-    lit=true;burn=1;light.color.set('#ff0033');flame.material.color.setRGB(5,.01,.04);glow.material.color.set('#ff0033');wickMaterial.emissive.set('#ff0033');glassMaterial.color.set('#ff1744');
+    lit=false;lightButton();
+    const redTimer=setTimeout(()=>{if(stopped)return;endingRed=true;lit=true;burn=0;state.brightness=1;light.color.setRGB(1,0,0);bounce.color.setRGB(1,0,0);flame.material.color.setRGB(4,0,0);glow.material.color.setRGB(1,0,0);wickMaterial.emissive.setRGB(1,0,0);glassMaterial.color.setRGB(1,0,0);glassMaterial.attenuationColor.setRGB(1,0,0);goldMaterial.color.setRGB(.5,0,0);scene.background.set('#000000');lightButton();},1500);
     document.querySelector('.studio').inert=true;
     const target=parent!==window?parent:window,doc=target.document;
     const overlay=doc.createElement('div');overlay.className='zheng-ending';
-    overlay.style.cssText='position:fixed;inset:0;z-index:2147483647;display:flex;align-items:flex-end;justify-content:flex-end;padding:clamp(18px,4vw,58px);box-sizing:border-box;background:rgba(10,0,3,.38);opacity:0;transition:opacity .4s';
-    const panel=doc.createElement('section');panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-label','故事未完');panel.style.cssText='width:min(500px,100%);max-height:85vh;overflow:auto;background:#180e12ed;border:1px solid #773f4b;padding:24px;box-sizing:border-box;color:#fff0ec;box-shadow:0 14px 70px #0008;font:18px/1.8 Microsoft YaHei,sans-serif';
+    overlay.style.cssText='position:fixed;inset:0;z-index:2147483647;display:flex;align-items:flex-end;justify-content:flex-end;padding:clamp(18px,4vw,58px);box-sizing:border-box;background:#000;opacity:0';
+    const panel=doc.createElement('section');panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-label','故事未完');panel.style.cssText='width:min(500px,100%);max-height:85vh;overflow:auto;background:#000;border:0;padding:24px;box-sizing:border-box;color:#fff0ec;box-shadow:0 14px 70px #0008;font:18px/1.8 Microsoft YaHei,sans-serif';
     const text=doc.createElement('p');text.textContent='感谢你玩到这里，但我的故事还没结束';text.style.cssText='margin:0 0 20px;font-size:22px;letter-spacing:1px';
     const image=doc.createElement('img');image.src=new URL('assets/story-creator.png',location.href).href;image.alt='作者主页';image.style.cssText='display:block;width:100%;height:auto;margin-bottom:22px';
     const next=doc.createElement('button');next.textContent='继续';next.style.cssText='display:block;margin-left:auto;padding:10px 28px;border:1px solid #b77b84;background:#7a2638;color:white;font:18px Microsoft YaHei,sans-serif;cursor:pointer';
@@ -302,8 +305,8 @@
     const previous=[...doc.body.children].filter(node=>node!==overlay).map(node=>[node,node.inert]);previous.forEach(([node])=>node.inert=true);
     const finish=()=>{localStorage.removeItem('memorial-invite-theme');previous.forEach(([node,value])=>node.inert=value);overlay.remove();target.location.href=new URL('index.html#home',location.href).href;};
     next.onclick=finish;overlay.addEventListener('keydown',event=>{if(event.key==='Tab'){event.preventDefault();next.focus();}if(event.key==='Escape'){event.preventDefault();finish();}});
-    setTimeout(()=>{if(!overlay.isConnected)return;overlay.style.opacity='1';if(!matchMedia('(prefers-reduced-motion: reduce)').matches)overlay.animate([{background:'rgba(255,65,90,.22)'},{background:'rgba(10,0,3,.38)'}],{duration:260,iterations:1});next.focus();},650);
-    addEventListener('pagehide',()=>{previous.forEach(([node,value])=>node.inert=value);overlay.remove();},{once:true});
+    const revealTimer=setTimeout(()=>{if(!overlay.isConnected)return;overlay.style.opacity='1';if(!matchMedia('(prefers-reduced-motion: reduce)').matches)overlay.animate([{background:'#401018'},{background:'#000000'}],{duration:260,iterations:1});next.focus();},3700);
+    addEventListener('pagehide',()=>{clearTimeout(redTimer);clearTimeout(revealTimer);previous.forEach(([node,value])=>node.inert=value);overlay.remove();},{once:true});
   }
   const saveConfirm=document.createElement('div');saveConfirm.className='lamp-confirm lamp-save-confirm';saveConfirm.hidden=true;saveConfirm.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="saveConfirmTitle"><button class="lamp-confirm-close" type="button" aria-label="关闭">×</button><div class="lamp-confirm-icon"><img src="assets/lamp-symbol.png?v=1" alt=""></div><h2 id="saveConfirmTitle">长明灯已保存</h2><p class="save-confirm-message"></p><div class="save-confirm-actions"><button class="save-confirm-stay" type="button">继续定制</button><button class="save-confirm-view" type="button">查看纪念馆</button></div></section>';document.body.append(saveConfirm);
   const closeSaveConfirm=()=>{saveConfirm.hidden=true};saveConfirm.querySelector('.lamp-confirm-close').onclick=closeSaveConfirm;saveConfirm.querySelector('.save-confirm-stay').onclick=closeSaveConfirm;saveConfirm.querySelector('.save-confirm-view').onclick=()=>{closeSaveConfirm();try{parent.location.hash=`#hall/${encodeURIComponent(memorialId)}`}catch(_){location.href=`index.html#hall/${encodeURIComponent(memorialId)}`}};saveConfirm.onclick=event=>{if(event.target===saveConfirm)closeSaveConfirm()};
