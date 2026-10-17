@@ -139,7 +139,7 @@ videoControlsObserver.observe(app,{childList:true,subtree:true});
 const demo={id:'demo',name:'阿乐',birth:'2024年08月21日',death:'2024年08月21日',creator:'admin',bio:'123123',records:[{type:'点烛',by:'admin',at:'2024年08月21日 21:30',text:'点燃了一支蜡烛，照亮前路'},{type:'上香',by:'admin',at:'2024年08月21日 21:28',text:'献上了一炷香，寄托哀思'},{type:'献花',by:'admin',at:'2024年08月21日 21:28',text:'献上了一束花，表达怀念'}]};
 const zhenzhen={id:'chen-zhenzhen',name:'陈珍珍',birth:'2004年03月14日',death:'2024年',creator:'安念堂',bio:'愿你在另一处，获得平静。',records:[]};
 const zhangwenhua={id:'zhang-wenhua',name:'张文华',birth:'1976年08月17日',death:'2013年11月03日',creator:'安念堂',bio:'张文华生于云阳，2013年于云阳市家中离世。',records:[]};
-const zhengxiuqin={id:'zheng-xiuqin',name:'郑秀琴',birth:'1975年',death:'2011年05月12日',creator:'安念堂',bio:'郑秀琴生于云阳，2011年于云阳市城南区离世。',records:[]};
+const zhengxiuqin={id:'zheng-xiuqin',name:'郑秀琴',birth:'1975年',death:'2005年05月12日',creator:'安念堂',bio:'郑秀琴生于云阳，2005年于云阳市城南区离世。',records:[]};
 const halls=()=>[zhenzhen,zhangwenhua,zhengxiuqin,demo,...saved()];
 const searchableHalls=()=>halls().filter(h=>!document.body.classList.contains('invite-theme')||(['chen-zhenzhen','zhang-wenhua','zheng-xiuqin','demo'].includes(h.id)&&!(h.id==='chen-zhenzhen'&&!window.memorialRegistrationState?.chen)));
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -822,7 +822,7 @@ function zhangwenhuaMemorial(initialTab='story'){
     ['工厂时期｜第一次听说桃原市','在工厂宿舍生活期间，一位年长女工曾多次向她们提起“桃原市”，称只要多做好事、积累福报，将来便有机会去往一个没有贫穷和痛苦的地方。张文华起初只把这些话当作长辈的安慰，并没有真正放在心上。'],
     ['工厂时期｜经历风波','工作期间，厂内接连发生了一些异常事件。1998年，一名与她们相熟的女工在设备事故中意外去世。此后，张文华也逐渐意识到工厂内部存在不少问题。这段经历给她留下了很深的影响，也让她始终没有彻底忘记年轻时听到的“桃原市”。'],
     ['离开工厂｜各自开始生活','经历那段时期后，张文华后来离开工厂，逐渐建立自己的家庭。虽然生活方向发生变化，她与郑秀琴仍一直保持联系。'],
-    ['成家以后｜家庭与牵挂','张文华婚后生下陈珍珍，家庭生活并不宽裕。郑秀琴偶尔仍会来看望她们，也曾向张文华表达过自己对家庭和孩子的羡慕。张文华当时并未太在意，只把这些话当作好友间的闲谈。'],
+    ['成家以后｜家庭与牵挂','张文华婚后生下陈珍珍，家庭生活并不宽裕。郑秀琴时常来看望她们'],
     ['生活低谷｜桃原市再次被提起','后来，郑秀琴的生活陷入低谷，并再次向张文华提起年轻时在工厂听说的“桃原市”。她开始认真相信，只要积累足够的福报，就能够前往那里。张文华起初并不认同，只把这些话当作好友在困境中的寄托。'],
     ['2005年｜故友离世','2005年，郑秀琴意外离世，年仅30岁。张文华一直无法释怀她生前最后一段时间的状态，也开始反复想起她曾说过的“桃原市”和“福报”。原本被她当作传闻的东西，也从此变成了一件始终无法彻底忘记的事。'],
     ['郑愿出生以后｜送往郑家','后来郑愿出生。由于家庭经济状况持续紧张，夫妻关系也长期不稳，张文华最终将年幼的郑愿交由郑家亲属照料。对她而言，这既是现实中的无奈选择，也多少带着对故友郑秀琴的愧疚与牵挂。'],
@@ -872,16 +872,43 @@ function zhangwenhuaMemorial(initialTab='story'){
 }
 function zhengxiuqinMemorial(initialTab='story'){
   const timeline=[
-    ['1975年｜出生于云阳','郑秀琴出生于云阳周边农村。家境普通，年轻时便离开家乡来到云阳市谋生，希望靠自己的工作改善生活。'],
-    ['年轻时期｜与张文华一同进厂','来到云阳市后，郑秀琴与好友张文华进入同一家服装厂工作。两人住在工厂宿舍，平日彼此照应，关系一直十分亲近。'],
-    ['工厂时期｜第一次听说桃原市','在宿舍生活期间，一位年长女工曾多次向她们提起“桃原市”，称那里没有贫穷和痛苦，只要多做好事、积累福报，将来便有机会前往。郑秀琴起初只把这些话当作长辈的安慰，并没有真正相信。'],
-    ['工厂时期｜经历风波','工作期间，郑秀琴逐渐察觉厂内部分年轻女工遭到不当对待。1998年，厂内又发生严重设备事故，一名与她们相熟的女工意外去世。此后，随着她了解到越来越多异常情况，郑秀琴开始私下帮助部分工友，并最终匿名向有关部门反映相关问题。这段经历给她留下了很深的影响。'],
-    ['离开工厂｜经营服装店','离开工厂后，郑秀琴留在云阳市生活，并凭借多年积累开了一家小服装店。生意最好的几年里，生活逐渐稳定，她与张文华也一直保持往来。'],
-    ['郑愿幼年｜承担照料','由于家庭情况，好友张文华将年幼的郑愿托付给郑秀琴照料。郑秀琴一直把他当作自家孩子照顾，郑愿也因此在她家生活过一段时间。'],
-    ['事业受挫｜生活重新陷入低谷','后来，郑秀琴的服装店因经营不善逐渐陷入困境，最终停业，并留下了一些债务和尚未结清的员工工资。此后她靠零工维持生活，同时一点点偿还欠款。即便生活并不宽裕，她仍会参与一些志愿活动，也会尽力帮助比自己更困难的人。'],
-    ['低谷时期｜重新想起桃原市','生活陷入低谷后，郑秀琴再次想起年轻时在工厂听过的“桃原市”。与过去不同的是，她开始认真相信，只要持续积累福报，或许真的能够去往一个没有痛苦、可以重新开始的地方。她也曾向身边人提起，自己正在完成一件“必须做完的事”。'],
-    ['2011年｜离世','2011年5月12日，郑秀琴于云阳市城南区一处出租屋内离世，年仅36岁。']
-  ];
+  [
+    "1975年｜出生于云阳",
+    "郑秀琴出生于云阳周边农村。家境普通，年轻时便希望离开家乡，通过工作改变自己的生活。"
+  ],
+  [
+    "年轻时期｜离开家乡",
+    "成年后，郑秀琴与好友张文华一同来到云阳市，两人随后进入同一家服装厂工作。初到城市时彼此照应，是对方少数能够信任的人。"
+  ],
+  [
+    "工厂时期｜第一次听说桃原市",
+    "住在工厂宿舍期间，一位年长女工经常照顾她们，也曾多次提到一个叫“桃原市”的地方。她说，只要多做好事、积累福报，最后便能够去往一个没有贫穷和痛苦的地方。\n郑秀琴最初并不真正相信，只把这些话当作对生活的一种安慰。"
+  ],
+  [
+    "1998年｜工厂风波",
+    "1998年，一名与她们相熟的女工在设备事故中意外去世。此后发生的一些异常情况，使郑秀琴开始重新回想起对方过去有关“桃原市”的说法。\n与此同时，她逐渐发现厂内部分年轻女工长期遭受不当对待。郑秀琴开始私下帮助工友，并尝试将相关情况向外反映。"
+  ],
+  [
+    "离开工厂｜重新开始生活",
+    "离开工厂后，郑秀琴留在云阳市经营一家小型服装店。最初几年生意逐渐稳定，她也第一次觉得自己的生活真正有了起色。"
+  ],
+  [
+    "生活逐渐稳定｜未能实现的愿望",
+    "生活稍有好转后，郑秀琴也曾希望拥有自己的家庭和孩子，但始终没能如愿。\n她很少主动提起这件事，但却始终没能如愿."
+  ],
+  [
+    "生活低谷｜店铺倒闭",
+    "后来服装店经营出现问题，最终无法继续维持。除了生意失败，她还留下了一些债务和需要处理的后续问题。\n曾经好不容易建立起来的生活再次失去稳定，她开始变得沉默，也很少再谈以后要做什么。"
+  ],
+  [
+    "低谷时期｜重新想起桃原市",
+    "正是在这一时期，郑秀琴重新想起年轻时工厂宿舍里听到的“桃原市”。\n过去被她当作安慰的话，逐渐变成了另一种可能。\n她开始相信，如果真的能够积累足够的福报，也许有一天可以离开现在的生活，在另一个地方重新开始。\n此后，她开始更频繁地帮助他人，并有意识地记录自己所做的善事。"
+  ],
+  [
+    "2005年｜离世",
+    "2005年，郑秀琴意外离世，享年30岁"
+  ]
+];
   const fortuneRecords=[
     {title:'帮助拾荒老人 / 环卫工人',paragraphs:['郑秀琴平时遇到附近拾荒的老人或环卫工人，会主动送水、送饭，有时也会把店里不要的纸箱和旧物整理好交给他们。'],verdict:'获得福报'},
     {title:'捐给山区孩子自己剩下的衣物',paragraphs:['郑秀琴会把自己和店里剩下但还能穿的衣物整理出来，统一寄给山区学校和困难家庭。','服装店经营困难以后，她仍然保留了这个习惯。'],verdict:'获得福报'},
@@ -902,7 +929,7 @@ function zhengxiuqinMemorial(initialTab='story'){
   ];
   const dark=document.body.classList.contains('invite-theme');
   const portrait=dark?'assets/zheng-xiuqin-taoyuan.png':'assets/zheng-xiuqin-portrait.png';
-  app.innerHTML=`<div class="life-memorial-shell"><aside class="life-profile"><img class="life-portrait" src="${portrait}" alt="郑秀琴"><h1>郑秀琴</h1><p class="life-dates">1975　—　2011.05.12</p><p class="life-wish">愿记忆与思念长存。</p><dl><div><dt>性别</dt><dd>女</dd></div><div><dt>出生</dt><dd>1975年</dd></div><div><dt>籍贯</dt><dd>云阳</dd></div><div><dt>离世</dt><dd>2011年5月12日</dd></div><div><dt>${dark?'登记地':'安葬地'}</dt><dd>${dark?'桃原市纪念馆':'云阳市纪念馆'}</dd></div></dl>${dark?'':'<button class="life-flower" type="button">✿　献花</button>'}</aside><section class="life-story"><nav class="life-tabs" aria-label="纪念馆栏目"><button class="active" data-life-tab="story">过往记事</button><button data-life-tab="tributes">${dark?'福报记录':'祭奠记录'}</button><button data-life-tab="messages">留言板</button><span>／ 生者记忆 · 让爱延续 ／</span></nav><div class="life-pane active" data-life-pane="story"><div class="life-timeline">${timeline.map(([title,body])=>`<article><i></i><h2>${esc(title)}</h2><p>${esc(body)}</p></article>`).join('')}</div></div><div class="life-pane" data-life-pane="tributes"><div class="tribute-heading"><h2>${dark?'福报记录':'祭奠记录'}</h2></div><div class="tribute-list"></div></div><div class="life-pane" data-life-pane="messages"><div class="tribute-heading"><h2>留言板</h2></div></div></section></div><div class="flower-confirm" hidden><section role="dialog" aria-modal="true" aria-labelledby="flower-confirm-title"><button class="flower-confirm-close" type="button" aria-label="关闭">×</button><div class="flower-confirm-icon">✿</div><h2 id="flower-confirm-title">已献花</h2><p>愿这一束花承载思念，长伴她安眠。</p><button class="flower-confirm-ok" type="button">确定</button></section></div>`;
+  app.innerHTML=`<div class="life-memorial-shell"><aside class="life-profile"><img class="life-portrait" src="${portrait}" alt="郑秀琴"><h1>郑秀琴</h1><p class="life-dates">1975　—　2005.05.12</p><p class="life-wish">愿记忆与思念长存。</p><dl><div><dt>性别</dt><dd>女</dd></div><div><dt>出生</dt><dd>1975年</dd></div><div><dt>籍贯</dt><dd>云阳</dd></div><div><dt>离世</dt><dd>2005年5月12日</dd></div><div><dt>${dark?'登记地':'安葬地'}</dt><dd>${dark?'桃原市纪念馆':'云阳市纪念馆'}</dd></div></dl>${dark?'':'<button class="life-flower" type="button">✿　献花</button>'}</aside><section class="life-story"><nav class="life-tabs" aria-label="纪念馆栏目"><button class="active" data-life-tab="story">过往记事</button><button data-life-tab="tributes">${dark?'福报记录':'祭奠记录'}</button><button data-life-tab="messages">留言板</button><span>／ 生者记忆 · 让爱延续 ／</span></nav><div class="life-pane active" data-life-pane="story"><div class="life-timeline">${timeline.map(([title,body])=>`<article><i></i><h2>${esc(title)}</h2><p>${esc(body).replace(/\n/g,'<br>')}</p></article>`).join('')}</div></div><div class="life-pane" data-life-pane="tributes"><div class="tribute-heading"><h2>${dark?'福报记录':'祭奠记录'}</h2></div><div class="tribute-list"></div></div><div class="life-pane" data-life-pane="messages"><div class="tribute-heading"><h2>留言板</h2></div></div></section></div><div class="flower-confirm" hidden><section role="dialog" aria-modal="true" aria-labelledby="flower-confirm-title"><button class="flower-confirm-close" type="button" aria-label="关闭">×</button><div class="flower-confirm-icon">✿</div><h2 id="flower-confirm-title">已献花</h2><p>愿这一束花承载思念，长伴她安眠。</p><button class="flower-confirm-ok" type="button">确定</button></section></div>`;
   if(dark){
     app.querySelector('.life-timeline').innerHTML=taoyuanTimeline.map(([title,body])=>`<article><i></i><h2>${esc(title)}</h2><p>${esc(body)}</p></article>`).join('');
     app.querySelector('[data-life-pane="tributes"] .tribute-heading').insertAdjacentHTML('beforeend','<p>以下为已记录的福报事项。</p>');
