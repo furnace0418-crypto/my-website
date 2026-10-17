@@ -228,16 +228,12 @@
     "bytes": 103166
   },
   {
-    "path": "assets/avatars/taoyuan-forum-avatar-v2.webp",
-    "bytes": 103166
-  },
-  {
     "path": "assets/icons/qq-reference-penguin.webp",
     "bytes": 377698
   },
   {
-    "path": "assets/documents/case-archive-page.webp",
-    "bytes": 567720
+    "path": "assets/documents/case-archive-page-guide.webp",
+    "bytes": 646666
   },
   {
     "path": "assets/forum-orange-sky-ad-v2.webp",
@@ -276,7 +272,7 @@
     "bytes": 96746
   },
   {
-    "path": "assets/photos/tansiyuan-2023-01-21.webp",
+    "path": "assets/photos/si-zhuang.webp",
     "bytes": 90932
   },
   {
@@ -294,10 +290,6 @@
   {
     "path": "assets/photos/twin-case-news-v2.webp",
     "bytes": 1155664
-  },
-  {
-    "path": "assets/photos/number-pattern-v2.webp",
-    "bytes": 1417198
   },
   {
     "path": "assets/photos/zhenzhen-perfume.webp",
@@ -332,10 +324,6 @@
     "bytes": 1443486
   },
   {
-    "path": "assets/photos/si-zhuang.webp",
-    "bytes": 90932
-  },
-  {
     "path": "assets/forum-corner-ad-sheep.webp",
     "bytes": 328992
   },
@@ -368,11 +356,8 @@
     "bytes": 287874
   },
   {
-    "path": "assets/photos/student-id-new.webp",
-    "bytes": 2646618
-  },
-  {
     "path": "assets/photos/qzone-owner-background-wide.webp",
     "bytes": 335938
   }
 ]
+

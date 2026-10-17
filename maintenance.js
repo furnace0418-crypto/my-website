@@ -11,9 +11,9 @@
   // Available narrative files in the private archive.
   const files = [
     {name:'留言.txt',folder:'文字资料',key:'message',text:true,body:"如果你看到这里，我应该已经到桃原市了。\n在那里，我可以重新开始，把过去没能实现的事情一点点补回来。那些遗憾、错过的人，还有一直没能过上的生活，也许终于都可以重新来一次。\n所以不用替我难过。\n如果你愿意，帮我在安念堂建一个纪念馆吧。\n就当替过去的我留个位置。\n毕竟从这里以后，应该就是另一段人生了。"},
-    {name:'离婚协议书.png',folder:'影像资料',key:'agreement',image:'assets/documents/private-divorce-agreement.png'},
-    {name:'照片 1.png', folder:'影像资料', image:'assets/documents/private-photo-1.png'},
-    {name:'城北区住宅火灾新闻.jpeg', folder:'新闻剪报', key:'news', image:'assets/documents/private-news-1.jpeg'},
+    {name:'离婚协议书.png',folder:'影像资料',key:'agreement',image:'assets/documents/private-divorce-agreement.webp'},
+    {name:'照片 1.png', folder:'影像资料', image:'assets/documents/private-photo-1.webp'},
+    {name:'城北区住宅火灾新闻.jpeg', folder:'新闻剪报', key:'news', image:'assets/documents/private-news-1.webp'},
     {name:'调查补充说明.pdf', folder:'调查资料', pdf:'assets/documents/investigation-supplement.pdf'},
     {name:'音频节点 1.mp3', folder:'音频资料', audio:'assets/sounds/private-audio-node-1.mp3?v=20261017-2'},
     {name:'维护说明.txt', folder:'系统文件', body:'本机维护程序 — 使用说明\n版本 0.1 / 本地会话\n\n[01] 加密文件\n列出受保护目录中的可用资料。选择文件夹后，请核对文件清单，再执行“显示到桌面”。原始资料保持只读。\n\n[02] 桌面显示\n显示操作仅对当前会话有效。返回桌面后可双击文件夹查看内容；重新载入系统后，相关项目恢复隐藏。新闻剪报使用独立目录。\n\n[03] 系统检查\n系统状态与运行诊断用于检查本机会话和资源载入情况。会话日志记录本次维护操作。\n\n[04] 操作按键\n方向键：选择项目    Enter：确认\nEsc：返回上一层    F10：保存设置并退出\n\n[05] 退出维护\n选择“保存设置并返回桌面”保留显示设置；选择“不保存并返回桌面”放弃本次设置变更。退出不关闭原有桌面窗口。'}
@@ -30,7 +30,7 @@
     buttons.forEach((button,index)=>{
       const clean=button.cloneNode(true);button.replaceWith(clean);
       const file=bundleFiles()[index],glyph=clean.querySelector('.explorer-item-icon');
-      if(!file.text)glyph.style.backgroundImage=`url("${file.pdf?'assets/icons/file-pdf-32.svg':file.audio?'assets/icons/private-audio-transparent.png':'assets/icons/file-jpeg-32.svg'}")`;
+      if(!file.text)glyph.style.backgroundImage=`url("${file.pdf?'assets/icons/file-pdf-32.svg':file.audio?'assets/icons/private-audio-transparent.webp':'assets/icons/file-jpeg-32.svg'}")`;
       clean.onclick=()=>{win.querySelectorAll('.explorer-item').forEach(item=>item.classList.toggle('selected',item===clean));};
       clean.ondblclick=()=>window.openPrivateMaintenance(null,file);
       clean.onkeydown=event=>{if(event.key==='Enter'){event.preventDefault();window.openPrivateMaintenance(null,file);}};

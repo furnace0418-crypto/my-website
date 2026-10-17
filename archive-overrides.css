@@ -46,21 +46,21 @@
 .explorer-item-icon.exe{background:url("assets/icons/ghost-link-16.svg") center/54px 54px no-repeat;image-rendering:pixelated}
 .explorer-item-icon.exe:before,.explorer-item-icon.exe:after{display:none}
 .case-archive-window .archive-toolbar i{border:1px solid #6b7174;border-radius:2px;background:#d8dbdc center/27px 27px no-repeat;box-shadow:inset 1px 1px #fff,1px 1px #a4a8aa}
-.case-archive-window .archive-toolbar [data-tool="add"] i{background-image:url("assets/icons/archive-add-pixel.png")}
-.case-archive-window .archive-toolbar [data-tool="extract"] i{background-image:url("assets/icons/archive-extract-pixel.png")}
-.case-archive-window .archive-toolbar [data-tool="unpack"] i{background-image:url("assets/icons/archive-unpack-pixel.png")}
-.case-archive-window .archive-toolbar [data-tool="delete"] i{background-image:url("assets/icons/archive-delete-pixel.png")}
-.case-archive-window .archive-toolbar [data-tool="compress"] i{background-image:url("assets/icons/archive-compress-pixel.png")}
+.case-archive-window .archive-toolbar [data-tool="add"] i{background-image:url("assets/icons/archive-add-pixel.webp")}
+.case-archive-window .archive-toolbar [data-tool="extract"] i{background-image:url("assets/icons/archive-extract-pixel.webp")}
+.case-archive-window .archive-toolbar [data-tool="unpack"] i{background-image:url("assets/icons/archive-unpack-pixel.webp")}
+.case-archive-window .archive-toolbar [data-tool="delete"] i{background-image:url("assets/icons/archive-delete-pixel.webp")}
+.case-archive-window .archive-toolbar [data-tool="compress"] i{background-image:url("assets/icons/archive-compress-pixel.webp")}
 .case-archive-window .archive-toolbar button:hover i{background-color:#eef0f0}
 .case-archive-window .archive-toolbar button:active i{border-color:#444;background-color:#c4c9cb;box-shadow:inset 1px 1px #84898c}
 .case-archive-window .archive-address>button:disabled img{opacity:.78}
 .case-archive-window .case-folder-note button{background:#d7d9da}
 .case-archive-window .case-folder-note button:hover{background:#eceeee}
-.case-archive-window .archive-file-icon[src$="ghost-link-16.svg"]{content:url("assets/icons/ghost-link-cd.png");object-fit:cover;object-position:center}
-.ghost-link-desktop-entry .ghost-link-icon{background-image:url("assets/icons/ghost-link-cd.png")!important;background-size:48px 48px!important}
-.window-mini-icon.ghost-link,.task-app-icon.ghost-link{background-image:url("assets/icons/ghost-link-cd.png")!important;background-size:contain!important}
-.ghost-download-icon{background-image:url("assets/icons/ghost-link-cd.png");background-size:32px 32px}
-.explorer-item-icon.exe{background-image:url("assets/icons/ghost-link-cd.png");background-size:54px 54px}
+.case-archive-window .archive-file-icon[src$="ghost-link-16.svg"]{content:url("assets/icons/ghost-link-cd.webp");object-fit:cover;object-position:center}
+.ghost-link-desktop-entry .ghost-link-icon{background-image:url("assets/icons/ghost-link-cd.webp")!important;background-size:48px 48px!important}
+.window-mini-icon.ghost-link,.task-app-icon.ghost-link{background-image:url("assets/icons/ghost-link-cd.webp")!important;background-size:contain!important}
+.ghost-download-icon{background-image:url("assets/icons/ghost-link-cd.webp");background-size:32px 32px}
+.explorer-item-icon.exe{background-image:url("assets/icons/ghost-link-cd.webp");background-size:54px 54px}
 .ghost-installer{width:min(520px,calc(100vw - 28px));font-family:SimSun,"MS Sans Serif",sans-serif}
 .ghost-installer>main{padding:0 24px 16px;background:#dedfdf}
 .ghost-installer-brand{display:flex;align-items:center;justify-content:center;gap:18px;min-height:120px;margin:0 -24px 18px;border-bottom:1px solid #a3a7a8;background:#eeefef}
@@ -78,7 +78,7 @@
 .desktop-icons.desktop-free-layout>.desktop-icon{position:absolute;pointer-events:auto;touch-action:none;cursor:default}
 .desktop-icons.desktop-free-layout>.desktop-icon.dragging{z-index:20;opacity:.86;cursor:grabbing;transform:none;filter:drop-shadow(3px 4px 2px rgba(0,0,0,.35))}
 .desktop-icons.desktop-free-layout>.desktop-icon.recycle-drop-ready{outline:2px dashed #fff;background:rgba(0,0,80,.28)}
-.recycle-item .explorer-item-icon.shortcut,.property-file-icon.shortcut{background:url("assets/icons/ghost-link-cd.png") center/54px 54px no-repeat;image-rendering:pixelated}
+.recycle-item .explorer-item-icon.shortcut,.property-file-icon.shortcut{background:url("assets/icons/ghost-link-cd.webp") center/54px 54px no-repeat;image-rendering:pixelated}
 .recycle-item .explorer-item-icon.shortcut:before,.recycle-item .explorer-item-icon.shortcut:after,.property-file-icon.shortcut:before,.property-file-icon.shortcut:after{display:none}
 .case-archive-window>.archive-toolbar{min-height:73px;padding:5px 9px;background:#d8dadb;border-bottom:1px solid #a5aaad}
 .case-archive-window .archive-toolbar button{min-width:76px;gap:2px;padding:3px 7px;color:#3f4548;font:14px SimSun,"MS Sans Serif",sans-serif}
@@ -95,9 +95,9 @@
 .recycle-native-icon>.qq-icon{width:70px;height:68px;background-size:68px 68px}
 .recycle-native-icon.recycle-property-icon>.qq-icon{width:58px;height:58px;background-size:58px 58px}
 .recycle-native-icon.ghost-link-desktop-entry>.ghost-link-icon{width:58px!important;height:58px!important;background-size:54px 54px!important}
-.desktop-icon .recycle-icon.recycle-full{background-image:url("assets/icons/recycle-full-pixel.png");background-size:92px 92px;background-position:center 53%;image-rendering:pixelated}
-.recycle-large-icon.recycle-full{background-image:url("assets/icons/recycle-full-pixel.png");background-size:110px 110px}
-.window-mini-icon.recycle.recycle-full,.task-app-icon.recycle.recycle-full{background-image:url("assets/icons/recycle-full-pixel.png")!important;background-size:29px 29px!important}
+.desktop-icon .recycle-icon.recycle-full{background-image:url("assets/icons/recycle-full-pixel.webp");background-size:92px 92px;background-position:center 53%;image-rendering:pixelated}
+.recycle-large-icon.recycle-full{background-image:url("assets/icons/recycle-full-pixel.webp");background-size:110px 110px}
+.window-mini-icon.recycle.recycle-full,.task-app-icon.recycle.recycle-full{background-image:url("assets/icons/recycle-full-pixel.webp")!important;background-size:29px 29px!important}
 .case-archive-window>.archive-toolbar{min-height:74px;gap:3px;padding:4px 10px;border-bottom:1px solid #969c9e;background:#d6d9d9}
 .case-archive-window .archive-toolbar button{min-width:80px;gap:3px;padding:3px 6px;color:#34393b;font:15px/20px SimSun,"MS Sans Serif",sans-serif}
 .case-archive-window .archive-toolbar i{width:36px;height:36px;background-size:36px 36px;filter:contrast(.62) brightness(1.18);image-rendering:pixelated}
@@ -112,3 +112,4 @@
 .browser-window .forum-ad-error p{margin:0 0 8px;color:#5f6368;font:14px/1.8 Arial,"Microsoft YaHei",sans-serif}
 .browser-window .forum-ad-error hr{display:none}
 .browser-window .forum-ad-error small{display:block;margin-top:20px;color:#6f7378;font:12px/1.6 Arial,"Microsoft YaHei",sans-serif}
+

@@ -185,7 +185,7 @@
   makePaperMaps(null);
   const paperImage = new Image();
   paperImage.onload = () => { if (!disposed) { makePaperMaps(paperImage); build(); } };
-  paperImage.src = 'assets/xuan-paper-v1.png';
+  paperImage.src = 'assets/xuan-paper-v1.webp';
 
   function clearModel() {
     if (!model) return;
@@ -445,3 +445,4 @@
     renderer.dispose();
   });
 })();
+
