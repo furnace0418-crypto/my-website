@@ -1,8 +1,8 @@
 (() => {
-  const VERSION = "20261005-2";
+  const VERSION = "20261018-1";
   const FILE_NAME = `taoyuan-desktop-assets-${VERSION}.zip`;
   const URL_PATH = `assets/desktop-assets-${VERSION}.zip`;
-  const SHA256 = "5d91e3422947937665146f30f719d8dd1527257f1ca19db8b22eda53925f52e3";
+  const SHA256 = "163dbf2a8d31259bdc77a55d48c654b39543f4f6d9fae2be9b8bc77079ceb582";
   const DB_NAME = "taoyuan-local-assets";
   const STORE_NAME = "files";
 
@@ -65,9 +65,10 @@
       entries.set(name, new Uint8Array(buffer, dataOffset, length));
       offset = dataOffset + length;
     }
-    if (!entries.has("assets/image-preload-manifest.json")) throw new Error("Asset manifest missing");
-    const items = JSON.parse(decoder.decode(entries.get("assets/image-preload-manifest.json")));
-    if (!Array.isArray(items) || items.length !== 94 || items.some(item => !entries.has(item.path))) {
+    if (!entries.has("assets/desktop-resource-manifest.json")) throw new Error("Asset manifest missing");
+    const manifest = JSON.parse(decoder.decode(entries.get("assets/desktop-resource-manifest.json")));
+    const items = manifest.items;
+    if (manifest.version !== VERSION || !Array.isArray(items) || !items.length || new Set(items.map(item => item.path)).size !== items.length || items.some(item => !/^assets\/(?!.*\.\.)/.test(item.path) || !entries.has(item.path) || entries.get(item.path).length !== item.bytes || typeof item.mime !== 'string')) {
       throw new Error("Asset pack is incomplete");
     }
     return { items, entries };
@@ -85,3 +86,4 @@
 
   window.DesktopAssetPack = { VERSION, FILE_NAME, URL_PATH, storedFile, rememberFile, rememberBlob, readStored };
 })();
+

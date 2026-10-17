@@ -25,7 +25,7 @@
     if (!saved || saved.version !== window.DesktopAssetPack.VERSION) throw new Error("No current local pack");
     const { items, entries } = await window.DesktopAssetPack.readStored(saved);
     const totalBytes = items.reduce((sum, item) => sum + item.bytes, 0);
-    const cache = await caches.open("taoyuan-desktop-20261005-2");
+    const cache = await caches.open(`taoyuan-desktop-${window.DesktopAssetPack.VERSION}`);
     const decodedImages = [];
     const byPath = new Map();
     let loadedBytes = 0, loaded = 0;
@@ -38,15 +38,17 @@
         const item = items[cursor++];
         const bytes = entries.get(item.path);
         const extension = item.path.split(".").pop().toLowerCase();
-        const mime = { webp: "image/webp", svg: "image/svg+xml" }[extension] || "application/octet-stream";
+        const mime = item.mime || { webp: "image/webp", svg: "image/svg+xml" }[extension] || "application/octet-stream";
         const blob = new Blob([bytes], { type: mime });
         await cache.put(new Request(new URL(item.path, location.href)), new Response(blob, { headers: { "Content-Type": mime } }));
-        const image = new Image();
-        image.decoding = "async";
-        image.src = URL.createObjectURL(blob);
-        await image.decode();
-        decodedImages.push(image);
-        byPath.set(item.path, image);
+        if (mime.startsWith('image/')) {
+          const image = new Image();
+          image.decoding = "async";
+          image.src = URL.createObjectURL(blob);
+          await image.decode();
+          decodedImages.push(image);
+          byPath.set(item.path, image);
+        }
         loadedBytes += bytes.byteLength;
         loaded++;
         notify("desktop-preload-progress", { loaded, total: items.length, failed: 0, loadedBytes, totalBytes, progress: Math.min(1, loadedBytes / totalBytes) });

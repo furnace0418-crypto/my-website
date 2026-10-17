@@ -1,6 +1,6 @@
 const CACHE_PREFIX = "taoyuan-desktop-";
 // New image formats use a fresh cache; discard stale PNG/JPEG entries.
-const CACHE_NAME = `${CACHE_PREFIX}20261005-2`;
+const CACHE_NAME = `${CACHE_PREFIX}20261018-1`;
 
 self.addEventListener("install", () => self.skipWaiting());
 
@@ -59,10 +59,31 @@ async function networkFirst(request) {
 
 self.addEventListener("fetch", (event) => {
   const { request } = event;
-  if (request.method !== "GET" || request.headers.has("range")) return;
+  if (request.method !== "GET") return;
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+
+  // Packed desktop assets are read locally, including audio byte-range requests.
+  const desktopAssets = new URL('desktop/assets/', self.registration.scope).pathname;
+  if (url.pathname.startsWith(desktopAssets) && !/desktop-assets-[^/]+\.zip$/i.test(url.pathname)) {
+    event.respondWith((async () => {
+      const cache = await caches.open(CACHE_NAME);
+      const cached = await cache.match(url.href, {ignoreSearch:true});
+      if (!cached) return fetch(request);
+      const range = request.headers.get('range');
+      if (!range) return cached;
+      const bytes = await cached.arrayBuffer();
+      const match = /^bytes=(\d*)-(\d*)$/.exec(range);
+      if (!match || (!match[1] && !match[2])) return fetch(request);
+      const start = match[1] ? Number(match[1]) : Math.max(0, bytes.byteLength - Number(match[2]));
+      const end = match[1] && match[2] ? Math.min(Number(match[2]), bytes.byteLength - 1) : bytes.byteLength - 1;
+      if (start > end || start >= bytes.byteLength) return new Response(null,{status:416,headers:{'Content-Range':`bytes */${bytes.byteLength}`}});
+      return new Response(bytes.slice(start,end+1),{status:206,headers:{'Content-Type':cached.headers.get('Content-Type') || 'application/octet-stream','Content-Range':`bytes ${start}-${end}/${bytes.byteLength}`,'Content-Length':String(end-start+1),'Accept-Ranges':'bytes'}});
+    })());
+    return;
+  }
+  if (request.headers.has('range')) return;
 
   // The user-selected ZIP is the durable copy; do not duplicate it in Cache Storage.
   if (/desktop-assets-[^/]+\.zip$/i.test(url.pathname)) {
@@ -84,3 +105,4 @@ self.addEventListener("fetch", (event) => {
 
   event.respondWith(cacheFirstAndRefresh(event));
 });
+
