@@ -1,7 +1,7 @@
 (() => {
   // Fictional narrative files: replace these placeholders when story content is ready.
   const files = [
-    {name:'照片 1.jpeg', folder:'影像资料', image:'assets/documents/private-photo-1.jpeg'},
+    {name:'照片 1.png', folder:'影像资料', image:'assets/documents/private-photo-1.png'},
     {name:'城北区住宅火灾新闻.jpeg', folder:'新闻剪报', key:'news', image:'assets/documents/private-news-1.jpeg'},
     {name:'陈珍珍死亡事件_补充调查情况说明.pdf', folder:'调查资料', pdf:'assets/documents/chen-supplementary-investigation.pdf'},
     {name:'音频节点 1.mp3', folder:'音频资料', audio:'assets/sounds/private-audio-node-1.mp3?v=20261017-2'},
