@@ -86,7 +86,12 @@ function renderAdminContact(host){
   };
   adminCompletionMessage=message=>appendMessage('admin',message);
   const actions=host.querySelector('.admin-chat-actions');
+  let flowVersion=0;
+  const backBar=document.createElement('div');backBar.className='admin-chat-backbar';
+  const back=document.createElement('button');back.type='button';back.textContent='返回';back.title='返回咨询事项';backBar.append(back);actions.before(backBar);
+  back.onclick=()=>{flowVersion++;host.classList.remove('has-form');log.querySelectorAll('.admin-typing').forEach(node=>node.remove());showTopics();};
   const deliver=async(messages,next)=>{
+    const version=++flowVersion;
     actions.replaceChildren();
     for(const message of messages){
       const typing=document.createElement('div');
@@ -96,8 +101,10 @@ function renderAdminContact(host){
       log.scrollTop=log.scrollHeight;
       await new Promise(resolve=>setTimeout(resolve,650));
       typing.remove();
+      if(version!==flowVersion)return;
       appendMessage('admin',message);
       await new Promise(resolve=>setTimeout(resolve,180));
+      if(version!==flowVersion)return;
     }
     next?.();
   };
@@ -126,9 +133,11 @@ function renderAdminContact(host){
       appendMessage('visitor',value);
       const button=form.querySelector('button[type="submit"]');
       button.disabled=true;
+      const version=flowVersion;
       let valid=false;
       try{valid=await window.memorialGateVerify('admin',{code:value})}
-      catch(_){deliver(['验证暂时不可用，请稍后重试。'],showCodeForm);return}
+      catch(_){if(version===flowVersion)deliver(['验证暂时不可用，请稍后重试。'],showCodeForm);return}
+      if(version!==flowVersion)return;
       if(!valid){
         deliver(['编号暂未匹配，请核对后重新输入。'],showCodeForm);
         return;
@@ -143,7 +152,8 @@ function renderAdminContact(host){
       const button=document.createElement('button');button.type='button';button.textContent=label;
       button.onclick=()=>{
         appendMessage('visitor',label);
-        deliver([kind==='missing'?'您要补全哪位居民的信息？请输入姓名。':'您要更正哪位居民的信息？请输入姓名。'],()=>showResidentNameForm(kind));
+        if(kind==='correction'){deliver(['当前业务繁忙，信息勘误服务暂时无法办理，请稍后再试。'],showRegistrationChoices);return;}
+        deliver(['您要补全哪位居民的信息？请输入姓名。'],()=>showResidentNameForm(kind));
       };
       actions.querySelector('.admin-topic-buttons').appendChild(button);
     }
@@ -157,7 +167,7 @@ function renderAdminContact(host){
       if(!residentName)return;
       appendMessage('visitor',residentName);
       const replies=residentName==='陈珍珍'
-        ?['陈珍珍的迁入记录在最终确认时出现异常。系统判定显示，其现实中的死亡形式符合“意外终止”条件，但相关过程存在明显的人为干预痕迹。根据生前记录，她曾主动介入迁入进程，使部分条件提前达成。由于最终结果仍以非直接主动方式发生，该次迁入结果判定有效，但不符合常规流程，故列入异常记录。',`在继续登记前，请问您与${residentName}是什么关系？`]
+        ?['系统已检索到陈珍珍的资料。\n根据现有记录，其生前福报已达到登记要求\n但该居民的部分登记资料在归档过程中缺失，目前纪念馆信息尚未完整建立。\n请补全相关居民资料后继续登记。',`在继续登记前，请问您与${residentName}是什么关系？`]
         :[`在继续登记前，请问您与${residentName}是什么关系？`];
       deliver(replies,()=>showRelationshipChoices(kind,residentName));
     };
@@ -294,6 +304,7 @@ function renderAdminContact(host){
     const saveButton=form.querySelector(':scope > button');
     saveButton.onclick=async()=>{
       if(saveButton.disabled)return;
+      const version=flowVersion;
       saveButton.disabled=true;
       feedback.hidden=false;
       let correct=false;
@@ -309,7 +320,8 @@ function renderAdminContact(host){
           relation:relation.value,
           year:date?.year,month:date?.month,day:date?.day
         });
-      }catch(_){feedback.textContent='验证暂时不可用，请稍后重试。';feedback.dataset.state='error';saveButton.disabled=false;return}
+      }catch(_){if(version!==flowVersion)return;feedback.textContent='验证暂时不可用，请稍后重试。';feedback.dataset.state='error';saveButton.disabled=false;return}
+      if(version!==flowVersion)return;
       if(!correct){feedback.textContent='信息有误，请核对后重试。';feedback.dataset.state='error';saveButton.disabled=false;return}
       feedback.textContent='登记资料已提交，正在核验，请稍候。';
       feedback.dataset.state='success';
@@ -327,3 +339,4 @@ function renderAdminContact(host){
   };
   deliver(['您好，您想咨询什么问题？'],showTopics);
 }
+
