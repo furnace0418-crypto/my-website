@@ -1,6 +1,8 @@
 (() => {
   const desktop = document.querySelector('#desktop');
   const icons = desktop.querySelector('.desktop-icons');
+  // Browser image/text drags must not compete with the desktop pointer drag.
+  icons.addEventListener('dragstart',event=>{if(event.target.closest('.desktop-icon'))event.preventDefault();});
   const storageKey = 'retroDesktopDocumentsV1';
   let documents = [];
   try { documents = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch {}
@@ -73,7 +75,7 @@
     icon.addEventListener('click', event => { event.stopPropagation(); select(icon); });
     if(item.privateFile==='audio'){
       const glyph=icon.querySelector('.private-desktop-file-icon');glyph.textContent='';glyph.style.cssText='display:block;position:relative;width:48px;height:52px;overflow:hidden;';
-      const image=document.createElement('img');image.src='assets/icons/private-audio-transparent.png';image.alt='';image.style.cssText='display:block;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;';glyph.appendChild(image);
+      const image=document.createElement('img');image.src='assets/icons/private-audio-transparent.png';image.alt='';image.draggable=false;image.style.cssText='display:block;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;pointer-events:none;user-select:none;-webkit-user-drag:none;';glyph.appendChild(image);
     }
     if(item.privateFile==='pdf'){
       const glyph=icon.querySelector('.private-desktop-file-icon');glyph.textContent='';glyph.style.cssText='display:block;width:48px;height:48px;background:url("assets/icons/file-pdf-32.svg") center/contain no-repeat;image-rendering:pixelated;';
