@@ -9,6 +9,7 @@
   ];
   window.openPrivateDesktopFile=key=>{const file=files.find(file=>file.key===key||(!file.key&&['pdf','audio','image'].includes(key)&&file[key]));if(file)window.openPrivateMaintenance(null,file);};
   window.openPrivateMaintenance = function(onExit, desktopFile=null) {
+    if(desktopFile?.image){openPhotoViewer({name:desktopFile.name,src:desktopFile.image,source:'私人资料'});return;}
     if(!desktopFile&&document.querySelector('#private-maintenance')) return;
     const appId=desktopFile?(desktopFile.key?'private-'+desktopFile.key:desktopFile.pdf?'private-pdf':desktopFile.image?'private-image':'private-audio'):null;
     if(appId&&document.querySelector(`[data-app="${appId}"]`)){openApp(appId);return;}
