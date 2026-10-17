@@ -61,6 +61,26 @@ const returnPathChapters = [
     '其后或可听见声音，见其背影，甚至在极短时间内与之相望。',
     '福报既足，二身之间的界限亦将愈发薄弱。'
   ]},
+  {id:'return-path-fortune',title:'关于福报',paragraphs:[
+    '福报渐积，二身之隔亦渐薄。',
+    '初时，愿身只存于念。',
+    '其貌未明，其声未闻，只偶尔现于梦中。',
+    '福报渐厚，则愿身渐清。',
+    '先见其影，而后辨其貌；先闻其声，而后知其意。',
+    '及福报将成，愿身所承之记忆、所愿、所憾，亦将愈发完整。',
+    '故福报愈盛，愿身愈近于现世。',
+    '然而愿身并非只受福报滋养。',
+    '人心所念，亦可养之。',
+    '若一人常念未得之物，常思未成之事，日夜沉溺于“若当初如此”“若人生能够重来”，则其愿身所得之念，亦会渐重。',
+    '若仍知现世为身，愿想为镜，则无妨。',
+    '若久居想象之中，厌弃现世，只愿活于未曾发生之人生，则愿身或会过盛。',
+    '现世愈被轻弃，愿身愈被相信。',
+    '至此，愿身便不再只是现世之身的一道倒影。',
+    '它会愈发完整，愈发清醒，甚至开始拥有属于自身的执念。',
+    '故前人有戒：'
+  ],quote:'有愿而不可溺愿。\n有梦而不可弃身。',afterQuote:[
+    '愿身本为归一而生。<br>若愿盛于身，念重于实，则归一之时，二身未必仍能安然相合。<br>此类情形极少见。<br>亦不可强求验证。'
+  ],footnote:'福报之义，何为善，何为度，何为积福，可另阅福善文化研究会所录<a href="#articles/fortune">《福报说明》</a>。'},
   {id:'return-path-unity',title:'关于归一',part:'第三部分',paragraphs:[
     '福报既成，现世之身与愿身便已具备归一之缘。',
     '然而归一并非由人自行决定。',
@@ -84,6 +104,8 @@ const returnPathChapters = [
     '见者若无缘，只会徒增恐惧。'
   ]}
 ];
+const returnPathNotes=['现世之身、愿身与桃原之间的关系','桃原的存在方式，以及人与其建立联系的过程','愿身如何由人的遗憾与愿望逐渐形成','福报如何加深联系，并使愿身逐渐清晰','福报既成之后，二身如何于死亡之际归一','归一完成之后，为何现世仍可能留下两具相同遗身'];
+returnPathChapters.forEach((chapter,index)=>{chapter.part=`第${index+1}篇`;chapter.note=returnPathNotes[index];});
 function returnPathSidebar(id='return-path-first'){
   return '<h2>归途录</h2>'+returnPathChapters.map(chapter=>`<a href="#articles/${chapter.id}" ${chapter.id===id?'aria-current="page"':''}><span>${chapter.title}</span>${chapter.part?`<small>${chapter.part}</small>`:''}</a>`).join('')+'<h2 class="bulletin-subheading">纪念文化</h2><a href="#articles/fortune"><span>福报说明</span><small>善念与善行</small></a><h2 class="bulletin-subheading">服务支持</h2><a href="#articles/contact"><span>联系管理员</span><small>咨询与反馈</small></a>';
 }
@@ -92,9 +114,11 @@ function returnPathPage(id){
   app.innerHTML=`<div class="page-shell bulletin-page"><div class="bulletin-layout"><nav class="bulletin-sidebar" aria-label="归途录选择">${returnPathSidebar(chapter.id)}</nav><article class="bulletin-reader" aria-labelledby="bulletin-title"><header class="bulletin-article-header"><p>归途录${chapter.part?' · '+chapter.part:''}</p><h2 id="bulletin-title">${chapter.title}</h2></header><div class="bulletin-article-body">${chapter.paragraphs.map(text=>`<p>${text}</p>`).join('')}</div></article></div></div>`;
   app.querySelector('a[href="#articles/contact"]').onclick=event=>{event.preventDefault();showAdminBusyDialog();};
   const chapterIndex=returnPathChapters.indexOf(chapter);
+  app.querySelector('.bulletin-page').classList.add('return-path-page');
   const heading=app.querySelector('.bulletin-article-header');
   heading.querySelector('p').textContent='《归途录》 · '+chapter.part;
   const position=document.createElement('div');position.textContent=`第 ${chapterIndex+1} 篇 / 共 ${returnPathChapters.length} 篇`;heading.appendChild(position);
+  const note=document.createElement('aside');note.className='return-path-note';note.textContent='篇注 · '+chapter.note;heading.after(note);
   const sidebar=app.querySelector('.bulletin-sidebar');
   sidebar.setAttribute('aria-label','归途录篇章目录');
   sidebar.querySelector('h2').textContent='《归途录》目录';
@@ -107,6 +131,9 @@ function returnPathPage(id){
     strong.textContent=chapter.quote;quote.appendChild(strong);
     app.querySelector('.bulletin-article-body').appendChild(quote);
   }
+  const body=app.querySelector('.bulletin-article-body');
+  if(chapter.afterQuote)body.insertAdjacentHTML('beforeend',chapter.afterQuote.map(text=>`<p>${text}</p>`).join(''));
+  if(chapter.footnote)body.insertAdjacentHTML('beforeend',`<aside class="return-path-footnote">${chapter.footnote}</aside>`);
   const navigation=document.createElement('nav');navigation.className='return-path-navigation';navigation.setAttribute('aria-label','归途录前后篇');
   for(const [index,label] of [[chapterIndex-1,'上一篇'],[chapterIndex+1,'下一篇']]){
     const adjacent=returnPathChapters[index];if(!adjacent)continue;
@@ -118,9 +145,10 @@ function wireHomeBulletins(){
   const panel=app.querySelector('.notice-panel');
   if(!panel)return;
   if(document.body.classList.contains('invite-theme')){
+    panel.classList.add('return-path-directory');
     panel.querySelector('h2').innerHTML='<span>︽</span> 归途录 <span>︾</span>';
     panel.querySelector('.section-heading p').textContent='世人皆有二身。';
-    panel.querySelector('ul').innerHTML=returnPathChapters.map(chapter=>`<li><a href="#articles/${chapter.id}">《归途录》${chapter.part} · ${chapter.title.replace('《归途录·初篇》','初篇')}</a></li>`).join('');
+    panel.querySelector('ul').innerHTML=returnPathChapters.map((chapter,index)=>`<li><a href="#articles/${chapter.id}"><span class="return-path-number">${String(index+1).padStart(2,'0')}</span><span class="return-path-entry"><strong>${chapter.title.replace('《归途录·初篇》','初篇')}</strong><small>${chapter.note}</small></span><span class="return-path-arrow" aria-hidden="true">›</span></a></li>`).join('');
     return;
   }
   panel.querySelector('h2').innerHTML='<span>︽</span> 资讯 <span>︾</span>';
@@ -175,3 +203,4 @@ function showAdminBusyDialog(){
   document.addEventListener('keydown',onKeydown);
   overlay.querySelector('.admin-busy-confirm').focus();
 }
+
