@@ -932,8 +932,8 @@ function startCaseArchiveDownload() {
   dialog.innerHTML='<header><img src="assets/icons/case-archive-transparent.webp" alt=""><strong>文件下载</strong><button type="button" aria-label="取消下载" title="取消下载">×</button></header><main><img class="sky-download-logo" src="assets/icons/case-archive-transparent.webp" alt="压缩包"><div><h2>正在下载档案整理.zip</h2><p>来自：bbs.fuguang.cn</p><div class="sky-download-track"><span></span></div><small>准备下载…　0%</small></div></main><footer>下载过程中请不要关闭此窗口。</footer>';
   document.querySelector("#desktop").appendChild(dialog);const controller=new AbortController(),bar=dialog.querySelector(".sky-download-track span"),label=dialog.querySelector("main small"),cancel=dialog.querySelector("header button");
   cancel.addEventListener("click",()=>{controller.abort();dialog.remove();});
-  downloadAndDecodeImages([{path:"assets/documents/case-archive-page-2011.webp",bytes:645958}],controller.signal,percent=>{bar.style.width=`${percent}%`;label.textContent=percent<100?`正在接收压缩文件…　${percent}%`:'下载完成　100%';})
-    .then(images=>{if(controller.signal.aborted)return;window.__downloadedCasePage=images.get("assets/documents/case-archive-page-2011.webp");dialog.classList.add("complete");dialog.querySelector("h2").textContent="档案整理.zip 下载完成";dialog.querySelector("footer").textContent="压缩文件已保存到桌面。";installCaseArchiveDesktopIcon();setTimeout(()=>dialog.remove(),1100);})
+  downloadAndDecodeImages([{path:"assets/documents/case-archive-page-2005.webp",bytes:645958}],controller.signal,percent=>{bar.style.width=`${percent}%`;label.textContent=percent<100?`正在接收压缩文件…　${percent}%`:'下载完成　100%';})
+    .then(images=>{if(controller.signal.aborted)return;window.__downloadedCasePage=images.get("assets/documents/case-archive-page-2005.webp");dialog.classList.add("complete");dialog.querySelector("h2").textContent="档案整理.zip 下载完成";dialog.querySelector("footer").textContent="压缩文件已保存到桌面。";installCaseArchiveDesktopIcon();setTimeout(()=>dialog.remove(),1100);})
     .catch(error=>{if(controller.signal.aborted)return;console.warn("Archive download failed",error);label.textContent="下载失败，请重试";dialog.querySelector("footer").textContent="网络或文件读取失败，请关闭窗口后重新下载。";});
 }
 function setupArchiveNoteWindow(win) {
@@ -1056,7 +1056,7 @@ function setupCasePdfWindow(win) {
   win.querySelector(".menu-bar").innerHTML='<button type="button">文件(<u>F</u>)</button><button type="button">查看(<u>V</u>)</button><button type="button">帮助(<u>H</u>)</button>';
   win.querySelector(".toolbar").innerHTML='<span class="case-pdf-toolbar-label">案件整理.pdf</span><button type="button" data-pdf-zoom="out" aria-label="缩小">－</button><output>100%</output><button type="button" data-pdf-zoom="in" aria-label="放大">＋</button><button type="button" data-pdf-zoom="fit">适合宽度</button><span class="case-pdf-page-count">第 1 页 / 共 1 页</span>';
   const viewport=document.createElement("div");viewport.className="case-pdf-viewport";
-  const page=document.createElement("img");page.className="case-pdf-page";page.src=window.__downloadedCasePage?.src || "assets/documents/case-archive-page-2011.webp?v=20261017-1";page.alt="案件整理 PDF 第 1 页的完整内容";viewport.appendChild(page);
+  const page=document.createElement("img");page.className="case-pdf-page";page.src=window.__downloadedCasePage?.src || "assets/documents/case-archive-page-2005.webp?v=20261017-1";page.alt="案件整理 PDF 第 1 页的完整内容";viewport.appendChild(page);
   win.querySelector(".window-content").replaceChildren(viewport);
   let zoom=1;const output=win.querySelector(".toolbar output");
   const updateZoom=()=>{page.style.width=`${Math.round(760*zoom)}px`;output.textContent=`${Math.round(zoom*100)}%`;};
@@ -2217,3 +2217,4 @@ document.addEventListener("keydown",event=>{
   if(event.key==="Escape"){setStartMenu(false);setVolumePopup(false);}
   if(event.key==="Enter"&&document.body.contains(loginError)){event.preventDefault();}
 });
+
