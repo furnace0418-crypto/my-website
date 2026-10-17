@@ -193,9 +193,35 @@ function renderAdminContact(host){
     const form=actions.querySelector('form');
     const genderRow=document.createElement('div');
     const residentCode=form.elements.residentCode;
+    const codeWrap=document.createElement('span');
+    codeWrap.className='admin-resident-code-wrap';
+    residentCode.before(codeWrap);codeWrap.appendChild(residentCode);
+    const codeGuide=document.createElement('span');
+    codeGuide.className='admin-resident-code-guide';
+    codeGuide.setAttribute('aria-hidden','true');codeWrap.appendChild(codeGuide);
+    residentCode.setAttribute('aria-description','居民编号以 TY 开头，后续依次为 1 位、6 位、8 位。');
+    const updateResidentGuide=()=>{
+      const value=residentCode.value;
+      const count=value.replace(/\s/g,'').length;
+      const template='TY × ×××××× ××××××××';
+      let offset=0,filled=0;
+      while(offset<template.length&&filled<count){if(template[offset]!==' ')filled++;offset++;}
+      codeGuide.replaceChildren();
+      const typed=document.createElement('span');typed.style.visibility='hidden';typed.textContent=value;codeGuide.appendChild(typed);
+      if(!value){const prefix=document.createElement('span');prefix.className='admin-resident-code-prefix';prefix.textContent='TY';codeGuide.appendChild(prefix);offset=2;}
+      codeGuide.appendChild(document.createTextNode(template.slice(offset)));
+      const style=getComputedStyle(residentCode);
+      codeGuide.style.font=style.font;codeGuide.style.letterSpacing=style.letterSpacing;
+      codeGuide.style.paddingLeft=style.paddingLeft;codeGuide.style.paddingRight=style.paddingRight;
+      codeGuide.scrollLeft=residentCode.scrollLeft;
+    };
+    residentCode.addEventListener('input',updateResidentGuide);
+    residentCode.addEventListener('scroll',()=>{codeGuide.scrollLeft=residentCode.scrollLeft;});
+    updateResidentGuide();
     const fillResidentPrefix=()=>{
       if(residentCode.value!=='')return;
       residentCode.value='TY';
+      updateResidentGuide();
       residentCode.setSelectionRange(2,2);
       requestAnimationFrame(()=>{
         if(document.activeElement===residentCode&&residentCode.value==='TY')residentCode.setSelectionRange(2,2);

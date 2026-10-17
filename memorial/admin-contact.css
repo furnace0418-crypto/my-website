@@ -25,4 +25,5 @@
 .admin-busy-dialog button:focus-visible{outline:2px solid #c37368;outline-offset:3px}
 @media(max-width:600px){.admin-busy-dialog{padding:28px 22px 26px}}
 .admin-message p{white-space:pre-line}
+.admin-resident-code-wrap{position:relative;display:block;min-width:0}.admin-resident-code-guide{position:absolute;inset:1px;display:flex;align-items:center;white-space:pre;overflow:hidden;pointer-events:none;color:#999;box-sizing:border-box}.admin-resident-code-guide>span{flex:none}.admin-resident-code-prefix{color:#463d35}.invite-theme .admin-resident-code-guide{color:#8b9992}.invite-theme .admin-resident-code-prefix{color:#d3ddd5}
 
