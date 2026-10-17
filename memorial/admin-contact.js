@@ -87,12 +87,13 @@ function renderAdminContact(host){
   adminCompletionMessage=message=>appendMessage('admin',message);
   const actions=host.querySelector('.admin-chat-actions');
   let flowVersion=0;
-  const backBar=document.createElement('div');backBar.className='admin-chat-backbar';
-  const back=document.createElement('button');back.type='button';back.textContent='返回';back.title='返回咨询事项';backBar.append(back);actions.before(backBar);
+  const back=document.createElement('button');back.type='button';back.className='admin-step-back';back.textContent='返回';back.title='返回咨询事项';
+  const showBack=()=>actions.append(back);
   back.onclick=()=>{flowVersion++;host.classList.remove('has-form');log.querySelectorAll('.admin-typing').forEach(node=>node.remove());showTopics();};
   const deliver=async(messages,next)=>{
     const version=++flowVersion;
     actions.replaceChildren();
+    if(next!==showTopics)showBack();
     for(const message of messages){
       const typing=document.createElement('div');
       typing.className='admin-chat-row from-admin admin-typing';
@@ -126,6 +127,7 @@ function renderAdminContact(host){
   };
   const showCodeForm=()=>{
     actions.innerHTML='<form class="admin-code-form"><label for="adminContactCode">管理员编号</label><div><input id="adminContactCode" name="code" inputmode="numeric" maxlength="8" autocomplete="off" placeholder="输入八位编号" required><button type="submit">确认编号</button></div></form>';
+    showBack();
     const form=actions.querySelector('form');
     form.onsubmit=async event=>{
       event.preventDefault();
@@ -148,6 +150,7 @@ function renderAdminContact(host){
   };
   const showRegistrationChoices=()=>{
     actions.innerHTML='<p class="admin-action-prompt">请选择登记事项</p><div class="admin-topic-buttons"></div>';
+    showBack();
     for(const [label,kind] of [['信息缺失','missing'],['信息勘误','correction']]){
       const button=document.createElement('button');button.type='button';button.textContent=label;
       button.onclick=()=>{
@@ -160,6 +163,7 @@ function renderAdminContact(host){
   };
   const showResidentNameForm=kind=>{
     actions.innerHTML='<form class="admin-code-form admin-name-form"><label for="adminResidentName">居民姓名</label><div><input id="adminResidentName" name="residentName" maxlength="30" autocomplete="off" placeholder="请输入居民姓名" required><button type="submit">下一步</button></div></form>';
+    showBack();
     const form=actions.querySelector('form');
     form.onsubmit=event=>{
       event.preventDefault();
@@ -175,6 +179,7 @@ function renderAdminContact(host){
   };
   const showRelationshipChoices=(kind,residentName)=>{
     actions.innerHTML='<p class="admin-action-prompt"></p><div class="admin-topic-buttons"></div>';
+    showBack();
     actions.querySelector('.admin-action-prompt').textContent=`请选择您与${residentName}的关系`;
     for(const label of ['家属','朋友','同学','其他']){
       const button=document.createElement('button');button.type='button';button.textContent=label;
@@ -192,6 +197,7 @@ function renderAdminContact(host){
   const showRegistrationForm=(kind,residentName)=>{
     host.classList.add('has-form');
     actions.innerHTML=`<form class="admin-registration-form"><h3>${kind==='missing'?'居民信息补全':'居民信息勘误'}</h3><div class="admin-registration-fields"><label>姓名<input name="residentName" autocomplete="off" required></label><label>性别<select name="gender" required><option value="">请选择</option><option value="女">女</option><option value="男">男</option><option value="其他">其他</option></select></label><label>居民编号<input name="residentCode" autocomplete="off" required></label><div class="admin-form-section">亲属关系 <small>父亲或母亲至少填写一位</small></div><label>父亲<input name="father" autocomplete="off"></label><label class="admin-checkbox-label" data-parent-resident="father" hidden>父亲是否为桃原市居民<input type="checkbox" name="fatherIsTaoyuanResident" value="是"></label><label>母亲<input name="mother" autocomplete="off"></label><label class="admin-checkbox-label" data-parent-resident="mother" hidden>母亲是否为桃原市居民<input type="checkbox" name="motherIsTaoyuanResident" value="是"></label><div class="admin-field-row"><span>与父亲／母亲关系</span><div class="admin-relation-select"><button type="button" class="admin-relation-trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="adminRelationOptions"><span>请选择</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 6 5 5 5-5"/></svg></button><div class="admin-relation-menu" id="adminRelationOptions" role="listbox" aria-label="与父亲或母亲关系" hidden><button type="button" role="option" data-relation="女儿" aria-selected="false">女儿</button><button type="button" role="option" data-relation="儿子" aria-selected="false">儿子</button><button type="button" role="option" data-relation="其他" aria-selected="false">其他</button></div><input type="hidden" name="parentRelation"></div></div><div class="admin-field-row"><span>迁入时间</span><div class="admin-date-picker"><div class="admin-date-input-wrap"><input name="moveInDate" type="text" inputmode="numeric" autocomplete="off" placeholder="年 / 月 / 日"><button type="button" class="admin-calendar-toggle" aria-label="打开日历" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M7 14h2M12 14h2M17 14h1M7 18h2M12 18h2"/></svg></button></div><div class="admin-calendar-panel" hidden><div class="admin-calendar-header"><button type="button" data-month-step="-1" aria-label="上个月">‹</button><div class="admin-calendar-title"><button type="button" class="admin-calendar-year-toggle" aria-label="选择年份"></button><strong class="admin-calendar-month-label"></strong></div><button type="button" data-month-step="1" aria-label="下个月">›</button></div><div class="admin-calendar-year-panel" hidden><div class="admin-calendar-decade"><button type="button" data-decade-step="-1" aria-label="上十年">‹</button><span></span><button type="button" data-decade-step="1" aria-label="下十年">›</button></div><div class="admin-calendar-years"></div></div><div class="admin-calendar-month-panel"><div class="admin-calendar-weekdays"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div><div class="admin-calendar-days"></div></div></div></div></div>${kind==='missing'?'':'<label class="wide">更正内容与依据<textarea name="notes" rows="3" required></textarea></label>'}</div><button type="button">保存登记</button></form>`;
+    showBack();
     requestAnimationFrame(()=>{log.scrollTop=log.scrollHeight});
     const form=actions.querySelector('form');
     const genderRow=document.createElement('div');
