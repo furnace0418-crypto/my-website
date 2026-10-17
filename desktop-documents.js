@@ -85,6 +85,7 @@
       const glyph=icon.querySelector('.private-desktop-file-icon');glyph.textContent='';glyph.style.cssText='display:block;width:48px;height:48px;background:url("assets/icons/file-pdf-32.svg") center/contain no-repeat;image-rendering:pixelated;';
     }
     if(item.privateFile==='image'||item.privateFile==='news'){const glyph=icon.querySelector('.private-desktop-file-icon');glyph.textContent='';glyph.style.cssText='display:block;width:52px;height:52px;background:url("assets/icons/file-jpeg-32.svg") center/contain no-repeat;image-rendering:pixelated;';}
+    if(item.privateFile==='private-folder'){const glyph=icon.querySelector('.private-desktop-file-icon');glyph.textContent='';glyph.style.cssText='display:block;width:52px;height:52px;background:url("assets/icons/folder-32.webp") center/contain no-repeat;image-rendering:pixelated;';}
     icon.addEventListener('dblclick', event => { if (!event.target.isContentEditable) openDocument(item); });
     icons.appendChild(icon); placeDesktopIcon(icon); enableDesktopIconDrag(icon);
     return icon;

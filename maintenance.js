@@ -1,13 +1,31 @@
 (() => {
   // Available narrative files in the private archive.
   const files = [
+    {name:'离婚协议书.png',folder:'影像资料',key:'agreement',image:'assets/documents/private-divorce-agreement.png'},
     {name:'照片 1.png', folder:'影像资料', image:'assets/documents/private-photo-1.png'},
     {name:'城北区住宅火灾新闻.jpeg', folder:'新闻剪报', key:'news', image:'assets/documents/private-news-1.jpeg'},
     {name:'陈珍珍死亡事件_补充调查情况说明.pdf', folder:'调查资料', pdf:'assets/documents/chen-supplementary-investigation.pdf'},
     {name:'音频节点 1.mp3', folder:'音频资料', audio:'assets/sounds/private-audio-node-1.mp3?v=20261017-2'},
     {name:'维护说明.txt', folder:'系统文件', body:'ZHENG YUAN / PRIVATE MAINTENANCE\n\n入口：桌面图标排列为 Z。\n返回：主菜单按 Esc，或选择返回桌面。\n\n选择隐藏文件后，可将其显示到桌面。\n退出维护界面后，双击桌面图标打开。\n新闻剪报单独存放。\n\n此界面为网页内的隐藏维护终端。\n诊断只读取当前网页状态，不访问真实硬件。'}
   ];
-  window.openPrivateDesktopFile=key=>{const file=files.find(file=>file.key===key||(!file.key&&['pdf','audio','image'].includes(key)&&file[key]));if(file)window.openPrivateMaintenance(null,file);};
+  const bundle={name:'私人资料',key:'private-folder',folder:'文件夹'};
+  const bundleFiles=()=>files.filter(file=>file.folder!=='新闻剪报'&&(file.image||file.pdf||file.audio));
+  function openPrivateFolder(){
+    const id='private-folder';if(document.querySelector(`[data-app="${id}"]`)){openApp(id);return;}
+    apps[id]={title:'私人资料',path:'桌面\\私人资料'};openApp(id);
+    const win=document.querySelector(`[data-app="${id}"]`);win.classList.add('private-folder-window');
+    for(const icon of [win.querySelector('.window-mini-icon'),document.querySelector(`.task-item[data-window-id="${win.id}"] .task-app-icon`)])if(icon)icon.style.background='url("assets/icons/folder-32.webp") center/contain no-repeat';
+    const content=win.querySelector('.window-content');content.replaceChildren();const grid=document.createElement('div');grid.className='private-folder-grid';content.append(grid);
+    for(const file of bundleFiles()){
+      const button=document.createElement('button');button.type='button';button.className='explorer-item';
+      const img=document.createElement('img');img.src=file.pdf?'assets/icons/file-pdf-32.svg':file.audio?'assets/icons/private-audio-transparent.png':'assets/icons/file-jpeg-32.svg';img.alt='';img.draggable=false;
+      const label=document.createElement('span');label.textContent=file.name;button.append(img,label);button.title=file.name;
+      button.onclick=()=>{grid.querySelectorAll('button').forEach(item=>item.classList.toggle('selected',item===button));};
+      button.ondblclick=()=>window.openPrivateMaintenance(null,file);button.onkeydown=event=>{if(event.key==='Enter'){event.preventDefault();window.openPrivateMaintenance(null,file);}};grid.append(button);
+    }
+    const status=win.querySelector('.statusbar span');if(status)status.textContent='4 个文件';
+  }
+  window.openPrivateDesktopFile=key=>{if(key===bundle.key){openPrivateFolder();return;}const file=files.find(file=>file.key===key||(!file.key&&['pdf','audio','image'].includes(key)&&file[key]));if(file)window.openPrivateMaintenance(null,file);};
   window.openPrivateMaintenance = function(onExit, desktopFile=null) {
     if(desktopFile?.image){openPhotoViewer({name:desktopFile.name,src:desktopFile.image,source:'私人资料'});return;}
     if(!desktopFile&&document.querySelector('#private-maintenance')) return;
@@ -63,14 +81,15 @@
     }
     function showFiles() {
       if(desktopFile){exit();return;}
-      const regular=files.filter(file=>file.folder!=='新闻剪报');
+      const regular=[bundle,...files.filter(file=>file.body)];
       screen='files';frame('郑愿 / 私人资料',`<div class="maintenance-files"><div class="maintenance-path">Z:\\PRIVATE\\　 [READ ONLY]</div>${regular.map((file,i)=>item(`${file.name}　 [${file.folder}]`,i)).join('')}<hr>${item('新闻剪报 / NEWS CLIPPINGS',regular.length)}${item('返回主菜单',regular.length+1)}<p></p></div>`,'');
       root.querySelector('.maintenance-files p').textContent='隐藏文件可显示到桌面，返回桌面后双击打开。';
-      root.querySelector('.maintenance-help').textContent='Enter 选择文件；显示状态会保存在当前浏览器中。';
-      actions=regular.map(file=>()=>file.pdf||file.audio||file.image?showVisibility(file):showText(file.name,file.body,showFiles));actions.push(showNews,main);root._back=main;bindActions();
+      root.querySelector('.maintenance-help').textContent='Enter 选择文件夹；刷新后桌面中的隐藏资料会重新隐藏。';
+      actions=regular.map(file=>()=>file===bundle?showVisibility(file):showText(file.name,file.body,showFiles));actions.push(showNews,main);root._back=main;bindActions();
     }
     function showNews(){screen='files';frame('私人资料 / 新闻剪报',`<div class="maintenance-files"><div class="maintenance-path">Z:\\PRIVATE\\NEWS\\</div>${item('城北区住宅火灾新闻.jpeg',0)}${item('返回私人资料',1)}</div>`,'新闻剪报单独存放。');actions=[()=>showVisibility(files.find(file=>file.key==='news')),showFiles];root._back=showFiles;bindActions();}
     function showVisibility(file,message=''){
+      if(file===bundle&&!message)message='文件夹包含以下 4 个文件：\n'+bundleFiles().map(item=>'  · '+item.name).join('\n')+'\n\n是否将整个文件夹显示到桌面？\n显示后双击文件夹查看，刷新后重新隐藏。';
       const key=file.key||(file.pdf?'pdf':file.image?'image':'audio'),visible=window.isPrivateFileOnDesktop?.(key);
       screen='visibility';root._back=showFiles;
       frame('隐藏文件 / DESKTOP VISIBILITY',`<div class="maintenance-text"><pre>${escapeHtml(file.name)}\n\n桌面状态：${visible?'已显示在桌面':'隐藏'}\n\n${escapeHtml(message||'文件保留在私人资料中。显示后可从桌面双击打开。')}</pre>${visible?'':item('显示到桌面',0)}${item('返回私人资料',visible?0:1)}</div>`,'这里只改变桌面可见性，不移动或删除原文件。');
