@@ -24,12 +24,5 @@
 .admin-busy-confirm{min-width:116px;margin-top:26px;padding:10px 20px;border:1px solid #78251f;background:#78251f;color:#fff;font-size:14px}
 .admin-busy-dialog button:focus-visible{outline:2px solid #c37368;outline-offset:3px}
 @media(max-width:600px){.admin-busy-dialog{padding:28px 22px 26px}}
-.admin-chat-actions{position:relative}
-.admin-chat-actions:has(>.admin-step-back){padding-right:110px;min-height:70px}
-.admin-chat-actions>.admin-step-back{position:absolute;top:20px;right:24px;padding:6px 18px;border:1px solid #8f3c32;background:transparent;color:#8f3c32;cursor:pointer;font-family:inherit;font-size:15px;line-height:1.5}
 .admin-message p{white-space:pre-line}
-.admin-step-back:hover{background:#eee3d9}
-.admin-step-back:focus-visible{outline:2px solid #8f3c32;outline-offset:2px}
-.invite-theme .admin-chat-actions>.admin-step-back{color:#aab8af;border-color:#78251f}
-@media(max-width:600px){.admin-chat-actions:has(>.admin-step-back){padding-right:24px;padding-top:64px}.admin-chat-actions>.admin-step-back{top:14px}}
 
