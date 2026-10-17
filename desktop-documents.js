@@ -9,7 +9,11 @@
   if (!Array.isArray(documents)) documents = [];
   documents = documents.filter(item => item && typeof item.id === 'string' && typeof item.name === 'string' && typeof item.content === 'string');
   documents.forEach(item=>{if(item.privateFile==='image'&&item.name==='照片 1.jpeg')item.name='照片 1.png';});
+  // Extra desktop files are visible only until this page is refreshed.
+  // Keep stored contents intact; private originals remain in maintenance.
+  documents.forEach(item => { item.onDesktop = false; });
   const persist = () => { try { localStorage.setItem(storageKey, JSON.stringify(documents)); } catch {} };
+  persist();
   const select = icon => icons.querySelectorAll('.desktop-icon').forEach(other => other.classList.toggle('selected', other === icon));
   const menu = document.createElement('div');
   menu.className = 'desktop-context-menu'; menu.hidden = true; menu.setAttribute('role', 'menu');
