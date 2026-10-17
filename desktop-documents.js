@@ -91,8 +91,8 @@
     return icon;
   }
   function createDocument(editName = true) {
-    let name = '新建文本文档.txt', count = 2;
-    const used = value => documents.some(item => item.name === value) || [...icons.querySelectorAll('.icon-label')].some(label => label.textContent === value);
+    let name = '新建文本文档 (1).txt', count = 2;
+    const used = value => [...icons.querySelectorAll('.icon-label')].some(label => label.textContent === value);
     while (used(name)) name = `新建文本文档 (${count++}).txt`;
     const item = { id: crypto.randomUUID(), name, content: '', onDesktop: true };
     documents.push(item); const icon = addIcon(item); persist(); select(icon);

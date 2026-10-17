@@ -30,6 +30,16 @@
 .maintenance .maintenance-pdf>.toolbar{flex-shrink:0;min-height:38px}.maintenance .maintenance-pdf>.toolbar button{width:auto;min-width:max-content;height:28px;white-space:nowrap;flex:0 0 auto;line-height:20px;padding:2px 10px}.private-file-window .window-content:has(.private-image-viewport){overflow:hidden}.desktop-file-viewer:has(.private-image-viewport){overflow:hidden}.desktop-file-viewer .maintenance-pdf:has(.private-image-viewport){display:flex;flex-direction:column;height:100%;min-height:0}.private-image-viewport{display:block;flex:1;min-height:0;height:auto;text-align:center;overflow:auto}.private-image-viewport img{margin:auto;width:auto;height:auto;max-width:100%;max-height:100%}.private-image-viewport img.original{max-width:none;max-height:none}.window-mini-icon.private-image,.window-mini-icon.private-news,.task-app-icon.private-image,.task-app-icon.private-news{background:url('assets/icons/private-jpeg.svg') center/contain no-repeat!important;border:0!important}
 .window-mini-icon.private-image,.window-mini-icon.private-news,.task-app-icon.private-image,.task-app-icon.private-news{background-image:url('assets/icons/file-jpeg-32.svg')!important}
 .private-folder-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:18px;padding:22px;align-content:start;background:white;min-height:100%}
+.window-mini-icon.private-folder,.task-app-icon.private-folder{background:transparent url('assets/icons/folder-32.webp') center/contain no-repeat!important;border:0;box-shadow:none}
+.maintenance-manifest{max-width:850px;margin:0 0 24px;font-size:16px;line-height:1.6}
+.manifest-kicker{font-size:12px;letter-spacing:2px;opacity:.7}
+.maintenance-manifest h2{display:flex;align-items:center;gap:24px;font-size:28px;letter-spacing:3px;margin:10px 0 18px;font-weight:normal}
+.maintenance-manifest h2 small{font-size:12px;letter-spacing:1px;opacity:.7}
+.manifest-status{font-size:14px;letter-spacing:1px}.manifest-status strong{margin-left:20px;font-weight:normal;color:#ffff8b}
+.maintenance-manifest ol{list-style:none;padding:0;margin:20px 0;border-top:1px solid #ffffff55;border-bottom:1px solid #ffffff55}
+.maintenance-manifest li{display:grid;grid-template-columns:34px minmax(0,1fr) 56px;gap:12px;align-items:center;padding:12px 4px;border-bottom:1px dotted #ffffff25}
+.maintenance-manifest li b{font-size:17px;font-weight:normal;overflow-wrap:anywhere;letter-spacing:.3px}.maintenance-manifest li span,.maintenance-manifest li small{font-size:12px;opacity:.65}
+.maintenance-manifest>p{font-size:16px;margin:16px 0 6px}.maintenance-manifest>small{font-size:12px;opacity:.7}
 .private-folder-grid .explorer-item{display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 6px;border:1px solid transparent;background:transparent;color:#222;text-align:center;min-width:0}
 .private-folder-grid .explorer-item img{width:48px;height:48px;object-fit:contain;image-rendering:pixelated;pointer-events:none}
 .private-folder-grid .explorer-item span{overflow-wrap:anywhere;font-size:14px;line-height:1.5}
