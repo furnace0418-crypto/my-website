@@ -610,6 +610,11 @@ function addPersonalArchive(name){
   const pane=document.createElement('div');
   pane.className='life-pane personal-archive-pane';
   pane.dataset.lifePane='personal';
+  if(name==='张文华'&&!document.body.classList.contains('invite-theme')){
+    pane.innerHTML='<div class="personal-archive-details"><a class="personal-archive-folder" href="assets/zhang-personal-archive.zip" download="张文华-个人信息留存.zip" aria-label="下载张文华个人信息留存资料，包含一封信件"><span class="personal-archive-folder-icon" aria-hidden="true"></span><span class="personal-archive-folder-copy"><strong>张文华 · 个人资料</strong><small>文件夹　·　1 封信件</small></span><span class="personal-archive-folder-action">下载文件夹 ↓</span></a></div>';
+    app.querySelector('.life-story').append(pane);
+    return;
+  }
   if(name!=='陈珍珍'){
     pane.innerHTML='<div class="personal-archive-empty">暂无个人信息留存</div>';
     app.querySelector('.life-story').append(pane);
