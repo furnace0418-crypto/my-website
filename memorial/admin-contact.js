@@ -27,10 +27,23 @@ function playAdminNoticeAudio(){
 localStorage.removeItem('memorial-chen-registration-unlocked');
 localStorage.removeItem('memorial-chen-registration-complete');
 localStorage.removeItem('memorial-chen-registration-ready-at');
-window.memorialRegistrationState={chen:false};
+const registrationOwner=()=>{try{const user=JSON.parse(localStorage.getItem('memorial-account')||'null');return user&&!user.guest&&user.accountId!=='guest-invite'?(user.accountId||user.phone||null):null;}catch(_){return null;}};
+const registrationKey=id=>`memorial-resident-registration-v1-${id}`;
+const registrationRecord=id=>{try{return id?JSON.parse(localStorage.getItem(registrationKey(id))||'{}'):{};}catch(_){return {};}};
+window.memorialRegistrationState={get chen(){const value=registrationRecord(registrationOwner());return value.chen===true||(Number.isFinite(value.readyAt)&&Date.now()>=value.readyAt);}};
+let registrationSessionOwner;
+window.syncMemorialRegistration=function(){
+  const id=registrationOwner();if(id===registrationSessionOwner)return;
+  registrationSessionOwner=id;clearTimeout(chenRegistrationTimer);adminChatSession=null;adminCompletionMessage=null;
+  document.querySelector('.chen-registration-complete-dialog')?.remove();
+  const value=registrationRecord(id);
+  if(id&&value.readyAt&&!value.chen){if(Date.now()>=value.readyAt)localStorage.setItem(registrationKey(id),JSON.stringify({chen:true}));else chenRegistrationTimer=setTimeout(()=>finishChenRegistration(id),value.readyAt-Date.now());}
+};
 let chenRegistrationTimer;
-function finishChenRegistration(){
-  window.memorialRegistrationState.chen=true;
+function finishChenRegistration(id=registrationOwner()){
+  if(!id)return;
+  localStorage.setItem(registrationKey(id),JSON.stringify({chen:true}));
+  if(registrationOwner()!==id)return;
   adminCompletionMessage?.('登记核验已完成。陈珍珍的纪念馆现已开放查询。');
   playAdminNoticeAudio();
   document.querySelector('.chen-registration-complete-dialog')?.remove();
@@ -42,10 +55,13 @@ function finishChenRegistration(){
   overlay.querySelector('.chen-registration-dialog-ok').focus();
 }
 function scheduleChenRegistrationCompletion(readyAt=Date.now()+10000){
+  const id=registrationOwner();if(!id)return;
+  localStorage.setItem(registrationKey(id),JSON.stringify({chen:false,readyAt}));
   clearTimeout(chenRegistrationTimer);
-  chenRegistrationTimer=setTimeout(finishChenRegistration,Math.max(0,readyAt-Date.now()));
+  chenRegistrationTimer=setTimeout(()=>finishChenRegistration(id),Math.max(0,readyAt-Date.now()));
 }
 function renderAdminContact(host){
+  window.syncMemorialRegistration();
   if(adminChatSession){
     host.replaceWith(adminChatSession);
     requestAnimationFrame(()=>{const log=adminChatSession.querySelector('.admin-chat-log');log.scrollTop=log.scrollHeight});

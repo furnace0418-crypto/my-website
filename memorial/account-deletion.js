@@ -4,7 +4,7 @@ window.deleteMemorialLocalAccount=function(id){
   const users=read('memorial-local-users-v1',{}),profile=window.memorialLocalAuth.profile(id);
   const belongs=entry=>entry&&(entry.accountId?entry.accountId===id:entry.by===profile.name);
   const halls=read('memorial-halls',[]),owned=halls.filter(h=>h.creatorId?h.creatorId===id:h.creator===profile.name);
-  const removals=[`memorial-user-avatar-${id}`,`annian-glass-lamp-v3-${id}`];
+  const removals=[`memorial-user-avatar-${id}`,`annian-glass-lamp-v3-${id}`,`memorial-resident-registration-v1-${id}`];
   owned.forEach(h=>removals.push(`memorial-hall-photos-${h.id}`,`annian-glass-lamp-hall-v1-${h.id}`));
   const writes={
     'memorial-halls':halls.filter(h=>!owned.includes(h)).map(h=>({...h,records:(h.records||[]).filter(r=>!belongs(r))})),

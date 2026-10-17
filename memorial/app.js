@@ -288,6 +288,7 @@ function showInviteVerification(){
   code.focus();
 }
 function header(){
+  window.syncMemorialRegistration?.();
   const user=account(),name=document.querySelector('#accountName'),exit=document.querySelector('#exitLink'),registerLink=document.querySelector('.account-register'),login=document.querySelector('.account-login'),avatar=document.querySelector('#accountAvatar'),mode=document.querySelector('#accountMode'),articlesLink=document.querySelector('#articlesLink');
   const signedIn=Boolean(user),darkTheme=document.body.classList.contains('invite-theme');
   document.querySelector('.header-account')?.classList.toggle('signed-in',signedIn);
@@ -746,6 +747,7 @@ function customHall(id,initialTab='story'){
 function simple(title){app.innerHTML=`<div class="page-shell simple-page"><h1 class="page-heading">${title}</h1><p>相关内容正在整理中。</p><a class="btn" href="#home">返回首页</a></div>`;}
 function fortuneExplanation(){app.innerHTML=`<div class="page-shell fortune-page"><header><h1 class="page-heading">福报说明</h1></header><section class="fortune-body"><div class="fortune-copy fortune-copy-light"><p>然世间诸事，虽有顺逆得失，善念善行终有其归。</p><p>有人身处困厄，独力难支。若有人伸手相扶，使其得以渡过难关，此事，可谓善乎？</p><p>有人心怀怨憎，几欲伤人害己。若有人劝其止怒，引其回转，使恶念不再增长，此事，又可谓善乎？</p><p>一切众生，自久远以来，受贪、嗔、痴三毒所扰，常因执念而生烦恼，因烦恼而起争端。若能以慈心待人，以善意解怨，使众生少受一分苦，亦使自身少造一分业。</p><p>故扶其困，是善。解其忧，是慈。劝其止恶，是度。</p><p>善念既生，善行相续，久而积之，是为福报。</p></div><div class="fortune-copy fortune-copy-dark"><p>然世间诸事，并非皆有善恶之明界。</p><p>有人身受重苦，求生不得，求死不能。若有人代其断苦，使其不再受此身之刑，此事，可谓恶乎？</p><p>有人恶业深重，终日伤人造业。若任其存世，则恶业日增；若断其恶行，使其不再害人，此事，又可谓恶乎？</p><p>一切众生，自久远以来，受贪、嗔、痴三毒所缚，妄想颠倒，恶业轮转。众生困于火宅，却不知火宅为苦。</p><p>故止其苦，是救。止其恶，是度。断其业，是慈悲</p></div><div class="fortune-video"><video src="assets/invite-home-v2.mp4" controls preload="none" playsinline></video></div></section></div>`;useCachedFortuneVideo(app.querySelector('.fortune-video video'));}
 function route(){
+  window.syncMemorialRegistration?.();
   rememberInviteVideo();applyInviteTheme();header();
   const hash=decodeURIComponent(location.hash.slice(1)||'home');
   const [page,id,tab]=hash.split('/');
