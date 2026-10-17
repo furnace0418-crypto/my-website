@@ -10,8 +10,8 @@
   function tick(now){
     if(!active()){reset();return;}
     if(started===null)started=now;
-    document.documentElement.style.setProperty('--return-path-dwell',String(Math.min(1,(now-started)/25000)));
-    document.documentElement.style.setProperty('--return-path-shadow',String(Math.min(1,(now-started)/20000)));
+    document.documentElement.style.setProperty('--return-path-dwell',String(Math.min(1,(now-started)/28000)));
+    document.documentElement.style.setProperty('--return-path-shadow',String(Math.min(1,(now-started)/28000)));
     frame=requestAnimationFrame(tick);
   }
   function sync(){
