@@ -1,7 +1,8 @@
 (() => {
   // Fictional narrative files: replace these placeholders when story content is ready.
   const files = [
-    {name:'照片 1.png', folder:'影像资料', image:'assets/documents/private-photo-1.png'},
+    {name:'照片 1.jpeg', folder:'影像资料', image:'assets/documents/private-photo-1.jpeg'},
+    {name:'城北区住宅火灾新闻.jpeg', folder:'新闻剪报', key:'news', image:'assets/documents/private-news-1.jpeg'},
     {name:'陈珍珍死亡事件_补充调查情况说明.pdf', folder:'调查资料', pdf:'assets/documents/chen-supplementary-investigation.pdf'},
     {name:'音频节点 1.mp3', folder:'音频资料', audio:'assets/sounds/private-audio-node-1.mp3?v=20261017-2'},
     {name:'个人记录.txt', folder:'私人文档', body:'[内容待补充]\n\n这里预留郑愿自己的记录。\n正式剧情尚未写入。'},
@@ -9,10 +10,10 @@
     {name:'照片索引.txt', folder:'影像资料', body:'[内容待补充]\n\n尚未导入照片。\n这里将列出郑愿保存的私人影像。'},
     {name:'维护说明.txt', folder:'系统文件', body:'ZHENG YUAN / PRIVATE MAINTENANCE\n\n入口：桌面图标排列为 Z。\n返回：主菜单按 Esc，或选择返回桌面。\n\n此界面为网页内的隐藏维护终端。\n诊断只读取当前网页状态，不访问真实硬件。\n文件区域目前使用剧情占位内容。'}
   ];
-  window.openPrivateDesktopFile=key=>{const file=files.find(file=>['pdf','audio','image'].includes(key)&&file[key]);if(file)window.openPrivateMaintenance(null,file);};
+  window.openPrivateDesktopFile=key=>{const file=files.find(file=>file.key===key||(!file.key&&['pdf','audio','image'].includes(key)&&file[key]));if(file)window.openPrivateMaintenance(null,file);};
   window.openPrivateMaintenance = function(onExit, desktopFile=null) {
     if(!desktopFile&&document.querySelector('#private-maintenance')) return;
-    const appId=desktopFile?(desktopFile.pdf?'private-pdf':desktopFile.image?'private-image':'private-audio'):null;
+    const appId=desktopFile?(desktopFile.key?'private-'+desktopFile.key:desktopFile.pdf?'private-pdf':desktopFile.image?'private-image':'private-audio'):null;
     if(appId&&document.querySelector(`[data-app="${appId}"]`)){openApp(appId);return;}
     const previous = document.activeElement;
     const root = document.createElement('section'); root.id=desktopFile?'desktop-'+appId:'private-maintenance'; root.className='maintenance booting';
@@ -64,13 +65,15 @@
     }
     function showFiles() {
       if(desktopFile){exit();return;}
-      screen='files';frame('郑愿 / 私人资料',`<div class="maintenance-files"><div class="maintenance-path">Z:\\PRIVATE\\　 [READ ONLY]</div>${files.map((file,i)=>item(`${file.name}　 [${file.folder}]`,i)).join('')}${item('返回主菜单',files.length)}<p>资料入口已建立 · 剧情内容待补充</p></div>`,'Enter 阅读文件；此隐藏入口不等同于真实加密存储，请勿放入真实敏感资料。');
+      const regular=files.filter(file=>file.folder!=='新闻剪报');
+      screen='files';frame('郑愿 / 私人资料',`<div class="maintenance-files"><div class="maintenance-path">Z:\\PRIVATE\\　 [READ ONLY]</div>${regular.map((file,i)=>item(`${file.name}　 [${file.folder}]`,i)).join('')}<hr>${item('新闻剪报 / NEWS CLIPPINGS',regular.length)}${item('返回主菜单',regular.length+1)}<p></p></div>`,'');
       root.querySelector('.maintenance-files p').textContent='隐藏文件可显示到桌面，返回桌面后双击打开。';
       root.querySelector('.maintenance-help').textContent='Enter 选择文件；显示状态会保存在当前浏览器中。';
-      actions=files.map(file=>()=>file.pdf||file.audio||file.image?showVisibility(file):showText(file.name,file.body,showFiles));actions.push(main);root._back=main;bindActions();
+      actions=regular.map(file=>()=>file.pdf||file.audio||file.image?showVisibility(file):showText(file.name,file.body,showFiles));actions.push(showNews,main);root._back=main;bindActions();
     }
+    function showNews(){screen='files';frame('私人资料 / 新闻剪报',`<div class="maintenance-files"><div class="maintenance-path">Z:\\PRIVATE\\NEWS\\</div>${item('城北区住宅火灾新闻.jpeg',0)}${item('返回私人资料',1)}</div>`,'新闻剪报单独存放。');actions=[()=>showVisibility(files.find(file=>file.key==='news')),showFiles];root._back=showFiles;bindActions();}
     function showVisibility(file,message=''){
-      const key=file.pdf?'pdf':file.image?'image':'audio',visible=window.isPrivateFileOnDesktop?.(key);
+      const key=file.key||(file.pdf?'pdf':file.image?'image':'audio'),visible=window.isPrivateFileOnDesktop?.(key);
       screen='visibility';root._back=showFiles;
       frame('隐藏文件 / DESKTOP VISIBILITY',`<div class="maintenance-text"><pre>${escapeHtml(file.name)}\n\n桌面状态：${visible?'已显示在桌面':'隐藏'}\n\n${escapeHtml(message||'文件保留在私人资料中。显示后可从桌面双击打开。')}</pre>${visible?'':item('显示到桌面',0)}${item('返回私人资料',visible?0:1)}</div>`,'这里只改变桌面可见性，不移动或删除原文件。');
       const reveal=()=>{try{window.showPrivateFileOnDesktop(key,file.name);showVisibility(file,'已显示到桌面，退出维护界面后即可打开。');}catch{showVisibility(file,'无法保存显示状态，请检查浏览器存储设置后重试。');}};

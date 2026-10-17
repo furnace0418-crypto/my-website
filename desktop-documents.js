@@ -6,6 +6,7 @@
   try { documents = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch {}
   if (!Array.isArray(documents)) documents = [];
   documents = documents.filter(item => item && typeof item.id === 'string' && typeof item.name === 'string' && typeof item.content === 'string');
+  documents.forEach(item=>{if(item.privateFile==='image'&&item.name==='照片 1.png')item.name='照片 1.jpeg';});
   const persist = () => { try { localStorage.setItem(storageKey, JSON.stringify(documents)); } catch {} };
   const select = icon => icons.querySelectorAll('.desktop-icon').forEach(other => other.classList.toggle('selected', other === icon));
   const menu = document.createElement('div');
@@ -77,6 +78,7 @@
     if(item.privateFile==='pdf'){
       const glyph=icon.querySelector('.private-desktop-file-icon');glyph.textContent='';glyph.style.cssText='display:block;width:48px;height:48px;background:url("assets/icons/file-pdf-32.svg") center/contain no-repeat;image-rendering:pixelated;';
     }
+    if(item.privateFile==='image'||item.privateFile==='news'){const glyph=icon.querySelector('.private-desktop-file-icon');glyph.textContent='';glyph.style.cssText='display:block;width:52px;height:52px;background:url("assets/icons/private-jpeg.svg") center/contain no-repeat;image-rendering:pixelated;';}
     icon.addEventListener('dblclick', event => { if (!event.target.isContentEditable) openDocument(item); });
     icons.appendChild(icon); placeDesktopIcon(icon); enableDesktopIconDrag(icon);
     return icon;
