@@ -10,6 +10,7 @@
   preparePixelFont().catch(() => {});
   // Available narrative files in the private archive.
   const files = [
+    {name:'留言.txt',folder:'文字资料',key:'message',text:true,body:"如果你看到这里，我应该已经到桃原市了。\n在那里，我可以重新开始，把过去没能实现的事情一点点补回来。那些遗憾、错过的人，还有一直没能过上的生活，也许终于都可以重新来一次。\n所以不用替我难过。\n如果你愿意，帮我在安念堂建一个纪念馆吧。\n就当替过去的我留个位置。\n毕竟从这里以后，应该就是另一段人生了。"},
     {name:'离婚协议书.png',folder:'影像资料',key:'agreement',image:'assets/documents/private-divorce-agreement.png'},
     {name:'照片 1.png', folder:'影像资料', image:'assets/documents/private-photo-1.png'},
     {name:'城北区住宅火灾新闻.jpeg', folder:'新闻剪报', key:'news', image:'assets/documents/private-news-1.jpeg'},
@@ -18,27 +19,28 @@
     {name:'维护说明.txt', folder:'系统文件', body:'本机维护程序 — 使用说明\n版本 0.1 / 本地会话\n\n[01] 加密文件\n列出受保护目录中的可用资料。选择文件夹后，请核对文件清单，再执行“显示到桌面”。原始资料保持只读。\n\n[02] 桌面显示\n显示操作仅对当前会话有效。返回桌面后可双击文件夹查看内容；重新载入系统后，相关项目恢复隐藏。新闻剪报使用独立目录。\n\n[03] 系统检查\n系统状态与运行诊断用于检查本机会话和资源载入情况。会话日志记录本次维护操作。\n\n[04] 操作按键\n方向键：选择项目    Enter：确认\nEsc：返回上一层    F10：保存设置并退出\n\n[05] 退出维护\n选择“保存设置并返回桌面”保留显示设置；选择“不保存并返回桌面”放弃本次设置变更。退出不关闭原有桌面窗口。'}
   ];
   const bundle={name:'私人资料',key:'private-folder',folder:'文件夹'};
-  const bundleFiles=()=>files.filter(file=>file.folder!=='新闻剪报'&&(file.image||file.pdf||file.audio));
+  const bundleFiles=()=>files.filter(file=>file.folder!=='新闻剪报'&&(file.image||file.pdf||file.audio||file.text));
   function openPrivateFolder(){
     const id='private-folder';if(document.querySelector(`[data-app="${id}"]`)){openApp(id);return;}
     apps[id]={title:'私人资料',path:'桌面\\私人资料'};openApp(id);
     const win=document.querySelector(`[data-app="${id}"]`);win.classList.add('private-folder-window');
-    explorerNodes[id]={title:'私人资料',path:'桌面\\私人资料',items:bundleFiles().map(file=>({name:file.name,type:file.pdf?'pdf':file.audio?'audio':'jpeg',detail:file.pdf?'PDF 文档':file.audio?'MPEG 音频':'PNG 图像'}))};
+    explorerNodes[id]={title:'私人资料',path:'桌面\\私人资料',items:bundleFiles().map(file=>({name:file.name,type:file.text?'txt':file.pdf?'pdf':file.audio?'audio':'jpeg',detail:file.text?'文本文档':file.pdf?'PDF 文档':file.audio?'MPEG 音频':'PNG 图像'}))};
     setupFileExplorerWindow(win,id);win._explorerRender(id);
     const buttons=win.querySelectorAll('.explorer-item');
     buttons.forEach((button,index)=>{
       const clean=button.cloneNode(true);button.replaceWith(clean);
       const file=bundleFiles()[index],glyph=clean.querySelector('.explorer-item-icon');
-      glyph.style.backgroundImage=`url("${file.pdf?'assets/icons/file-pdf-32.svg':file.audio?'assets/icons/private-audio-transparent.png':'assets/icons/file-jpeg-32.svg'}")`;
+      if(!file.text)glyph.style.backgroundImage=`url("${file.pdf?'assets/icons/file-pdf-32.svg':file.audio?'assets/icons/private-audio-transparent.png':'assets/icons/file-jpeg-32.svg'}")`;
       clean.onclick=()=>{win.querySelectorAll('.explorer-item').forEach(item=>item.classList.toggle('selected',item===clean));};
       clean.ondblclick=()=>window.openPrivateMaintenance(null,file);
       clean.onkeydown=event=>{if(event.key==='Enter'){event.preventDefault();window.openPrivateMaintenance(null,file);}};
     });
     win.querySelectorAll('[data-explorer-action]').forEach(button=>{button.disabled=true;});
-    win.querySelector('.statusbar span').textContent='4 个对象';
+    win.querySelector('.statusbar span').textContent=`${bundleFiles().length} 个对象`;
   }
   window.openPrivateDesktopFile=key=>{if(key===bundle.key){openPrivateFolder();return;}const file=files.find(file=>file.key===key||(!file.key&&['pdf','audio','image'].includes(key)&&file[key]));if(file)window.openPrivateMaintenance(null,file);};
   window.openPrivateMaintenance = function(onExit, desktopFile=null) {
+    if(desktopFile?.text){openExplorerTextFile({name:desktopFile.name,content:desktopFile.body});return;}
     if(desktopFile?.image){openPhotoViewer({name:desktopFile.name,src:desktopFile.image,source:'私人资料'});return;}
     if(!desktopFile&&document.querySelector('#private-maintenance')) return;
     const appId=desktopFile?(desktopFile.key?'private-'+desktopFile.key:desktopFile.pdf?'private-pdf':desktopFile.image?'private-image':'private-audio'):null;
@@ -93,7 +95,7 @@
     }
     function showFiles() {
       if(desktopFile){exit();return;}
-      const regular=[bundle,...files.filter(file=>file.body)];
+      const regular=[bundle,...files.filter(file=>file.body&&!file.text)];
       screen='files';frame('郑愿 / 私人资料',`<div class="maintenance-files"><div class="maintenance-path">Z:\\PRIVATE\\　 [READ ONLY]</div>${regular.map((file,i)=>item(`${file.name}　 [${file.folder}]`,i)).join('')}<hr>${item('新闻剪报 / NEWS CLIPPINGS',regular.length)}${item('返回主菜单',regular.length+1)}<p></p></div>`,'');
       root.querySelector('.maintenance-files p').textContent='隐藏文件可显示到桌面，返回桌面后双击打开。';
       root.querySelector('.maintenance-help').textContent='Enter 选择文件夹；刷新后桌面中的隐藏资料会重新隐藏。';
@@ -107,7 +109,7 @@
       const reveal=()=>{try{window.showPrivateFileOnDesktop(key,file.name);showVisibility(file,'已显示到桌面，退出维护界面后即可打开。');}catch{showVisibility(file,'无法保存显示状态，请检查浏览器存储设置后重试。');}};
       if(file===bundle){
         const pre=root.querySelector('.maintenance-text pre');
-        pre.outerHTML=`<section class="maintenance-manifest"><div class="manifest-kicker">PROTECTED DIRECTORY / 受保护目录</div><h2>私人资料 <small>4 FILES</small></h2><div class="manifest-status">桌面状态 <strong>${visible?'已显示':'隐藏'}</strong></div><ol>${bundleFiles().map((entry,index)=>`<li><span>${String(index+1).padStart(2,'0')}</span><b>${escapeHtml(entry.name)}</b><small>${entry.pdf?'PDF':entry.audio?'AUDIO':'IMAGE'}</small></li>`).join('')}</ol><p>${escapeHtml(message||(visible?'文件夹已显示在桌面。退出维护程序后即可访问。':'是否将以上文件以文件夹形式显示到桌面？'))}</p></section>`;
+        pre.outerHTML=`<section class="maintenance-manifest"><div class="manifest-kicker">PROTECTED DIRECTORY / 受保护目录</div><h2>私人资料 <small>${bundleFiles().length} FILES</small></h2><div class="manifest-status">桌面状态 <strong>${visible?'已显示':'隐藏'}</strong></div><ol>${bundleFiles().map((entry,index)=>`<li><span>${String(index+1).padStart(2,'0')}</span><b>${escapeHtml(entry.name)}</b><small>${entry.text?'TXT':entry.pdf?'PDF':entry.audio?'AUDIO':'IMAGE'}</small></li>`).join('')}</ol><p>${escapeHtml(message||(visible?'文件夹已显示在桌面。退出维护程序后即可访问。':'是否将以上文件以文件夹形式显示到桌面？'))}</p></section>`;
       }
       actions=visible?[showFiles]:[reveal,showFiles];bindActions();
     }
