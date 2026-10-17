@@ -1,5 +1,5 @@
 {
-  "version": "20261018-1",
+  "version": "20261018-2",
   "items": [
     {
       "path": "assets/avatars/chenyuan-user.webp",
@@ -62,8 +62,8 @@
       "mime": "image/webp"
     },
     {
-      "path": "assets/documents/case-archive-page-guide.webp",
-      "bytes": 646666,
+      "path": "assets/documents/case-archive-page-south.webp",
+      "bytes": 646544,
       "mime": "image/webp"
     },
     {
@@ -108,7 +108,7 @@
     },
     {
       "path": "assets/documents/案件整理.pdf",
-      "bytes": 108912,
+      "bytes": 118496,
       "mime": "application/pdf"
     },
     {

@@ -1,8 +1,8 @@
 (() => {
-  const VERSION = "20261018-1";
+  const VERSION = "20261018-2";
   const FILE_NAME = `taoyuan-desktop-assets-${VERSION}.zip`;
   const URL_PATH = `assets/desktop-assets-${VERSION}.zip`;
-  const SHA256 = "163dbf2a8d31259bdc77a55d48c654b39543f4f6d9fae2be9b8bc77079ceb582";
+  const SHA256 = "646874c739d52cb7613dd67b3373a3095faaa27e526935d2efeba05ec6e98ba5";
   const DB_NAME = "taoyuan-local-assets";
   const STORE_NAME = "files";
 
