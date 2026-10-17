@@ -23,6 +23,7 @@
       apps[appId]={title:desktopFile.name+' - '+(desktopFile.pdf?'PDF 阅读器':desktopFile.image?'图片查看器':'音频播放器'),path:'桌面\\'+desktopFile.name};openApp(appId);
       hostWindow=document.querySelector(`[data-app="${appId}"]`);hostWindow.classList.add('private-file-window');
       hostWindow.style.width=Math.min(1000,innerWidth-40)+'px';hostWindow.style.height=Math.min(760,innerHeight-80)+'px';hostWindow.style.left='20px';hostWindow.style.top='20px';
+      if(desktopFile.audio){hostWindow.style.width=Math.min(600,innerWidth-40)+'px';hostWindow.style.height=Math.min(390,innerHeight-80)+'px';hostWindow.classList.add('classic-audio-window');}
       hostWindow.querySelector('.window-content').replaceChildren(root);root.removeAttribute('aria-modal');
       closeObserver=new MutationObserver(()=>{if(!hostWindow.isConnected){disposePlayer();closeObserver.disconnect();}});closeObserver.observe(hostWindow.parentNode,{childList:true});
     }else{desktop.inert=true;document.body.appendChild(root);}root.focus();
@@ -104,6 +105,8 @@
       frame('私人资料 / AUDIO ARCHIVE',`<div class="maintenance-text"><div class="maintenance-path">Z:\\PRIVATE\\AUDIO\\　 [READ ONLY]</div><section class="private-player" aria-label="复古音频播放器"><div class="private-player-title">ZY AUDIO PLAYER <span>LOCAL FILE / 01</span></div><div class="private-player-lcd"><div class="private-player-track">01. ${escapeHtml(file.name)}</div><div class="private-player-clock">00:00 <small>/ --:--</small></div><div class="private-player-status" role="status">正在读取音频…</div></div><label class="private-player-seek">播放进度<input aria-label="播放进度" type="range" min="0" max="100" step="0.1" value="0" disabled></label><div class="private-player-controls"><button type="button" data-play disabled>▶ 播放</button><button type="button" data-stop disabled>■ 停止</button><button type="button" data-mute aria-pressed="false">♪ 静音</button></div><label class="private-player-volume">VOLUME <input aria-label="音量" type="range" min="0" max="100" value="80"><output>80%</output></label><div class="private-player-bottom">MPEG AUDIO　 /　 PRIVATE RECORDING</div></section><div class="private-player-return">${item('返回私人资料',0)}</div></div>`,'空格播放 / 暂停；方向键调节已选滑块；Esc 返回并停止播放。');
       actions=[showFiles];root._back=showFiles;bindActions();
       const player=root.querySelector('.private-player'), audio=new Audio(file.audio);
+      player.querySelector('.private-player-title').textContent='媒体播放器';
+      player.querySelector('.private-player-bottom').textContent='音频文件　 ·　 MPEG Audio';
       audio.preload='metadata';audio.volume=.8;
       const play=player.querySelector('[data-play]'),stop=player.querySelector('[data-stop]'),mute=player.querySelector('[data-mute]'),seek=player.querySelector('.private-player-seek input'),volume=player.querySelector('.private-player-volume input'),status=player.querySelector('[role=status]');
       let disposed=false;
