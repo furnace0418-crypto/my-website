@@ -11,7 +11,15 @@
   documents.forEach(item=>{if(item.privateFile==='image'&&item.name==='照片 1.jpeg')item.name='照片 1.png';});
   // Extra desktop files are visible only until this page is refreshed.
   // Keep stored contents intact; private originals remain in maintenance.
-  documents.forEach(item => { item.onDesktop = false; });
+  // Temporary user-requested test hold. Resume refresh hiding only on approval.
+  const preserveDesktopTestDocuments = true;
+  if (preserveDesktopTestDocuments) {
+    try {
+      if (!localStorage.getItem('retroDesktopDocumentsTestBackupV1'))
+        localStorage.setItem('retroDesktopDocumentsTestBackupV1', JSON.stringify(documents));
+    } catch {}
+  }
+  documents.forEach(item => { if (!preserveDesktopTestDocuments || item.privateFile) item.onDesktop = false; });
   const persist = () => { try { localStorage.setItem(storageKey, JSON.stringify(documents)); } catch {} };
   persist();
   const select = icon => icons.querySelectorAll('.desktop-icon').forEach(other => other.classList.toggle('selected', other === icon));
