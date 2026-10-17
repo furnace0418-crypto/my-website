@@ -192,6 +192,17 @@ function renderAdminContact(host){
     requestAnimationFrame(()=>{log.scrollTop=log.scrollHeight});
     const form=actions.querySelector('form');
     const genderRow=document.createElement('div');
+    const residentCode=form.elements.residentCode;
+    const fillResidentPrefix=()=>{
+      if(residentCode.value!=='')return;
+      residentCode.value='TY';
+      residentCode.setSelectionRange(2,2);
+      requestAnimationFrame(()=>{
+        if(document.activeElement===residentCode&&residentCode.value==='TY')residentCode.setSelectionRange(2,2);
+      });
+    };
+    residentCode.addEventListener('focus',fillResidentPrefix);
+    residentCode.addEventListener('click',fillResidentPrefix);
     genderRow.className='admin-field-row';
     genderRow.innerHTML='<span>性别</span><div class="admin-relation-select admin-gender-select"><button type="button" class="admin-relation-trigger admin-gender-trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="adminGenderOptions"><span>请选择</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 6 5 5 5-5"/></svg></button><div class="admin-relation-menu admin-gender-menu" id="adminGenderOptions" role="listbox" aria-label="性别" hidden><button type="button" role="option" data-gender="女" aria-selected="false">女</button><button type="button" role="option" data-gender="男" aria-selected="false">男</button><button type="button" role="option" data-gender="其他" aria-selected="false">其他</button></div><input type="hidden" name="gender"></div>';
     form.elements.gender.closest('label').replaceWith(genderRow);
