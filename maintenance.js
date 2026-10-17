@@ -1,14 +1,11 @@
 (() => {
-  // Fictional narrative files: replace these placeholders when story content is ready.
+  // Available narrative files in the private archive.
   const files = [
     {name:'照片 1.png', folder:'影像资料', image:'assets/documents/private-photo-1.png'},
     {name:'城北区住宅火灾新闻.jpeg', folder:'新闻剪报', key:'news', image:'assets/documents/private-news-1.jpeg'},
     {name:'陈珍珍死亡事件_补充调查情况说明.pdf', folder:'调查资料', pdf:'assets/documents/chen-supplementary-investigation.pdf'},
     {name:'音频节点 1.mp3', folder:'音频资料', audio:'assets/sounds/private-audio-node-1.mp3?v=20261017-2'},
-    {name:'个人记录.txt', folder:'私人文档', body:'[内容待补充]\n\n这里预留郑愿自己的记录。\n正式剧情尚未写入。'},
-    {name:'未发送的信.txt', folder:'私人文档', body:'[内容待补充]\n\n这里预留一封未发送的信。\n收件人和正文待确定。'},
-    {name:'照片索引.txt', folder:'影像资料', body:'[内容待补充]\n\n尚未导入照片。\n这里将列出郑愿保存的私人影像。'},
-    {name:'维护说明.txt', folder:'系统文件', body:'ZHENG YUAN / PRIVATE MAINTENANCE\n\n入口：桌面图标排列为 Z。\n返回：主菜单按 Esc，或选择返回桌面。\n\n此界面为网页内的隐藏维护终端。\n诊断只读取当前网页状态，不访问真实硬件。\n文件区域目前使用剧情占位内容。'}
+    {name:'维护说明.txt', folder:'系统文件', body:'ZHENG YUAN / PRIVATE MAINTENANCE\n\n入口：桌面图标排列为 Z。\n返回：主菜单按 Esc，或选择返回桌面。\n\n选择隐藏文件后，可将其显示到桌面。\n退出维护界面后，双击桌面图标打开。\n新闻剪报单独存放。\n\n此界面为网页内的隐藏维护终端。\n诊断只读取当前网页状态，不访问真实硬件。'}
   ];
   window.openPrivateDesktopFile=key=>{const file=files.find(file=>file.key===key||(!file.key&&['pdf','audio','image'].includes(key)&&file[key]));if(file)window.openPrivateMaintenance(null,file);};
   window.openPrivateMaintenance = function(onExit, desktopFile=null) {
