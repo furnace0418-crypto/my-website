@@ -1,4 +1,13 @@
 (() => {
+  // Start loading during desktop boot; never reveal the menu in a fallback font.
+  let pixelFontReady;
+  function preparePixelFont() {
+    if (!pixelFontReady) pixelFontReady = document.fonts.load('24px MaintenancePixel', '私人资料').then(fonts => {
+      if (!fonts.length) throw new Error('Maintenance font unavailable');
+    }).catch(error => { pixelFontReady = null; throw error; });
+    return pixelFontReady;
+  }
+  preparePixelFont().catch(() => {});
   // Available narrative files in the private archive.
   const files = [
     {name:'离婚协议书.png',folder:'影像资料',key:'agreement',image:'assets/documents/private-divorce-agreement.png'},
@@ -178,7 +187,17 @@
       if(event.key==='Tab'){event.preventDefault();buttons[(selected+(event.shiftKey?-1:1)+buttons.length)%buttons.length]?.focus();return;}
       if(event.key.startsWith('Arrow')){event.preventDefault();event.stopPropagation();let step=event.key==='ArrowUp'?-1:event.key==='ArrowDown'?1:event.key==='ArrowLeft'?-4:4;if(screen!=='main')step=step<0?-1:1;buttons[(selected+step+buttons.length)%buttons.length]?.focus();}
     });
-    if(desktopFile){if(desktopFile.pdf)showPdf(desktopFile);else if(desktopFile.image)showImage(desktopFile);else showAudio(desktopFile);}else main();
+    if(desktopFile){if(desktopFile.pdf)showPdf(desktopFile);else if(desktopFile.image)showImage(desktopFile);else showAudio(desktopFile);}else {
+      root.style.background='#000080';
+      root.innerHTML='<div style="font:20px/1.6 monospace">LOADING DISPLAY RESOURCES...</div>';
+      preparePixelFont().then(() => {
+        if (closed || !root.isConnected) return;
+        root.style.background=''; main();
+      }).catch(() => {
+        if (closed || !root.isConnected) return;
+        root.innerHTML='<div style="font:20px/1.6 monospace">DISPLAY RESOURCE LOAD FAILED.<br>Press Esc to return and retry.</div>';
+      });
+    }
   };
 })();
 
