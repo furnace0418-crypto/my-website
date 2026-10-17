@@ -493,6 +493,18 @@ function wireCreateDatePicker(input){
   panel.addEventListener('keydown',event=>{if(event.key==='Escape'){panel.hidden=true;toggle.setAttribute('aria-expanded','false');toggle.focus()}});
   document.addEventListener('pointerdown',event=>{if(!picker.isConnected)return;if(!picker.contains(event.target)){panel.hidden=true;toggle.setAttribute('aria-expanded','false')}},{signal:window.createDatePickerAbort?.signal});
 }
+function validateResidentDates(form){
+  const fields=form.elements;
+  const matches=(value,expected)=>{
+    const parts=value.trim().match(/^(\d{4})\s*[年.\/-]\s*(\d{1,2})\s*[月.\/-]\s*(\d{1,2})\s*日?$/);
+    return Boolean(parts&&parts.slice(1).map(Number).join('-')===expected);
+  };
+  const valid=fields.name.value.trim()!=='郑愿'||(matches(fields.birth.value,'2006-8-23')&&matches(fields.death.value,'2025-9-27'));
+  let message=form.querySelector('.resident-date-error');
+  if(!valid&&!message){message=document.createElement('p');message.className='message resident-date-error';message.setAttribute('role','alert');form.querySelector('[type="submit"]').before(message);}
+  if(message){message.hidden=valid;message.textContent=valid?'':'姓名与出生、逝世日期不匹配，请核对后重试。';}
+  return valid;
+}
 function create(section='details',hallId=''){
   if(!account()){location.hash='#register';return}
   const lamp=section==='lantern';
@@ -520,7 +532,7 @@ function create(section='details',hallId=''){
   window.createDatePickerAbort?.abort();window.createDatePickerAbort=new AbortController();
   app.querySelectorAll('#createForm input[type="date"]').forEach(wireCreateDatePicker);
   const createForm=document.querySelector('#createForm'),photoState=wireHallPhotos(createForm);createForm._photoState=photoState;
-  createForm.onsubmit=e=>{e.preventDefault();const f=e.currentTarget;if(!f.birth.value||!f.death.value)return;const h={id:String(Date.now()),name:f.name.value.trim(),birth:f.birth.value,death:f.death.value,creator:account().name,creatorId:account().accountId,bio:f.bio.value.trim(),records:[]};if(!photoState.save(h.id))return;localStorage.setItem('memorial-halls',JSON.stringify([...saved(),h]));location.hash='#create/lantern/'+h.id;};
+  createForm.onsubmit=e=>{e.preventDefault();const f=e.currentTarget;if(!f.birth.value||!f.death.value||!validateResidentDates(f))return;const h={id:String(Date.now()),name:f.name.value.trim(),birth:f.birth.value,death:f.death.value,creator:account().name,creatorId:account().accountId,bio:f.bio.value.trim(),records:[]};if(!photoState.save(h.id))return;localStorage.setItem('memorial-halls',JSON.stringify([...saved(),h]));location.hash='#create/lantern/'+h.id;};
 }
 const ownsHall=(hall,user)=>Boolean(user&&(hall.creatorId?hall.creatorId===user.accountId:hall.creator===user.name));
 function editHall(id){
@@ -537,7 +549,7 @@ function editHall(id){
   const saveButton=form.querySelector('button[type="submit"]');saveButton.textContent='保存修改';
   const actions=document.createElement('div');actions.className='create-edit-actions';saveButton.before(actions);actions.append(saveButton);
   const lampPanel=document.createElement('div');lampPanel.className='edit-lamp-panel';lampPanel.innerHTML='<span>我的长明灯</span><a href="#create/lantern/'+encodeURIComponent(hall.id)+'">继续定制 ›</a>';form.append(lampPanel);
-  form.onsubmit=event=>{event.preventDefault();if(!form.reportValidity()||!form._photoState.save(id))return;const updated={...hall,name:form.elements.name.value.trim(),birth:form.elements.birth.value,death:form.elements.death.value,bio:form.elements.bio.value.trim()};localStorage.setItem('memorial-halls',JSON.stringify(saved().map(item=>item.id===id?updated:item)));location.hash='#me'};
+  form.onsubmit=event=>{event.preventDefault();if(!form.reportValidity()||!validateResidentDates(form)||!form._photoState.save(id))return;const updated={...hall,name:form.elements.name.value.trim(),birth:form.elements.birth.value,death:form.elements.death.value,bio:form.elements.bio.value.trim()};localStorage.setItem('memorial-halls',JSON.stringify(saved().map(item=>item.id===id?updated:item)));location.hash='#me'};
 }
 function myPage(){
   const user=account();
