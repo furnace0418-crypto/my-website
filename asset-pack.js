@@ -1,8 +1,8 @@
 (() => {
-  const VERSION = "20261018-3";
+  const VERSION = "20261018-4";
   const FILE_NAME = `taoyuan-desktop-assets-${VERSION}.zip`;
   const URL_PATH = `assets/desktop-assets-${VERSION}.zip`;
-  const SHA256 = "4cc17e4688f6232791d680b56fe7d86ad7f22ed73da7c2d91e098972010d73c5";
+  const SHA256 = "d4bdeee611761adf4ac2cb0de89bc152f1ebc1a4779b904d9e638a5dacdc6cf7";
   const DB_NAME = "taoyuan-local-assets";
   const STORE_NAME = "files";
   // This game password is intentionally available to the browser for automatic loading.
@@ -73,7 +73,10 @@
         if (!entry.encrypted || entry.filename.includes('..') || entry.filename.startsWith('/') || entries.has(entry.filename)) throw new Error('Invalid asset entry');
         total += entry.uncompressedSize;
         if (total > 128 * 1024 * 1024) throw new Error('Asset pack is too large');
-        entries.set(entry.filename, await entry.getData(new zip.Uint8ArrayWriter(), {checkSignature:true}));
+        // Keep runtime asset URLs stable while grouping archive contents for players.
+        const runtimePath = entry.filename.replace(/^assets\/\u8d44\u6e90\u6570\u636e\//, 'assets/');
+        if (entries.has(runtimePath)) throw new Error('Duplicate asset entry');
+        entries.set(runtimePath, await entry.getData(new zip.Uint8ArrayWriter(), {checkSignature:true}));
       }
     } finally { await reader.close(); }
     if (!entries.has("assets/desktop-resource-manifest.json")) throw new Error("Asset manifest missing");
