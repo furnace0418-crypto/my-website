@@ -140,8 +140,13 @@ const demo={id:'demo',name:'阿乐',birth:'2024年08月21日',death:'2024年08�
 const zhenzhen={id:'chen-zhenzhen',name:'陈珍珍',birth:'2004年03月14日',death:'2024年',creator:'安念堂',bio:'愿你在另一处，获得平静。',records:[]};
 const zhangwenhua={id:'zhang-wenhua',name:'张文华',birth:'1976年08月17日',death:'2013年11月03日',creator:'安念堂',bio:'张文华生于云阳，2013年于云阳市家中离世。',records:[]};
 const zhengxiuqin={id:'zheng-xiuqin',name:'郑秀琴',birth:'1975年',death:'2005年05月12日',creator:'安念堂',bio:'郑秀琴生于云阳，2005年于云阳市城南区离世。',records:[]};
-const halls=()=>[zhenzhen,zhangwenhua,zhengxiuqin,demo,...saved()];
-const searchableHalls=()=>halls().filter(h=>!document.body.classList.contains('invite-theme')||(['chen-zhenzhen','zhang-wenhua','zheng-xiuqin','demo'].includes(h.id)&&!(h.id==='chen-zhenzhen'&&!window.memorialRegistrationState?.chen)));
+const familyOnlyHalls=[
+  {id:'liu-jianguo',name:'刘建国',gender:'男',birth:'1968年',death:'2015年07月21日'},
+  {id:'wang-li',name:'王丽',gender:'女',birth:'1982年',death:'2018年03月09日'},
+  {id:'zhao-qiang',name:'赵强',gender:'男',birth:'1990年',death:'2020年12月15日'}
+].map(h=>({...h,creator:'安念堂',familyOnly:true}));
+const halls=()=>[zhenzhen,zhangwenhua,zhengxiuqin,...familyOnlyHalls,demo,...saved()];
+const searchableHalls=()=>halls().filter(h=>!document.body.classList.contains('invite-theme')||((h.familyOnly||['chen-zhenzhen','zhang-wenhua','zheng-xiuqin','demo'].includes(h.id))&&!(h.id==='chen-zhenzhen'&&!window.memorialRegistrationState?.chen)));
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const field=(form,name)=>form.elements.namedItem(name).value;
 const dateText=()=>new Date().toLocaleString('zh-CN',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false});
@@ -453,6 +458,10 @@ function changePasswordPage(){
     finally{submit.disabled=false}
   };
 }
+function familyOnlyMemorial(h){
+  pendingBrowseQuery=h.name;
+  app.innerHTML=`<div class="page-shell"><section class="panel family-only-memorial" aria-labelledby="familyOnlyTitle"><svg class="family-only-lock" viewBox="0 0 48 48" aria-hidden="true"><rect x="10" y="21" width="28" height="22" rx="3"/><path d="M16 21v-7a8 8 0 0 1 16 0v7M24 29v6"/></svg><p class="family-only-name">${esc(h.name)}纪念馆</p><h1 id="familyOnlyTitle">仅家属访问</h1><p>该纪念馆已设置为仅家属访问，暂不对外开放。</p><p class="family-only-detail">感谢您的理解与尊重。</p><a class="btn btn-gold" href="#browse">返回搜索</a></section></div>`;
+}
 function browse(query=''){
   app.innerHTML=`<div class="page-shell"><h1 class="page-heading">浏览纪念馆</h1><form class="browse-tools" id="hallSearchForm"><svg class="browse-search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg><input class="search-input" id="hallSearch" placeholder="搜索逝者姓名"><button class="btn btn-gold" type="submit">搜索</button></form><div class="memorial-grid" id="hallGrid"></div></div>`;
   const grid=app.querySelector('#hallGrid'),input=app.querySelector('#hallSearch');
@@ -462,7 +471,7 @@ function browse(query=''){
     const q=input.value.trim();
     if(!q){grid.innerHTML='<div class="empty">请输入故人姓名进行搜索</div>';return}
     const found=searchableHalls().filter(h=>h.name.includes(q));
-    grid.innerHTML=found.length?found.map(h=>{const featured=['chen-zhenzhen','zhang-wenhua','zheng-xiuqin'].includes(h.id);const coverClass=h.id==='chen-zhenzhen'?' chen-cover':h.id==='zhang-wenhua'?' zhang-cover':h.id==='zheng-xiuqin'?' zheng-cover':'';return `<article class="memorial-card${featured?' featured-memorial':''}"><div class="memorial-cover${coverClass}">${featured?'':'☾'}</div><div class="memorial-card-body"><h2>${esc(h.name)}</h2><p>${esc(h.birth)} - ${esc(h.death)}</p><p>创建者: ${esc(h.creator)}</p><a class="btn btn-gold" href="#hall/${encodeURIComponent(h.id)}">${featured?'进入纪念馆':'❤ 进行祭祀'}</a></div></article>`}).join(''):'<div class="empty">没有找到相关纪念馆</div>';
+    grid.innerHTML=found.length?found.map(h=>{const featured=h.familyOnly||['chen-zhenzhen','zhang-wenhua','zheng-xiuqin'].includes(h.id);const coverClass=h.id==='chen-zhenzhen'?' chen-cover':h.id==='zhang-wenhua'?' zhang-cover':h.id==='zheng-xiuqin'||h.familyOnly?' zheng-cover':'';return `<article class="memorial-card${featured?' featured-memorial':''}"><div class="memorial-cover${coverClass}">${featured?'':'☾'}</div><div class="memorial-card-body"><h2>${esc(h.name)}</h2><p>${esc(h.birth)} - ${esc(h.death)}</p><p>创建者: ${esc(h.creator)}</p><a class="btn btn-gold" href="#hall/${encodeURIComponent(h.id)}">${featured?'进入纪念馆':'❤ 进行祭祀'}</a></div></article>`}).join(''):'<div class="empty">没有找到相关纪念馆</div>';
   }
   app.querySelector('#hallSearchForm').onsubmit=e=>{e.preventDefault();draw()};
   draw();
@@ -718,7 +727,7 @@ function zhenzhenMemorial(initialTab='story'){
     flowerConfirm.remove();
   }
 }
-function hall(id,tab){if(id==='chen-zhenzhen'){zhenzhenMemorial(tab);return}if(id==='zhang-wenhua'){zhangwenhuaMemorial(tab);return}if(id==='zheng-xiuqin'){zhengxiuqinMemorial(tab);return}const h=halls().find(x=>x.id===id);if(!h){browse();return}app.innerHTML=`<div class="page-shell"><div class="panel"><div class="detail-head"><div class="portrait">☾</div><div><h1>${esc(h.name)}</h1><p>${esc(h.birth)} - ${esc(h.death)}　创建者: ${esc(h.creator)}</p><div class="rite-actions"><button data-rite="点烛">🕯 点烛</button><button data-rite="上香">♨ 上香</button><button data-rite="献花">🌿 献花</button></div></div></div><div class="detail-content"><h2>生平简介</h2><p class="bio">${esc(h.bio||'暂无生平简介')}</p><h2>祭祀记录</h2><div id="recordList"></div><form id="messageForm"><label class="field"><span>留下思念</span><textarea name="message" placeholder="写下想说的话" required></textarea></label><button class="btn" type="submit">发表留言</button></form></div></div></div>`;const list=document.querySelector('#recordList');function records(){list.innerHTML=h.records.length?h.records.map(r=>`<article class="record"><div class="record-top"><span><b>${esc(r.by)}</b>　${esc(r.type)}</span><time>${esc(r.at)}</time></div><p>${esc(r.text)}</p></article>`).join(''):'<p class="empty">尚无祭祀记录</p>'}records();function add(type,text){h.records.unshift({type,by:account()?.name||'访客',at:dateText(),text});if(h.id!=='demo'){localStorage.setItem('memorial-halls',JSON.stringify(saved().map(x=>x.id===h.id?h:x)))}records()}document.querySelectorAll('[data-rite]').forEach(b=>b.onclick=()=>{const t=b.dataset.rite;add(t,({点烛:'点燃了一支蜡烛，照亮前路',上香:'献上了一炷香，寄托哀思',献花:'献上了一束花，表达怀念'})[t])});document.querySelector('#messageForm').onsubmit=e=>{e.preventDefault();const f=e.currentTarget;add('留言',f.message.value.trim());f.reset()};}
+function hall(id,tab){const restricted=familyOnlyHalls.find(h=>h.id===id);if(restricted){familyOnlyMemorial(restricted);return}if(id==='chen-zhenzhen'){zhenzhenMemorial(tab);return}if(id==='zhang-wenhua'){zhangwenhuaMemorial(tab);return}if(id==='zheng-xiuqin'){zhengxiuqinMemorial(tab);return}const h=halls().find(x=>x.id===id);if(!h){browse();return}app.innerHTML=`<div class="page-shell"><div class="panel"><div class="detail-head"><div class="portrait">☾</div><div><h1>${esc(h.name)}</h1><p>${esc(h.birth)} - ${esc(h.death)}　创建者: ${esc(h.creator)}</p><div class="rite-actions"><button data-rite="点烛">🕯 点烛</button><button data-rite="上香">♨ 上香</button><button data-rite="献花">🌿 献花</button></div></div></div><div class="detail-content"><h2>生平简介</h2><p class="bio">${esc(h.bio||'暂无生平简介')}</p><h2>祭祀记录</h2><div id="recordList"></div><form id="messageForm"><label class="field"><span>留下思念</span><textarea name="message" placeholder="写下想说的话" required></textarea></label><button class="btn" type="submit">发表留言</button></form></div></div></div>`;const list=document.querySelector('#recordList');function records(){list.innerHTML=h.records.length?h.records.map(r=>`<article class="record"><div class="record-top"><span><b>${esc(r.by)}</b>　${esc(r.type)}</span><time>${esc(r.at)}</time></div><p>${esc(r.text)}</p></article>`).join(''):'<p class="empty">尚无祭祀记录</p>'}records();function add(type,text){h.records.unshift({type,by:account()?.name||'访客',at:dateText(),text});if(h.id!=='demo'){localStorage.setItem('memorial-halls',JSON.stringify(saved().map(x=>x.id===h.id?h:x)))}records()}document.querySelectorAll('[data-rite]').forEach(b=>b.onclick=()=>{const t=b.dataset.rite;add(t,({点烛:'点燃了一支蜡烛，照亮前路',上香:'献上了一炷香，寄托哀思',献花:'献上了一束花，表达怀念'})[t])});document.querySelector('#messageForm').onsubmit=e=>{e.preventDefault();const f=e.currentTarget;add('留言',f.message.value.trim());f.reset()};}
 function customHall(id,initialTab='story'){
   if(document.body.classList.contains('invite-theme')){location.hash='#browse';return}
   const h=saved().find(item=>item.id===id);if(!h){browse();return}

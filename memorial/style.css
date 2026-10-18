@@ -672,4 +672,5 @@ body.invite-theme{--portal-red:#78251f;--invite-accent:#78251f}
 .invite-theme .memorial-message-list .memorial-message p,.invite-theme .custom-message-list .memorial-message p{color:#d4dfd8}
 .invite-theme .memorial-message-list .memorial-message time,.invite-theme .custom-message-list .memorial-message time{color:#aebcb4}
 @media(max-width:700px){.personal-archive-empty{min-height:270px}}
+.family-only-memorial{max-width:680px;margin:54px auto;padding:48px 28px;text-align:center}.family-only-lock{width:52px;height:52px;fill:none;stroke:currentColor;stroke-width:2;color:#947360;margin-bottom:18px}.family-only-name{font-size:17px;letter-spacing:2px}.family-only-memorial h1{font-size:28px;margin:16px 0 22px}.family-only-memorial p{line-height:1.9}.family-only-detail{opacity:.7;font-size:14px}.family-only-memorial .btn{margin-top:22px}.invite-theme .family-only-memorial{background:#142223;border-color:#394b4c;color:#c3ceca}.invite-theme .family-only-lock{color:#91a69f}
 
