@@ -280,7 +280,7 @@ function showInviteVerification(){
   document.querySelector('.invite-prompt.invite-recheck')?.remove();
   const prompt=document.createElement('div');
   prompt.className='invite-prompt invite-recheck';
-  prompt.innerHTML=`<section role="dialog" aria-modal="true" aria-labelledby="invite-recheck-title"><button class="invite-close" type="button" aria-label="关闭验证窗口">×</button><h2 id="invite-recheck-title">特邀访问权限验证</h2><p>该邀请码用于验证特邀访客身份。完成验证后，可进入特邀主题并访问相应内容；如暂不验证，仍可继续使用普通用户功能。</p><label><span>特邀邀请码</span><input class="invite-recheck-code" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="请输入特邀邀请码"></label><small class="invite-recheck-error" role="alert"></small><div><button class="invite-skip" type="button">暂不验证</button><button class="invite-confirm" type="button">验证并进入</button></div></section>`;
+  prompt.innerHTML=`<section role="dialog" aria-modal="true" aria-labelledby="invite-recheck-title"><button class="invite-close" type="button" aria-label="关闭验证窗口">×</button><h2 id="invite-recheck-title">特邀访问权限验证</h2><p>该邀请码用于验证特邀访客身份。完成验证后，可进入特邀主题并访问相应内容；如暂不验证，仍可继续使用普通用户功能。</p><label><span>特邀邀请码</span><input class="invite-recheck-code" inputmode="text" autocapitalize="characters" spellcheck="false" maxlength="6" autocomplete="one-time-code" placeholder="请输入特邀邀请码"></label><small class="invite-recheck-error" role="alert"></small><div><button class="invite-skip" type="button">暂不验证</button><button class="invite-confirm" type="button">验证并进入</button></div></section>`;
   document.body.appendChild(prompt);
   const code=prompt.querySelector('.invite-recheck-code'),error=prompt.querySelector('.invite-recheck-error');
   const close=()=>prompt.remove();
@@ -310,7 +310,7 @@ function showEntryInvitePrompt(){
   document.querySelector('.invite-entry-prompt')?.remove();
   const prompt=document.createElement('div');
   prompt.className='invite-prompt invite-entry-prompt';
-  prompt.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="invite-entry-title"><button class="invite-close" type="button" aria-label="关闭">×</button><h2 id="invite-entry-title">你有邀请码吗？</h2><p>有邀请码可进入特邀主题；没有邀请码也可以正常使用安念堂。</p><label><span>特邀邀请码</span><input inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="请输入邀请码"></label><small role="alert"></small><div><button class="invite-skip" type="button">暂不验证</button><button class="invite-confirm" type="button">验证并进入</button></div></section>';
+  prompt.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="invite-entry-title"><button class="invite-close" type="button" aria-label="关闭">×</button><h2 id="invite-entry-title">你有邀请码吗？</h2><p>有邀请码可进入特邀主题；没有邀请码也可以正常使用安念堂。</p><label><span>特邀邀请码</span><input inputmode="text" autocapitalize="characters" spellcheck="false" maxlength="6" autocomplete="one-time-code" placeholder="请输入邀请码"></label><small role="alert"></small><div><button class="invite-skip" type="button">暂不验证</button><button class="invite-confirm" type="button">验证并进入</button></div></section>';
   document.body.append(prompt);
   const code=prompt.querySelector('input'),error=prompt.querySelector('small');
   const ordinary=()=>{prompt.remove();inviteAccessGranted=false;localStorage.removeItem('memorial-invite-theme');applyInviteTheme();header();if(location.hash==='#home')route();else location.hash='#home'};
