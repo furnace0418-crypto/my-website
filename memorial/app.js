@@ -471,6 +471,10 @@ function browse(query=''){
     const q=input.value.trim();
     if(!q){grid.innerHTML='<div class="empty">请输入故人姓名进行搜索</div>';return}
     const found=searchableHalls().filter(h=>h.name.includes(q));
+    if(!found.length&&q==='陈珍珍'&&document.body.classList.contains('invite-theme')&&!window.memorialRegistrationState?.chen){
+      grid.innerHTML='<div class="empty">该居民尚未完成登记，请联系管理员。</div>';
+      return;
+    }
     grid.innerHTML=found.length?found.map(h=>{const featured=h.familyOnly||['chen-zhenzhen','zhang-wenhua','zheng-xiuqin'].includes(h.id);const coverClass=h.id==='chen-zhenzhen'?' chen-cover':h.id==='zhang-wenhua'?' zhang-cover':h.id==='zheng-xiuqin'||h.familyOnly?' zheng-cover':'';return `<article class="memorial-card${featured?' featured-memorial':''}"><div class="memorial-cover${coverClass}">${featured?'':'☾'}</div><div class="memorial-card-body"><h2>${esc(h.name)}</h2><p>${esc(h.birth)} - ${esc(h.death)}</p><p>创建者: ${esc(h.creator)}</p><a class="btn btn-gold" href="#hall/${encodeURIComponent(h.id)}">${featured?'进入纪念馆':'❤ 进行祭祀'}</a></div></article>`}).join(''):'<div class="empty">没有找到相关纪念馆</div>';
   }
   app.querySelector('#hallSearchForm').onsubmit=e=>{e.preventDefault();draw()};
