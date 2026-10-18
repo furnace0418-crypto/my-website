@@ -67,14 +67,14 @@
     <script>
       if ("serviceWorker" in navigator && location.protocol === "https:") {
         window.persistentCacheReady = navigator.serviceWorker
-          .register("./sw.js?v=20261018-2", { scope: "./", updateViaCache: "none" })
+          .register("./sw.js?v=20261018-3", { scope: "./", updateViaCache: "none" })
           .catch((error) => console.warn("Persistent asset cache unavailable", error));
       }
     </script>
     <script defer src="retro-workstation.js?v=20261016-26"></script>
     <script defer src="bundle.retro-workstation.js?v=20261005-1"></script>
     <link href="main.css?v=20261005-5" rel="stylesheet" />
-    <script src="desktop/asset-pack.js?v=20261018-pack2"></script>
+    <script src="desktop/asset-pack.js?v=20261018-pack3"></script>
   
   </head>
   <body class="pixel-loading">

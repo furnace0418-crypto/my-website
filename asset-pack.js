@@ -1,10 +1,24 @@
 (() => {
-  const VERSION = "20261018-2";
+  const VERSION = "20261018-3";
   const FILE_NAME = `taoyuan-desktop-assets-${VERSION}.zip`;
   const URL_PATH = `assets/desktop-assets-${VERSION}.zip`;
-  const SHA256 = "646874c739d52cb7613dd67b3373a3095faaa27e526935d2efeba05ec6e98ba5";
+  const SHA256 = "4cc17e4688f6232791d680b56fe7d86ad7f22ed73da7c2d91e098972010d73c5";
   const DB_NAME = "taoyuan-local-assets";
   const STORE_NAME = "files";
+  // This game password is intentionally available to the browser for automatic loading.
+  const PACK_PASSWORD = "0927";
+  const ZIP_LIBRARY_URL = new URL('assets/vendor/zip-2.24.0.min.js', document.currentScript.src).href;
+  let zipLibrary;
+  function loadZipLibrary() {
+    if (window.zip) return Promise.resolve(window.zip);
+    if (!zipLibrary) zipLibrary = new Promise((resolve, reject) => {
+      const script = document.createElement('script');script.src = ZIP_LIBRARY_URL;
+      script.onload = () => window.zip ? resolve(window.zip) : reject(new Error('ZIP reader unavailable'));
+      script.onerror = () => { zipLibrary = null; script.remove(); reject(new Error('ZIP reader could not load')); };
+      document.head.appendChild(script);
+    });
+    return zipLibrary;
+  }
 
   function openDatabase() {
     return new Promise((resolve, reject) => {
@@ -46,25 +60,22 @@
   const rememberFile = handle => rememberPack({ handle });
   const rememberBlob = blob => rememberPack({ blob });
 
-  function unpackStoredZip(buffer) {
-    const view = new DataView(buffer), decoder = new TextDecoder();
+  async function unpackStoredZip(buffer) {
+    const zip = await loadZipLibrary(), decoder = new TextDecoder();
     const entries = new Map();
-    let offset = 0;
-    while (offset + 30 <= buffer.byteLength && view.getUint32(offset, true) === 0x04034b50) {
-      const flags = view.getUint16(offset + 6, true);
-      const method = view.getUint16(offset + 8, true);
-      const length = view.getUint32(offset + 18, true);
-      const plainLength = view.getUint32(offset + 22, true);
-      const nameLength = view.getUint16(offset + 26, true);
-      const extraLength = view.getUint16(offset + 28, true);
-      const dataOffset = offset + 30 + nameLength + extraLength;
-      if ((flags & 8) || method !== 0 || length !== plainLength || dataOffset + length > buffer.byteLength) {
-        throw new Error("Unsupported or damaged asset pack");
+    const reader = new zip.ZipReader(new zip.Uint8ArrayReader(new Uint8Array(buffer)), {password:PACK_PASSWORD,useWebWorkers:false});
+    try {
+      const files = await reader.getEntries();
+      if (files.length > 1000) throw new Error('Too many asset entries');
+      let total = 0;
+      for (const entry of files) {
+        if (entry.directory) continue;
+        if (!entry.encrypted || entry.filename.includes('..') || entry.filename.startsWith('/') || entries.has(entry.filename)) throw new Error('Invalid asset entry');
+        total += entry.uncompressedSize;
+        if (total > 128 * 1024 * 1024) throw new Error('Asset pack is too large');
+        entries.set(entry.filename, await entry.getData(new zip.Uint8ArrayWriter(), {checkSignature:true}));
       }
-      const name = decoder.decode(new Uint8Array(buffer, offset + 30, nameLength));
-      entries.set(name, new Uint8Array(buffer, dataOffset, length));
-      offset = dataOffset + length;
-    }
+    } finally { await reader.close(); }
     if (!entries.has("assets/desktop-resource-manifest.json")) throw new Error("Asset manifest missing");
     const manifest = JSON.parse(decoder.decode(entries.get("assets/desktop-resource-manifest.json")));
     const items = manifest.items;

@@ -1,6 +1,6 @@
 const CACHE_PREFIX = "taoyuan-desktop-";
 // New image formats use a fresh cache; discard stale PNG/JPEG entries.
-const CACHE_NAME = `${CACHE_PREFIX}20261018-2`;
+const CACHE_NAME = `${CACHE_PREFIX}20261018-3`;
 
 self.addEventListener("install", () => self.skipWaiting());
 
@@ -66,6 +66,10 @@ self.addEventListener("fetch", (event) => {
 
   // Packed desktop assets are read locally, including audio byte-range requests.
   const desktopAssets = new URL('desktop/assets/', self.registration.scope).pathname;
+  if (url.pathname.startsWith(desktopAssets + 'vendor/')) {
+    event.respondWith(cacheFirstImage(request));
+    return;
+  }
   if (url.pathname.startsWith(desktopAssets) && !/desktop-assets-[^/]+\.zip$/i.test(url.pathname)) {
     event.respondWith((async () => {
       const cache = await caches.open(CACHE_NAME);
