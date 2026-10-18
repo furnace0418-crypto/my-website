@@ -413,9 +413,6 @@ const qqConversations = {
   "珍珍姐": {
     type: "direct", avatarSrc: "assets/avatars/zhenzhen-retro.webp", status: "离线", identity: "QQ：5200718",
     messages: [
-      { date: "2022.1.11" },
-      { sender: "我", mine: true, text: "妈妈做的菜就是比外面的好吃，你说是吧\n不过我妈也是你妈啦！" },
-      { sender: "珍珍姐", text: "你少来哈哈哈哈" },
       { date: "2022.4.12" },
       { sender: "珍珍姐", text: "谢谢你送我的四叶草发夹，小郑子" },
       { sender: "我", mine: true, text: "你居然真戴啊" },
